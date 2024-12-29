@@ -12,6 +12,7 @@ namespace MachineLearning
         T* data;
 
     public:
+        Matrix(); // Default constructor for creating an empty object
         Matrix(size_t numOfRows, size_t numOfCols);
         ~Matrix();
 
@@ -24,9 +25,19 @@ namespace MachineLearning
 
         T& operator()(size_t row, size_t col); // access operator
         const T& operator()(size_t row, size_t col) const; // const access operator
+
+        size_t getRows();
+        size_t getColumns();
     };
 
     // --- IMPLEMENTATION ---
+
+    template<typename T>
+    inline Matrix<T>::Matrix()
+        :rows(0), cols(0), data(nullptr)
+    {
+    }
+
     template<typename T>
     Matrix<T>::Matrix(size_t numOfRows, size_t numOfCols)
         : rows(numOfRows), cols(numOfCols)
@@ -97,5 +108,17 @@ namespace MachineLearning
     const T& Matrix<T>::operator()(size_t row, size_t col) const
     {
         return data[row * cols + col];
+    }
+
+    template<typename T>
+    inline size_t Matrix<T>::getRows()
+    {
+        return rows;
+    }
+
+    template<typename T>
+    inline size_t Matrix<T>::getColumns()
+    {
+        return cols;
     }
 }

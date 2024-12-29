@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "matrix.h"
+#include "layer.h"
 
 int main()
 {
