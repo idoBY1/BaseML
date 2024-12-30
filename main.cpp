@@ -1,27 +1,18 @@
 #include <iostream>
 
-#include "matrix.h"
-#include "layer.h"
+#include "utils.h"
 
 int main()
 {
-	MachineLearning::Matrix<float> mat(3, 2);
+	std::cout << "Started..." << std::endl;
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 1; i <= 100; i++)
 	{
-		for (int j = 0; j < 2; j++)
-		{
-			mat(i, j) = i * 2 + j;
-		}
+		std::cout << "Random number " << i << ": " 
+			<< MachineLearning::Utils::getRandomFloat(-0.2f, 0.2f) << "\n";
 	}
 
-	for (int i = 0; i < 3; i++)
-	{
-		for (int j = 0; j < 2; j++)
-		{
-			std::cout << mat(i, j) << "\n";
-		}
-	}
+	std::cout << "Done." << std::endl;
 
 	return 0;
 }
