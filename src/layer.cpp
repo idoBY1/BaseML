@@ -9,13 +9,31 @@
 namespace MachineLearning
 {
 	Layer::Layer()
-		:inputCount(0), outputCount(0), weights(), biases(), outputs(), gradients()
+		:inputCount(0), outputCount(0), weights(), biases(), outputs(), gradients(), activationFunc(nullptr), activationFuncDerivative(nullptr)
 	{
 	}
 
 	Layer::Layer(size_t numInputs, size_t numOutputs)
 		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs), 
-		biases(numOutputs), outputs(numOutputs), gradients(numOutputs)
+		biases(numOutputs), outputs(numOutputs), gradients(numOutputs), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative)
+	{
+		// Initialize the biases and weights with random values
+
+		for (int i = 0; i < numOutputs; i++)
+		{
+			// Generate a number between MIN_INIT_VAL and MAX_INIT_VAL (the number is a float)
+			biases[i] = Utils::getRandomFloat(MIN_INIT_VAL, MAX_INIT_VAL);
+
+			for (int j = 0; j < numInputs; j++)
+			{
+				weights(i, j) = Utils::getRandomFloat(MIN_INIT_VAL, MAX_INIT_VAL);
+			}
+		}
+	}
+
+	Layer::Layer(size_t numInputs, size_t numOutputs, float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
+		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs),
+		biases(numOutputs), outputs(numOutputs), gradients(numOutputs), activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative)
 	{
 		// Initialize the biases and weights with random values
 
@@ -46,19 +64,6 @@ namespace MachineLearning
 		return outputs;
 	}
 
-	// The activation function
-	float Layer::sigmoid(float input)
-	{
-		return 1.0f / (1.0f + expf(-input));
-	}
-
-	// The derivative of the activation function (the derivative of the sigmoid 
-	// function can be calculated from its output)
-	float Layer::sigmoidDerivative(float neuronOutput)
-	{
-		return neuronOutput * (1.0f - neuronOutput);
-	}
-
 	void Layer::calculateOutputs(const std::vector<float>& inputs)
 	{
 		for (int i = 0; i < outputCount; i++)
@@ -70,7 +75,7 @@ namespace MachineLearning
 				outputs[i] += inputs[j] * weights(i, j);
 			}
 
-			outputs[i] = sigmoid(outputs[i]);
+			outputs[i] = (*activationFunc)(outputs[i]);
 		}
 	}
 }

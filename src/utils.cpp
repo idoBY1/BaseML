@@ -13,4 +13,15 @@ namespace MachineLearning::Utils
         std::uniform_real_distribution<float> distrib(min, max);
         return distrib(gen);
     }
+
+    float sigmoid(float input)
+    {
+        return 1.0f / (1.0f + expf(-input));
+    }
+
+    // (the derivative of the sigmoid function can be calculated from its output)
+    float sigmoidDerivative(float neuronOutput)
+    {
+        return neuronOutput * (1.0f - neuronOutput);
+    }
 }

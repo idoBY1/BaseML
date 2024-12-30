@@ -14,23 +14,18 @@ namespace MachineLearning
 	private:
 		size_t inputCount, outputCount;
 		Matrix<float> weights;
-		std::vector<float> biases;
-		std::vector<float> outputs;
-		std::vector<float> gradients;
+		std::vector<float> biases, outputs, gradients;
+		float (*activationFunc)(float), (*activationFuncDerivative)(float);
 
 	public:
 		Layer(); // Default constructor for creating an empty object
 		Layer(size_t numInputs, size_t numOutputs);
+		Layer(size_t numInputs, size_t numOutputs, float (*activationFunction)(float), float (*activationFunctionDerivative)(float));
 
 		size_t getInputCount();
 		size_t getOutputCount();
 		const std::vector<float>& getOutputs();
 
-		float sigmoid(float input); // Activation function
-		float sigmoidDerivative(float neuronOutput); // The derivative of the activation function
-
 		void calculateOutputs(const std::vector<float>& inputs); // Forward propagation
-
-		
 	};
 }

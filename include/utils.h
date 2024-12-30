@@ -3,4 +3,7 @@
 namespace MachineLearning::Utils
 {
 	float getRandomFloat(float min, float max);
+
+	float sigmoid(float input);
+	float sigmoidDerivative(float neuronOutput);
 }
