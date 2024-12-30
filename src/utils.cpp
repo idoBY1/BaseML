@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "utils.h"
 #include <random>
 
 namespace MachineLearning::Utils
@@ -23,5 +24,12 @@ namespace MachineLearning::Utils
     float sigmoidDerivative(float neuronOutput)
     {
         return neuronOutput * (1.0f - neuronOutput);
+    }
+
+    float MachineLearning::Utils::squareError(float activation, float expected)
+    {
+        float error = activation - expected;
+
+        return error * error;
     }
 }

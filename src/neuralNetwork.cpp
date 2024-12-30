@@ -9,13 +9,16 @@ namespace MachineLearning
 	NeuralNetwork::NeuralNetwork(std::vector<size_t> layerSizes)
 		:layers(layerSizes.size() - 1)
 	{
-		srand(static_cast <unsigned> (time(0))); // Set seed for random numbers to initialize layers with random values
-
 		// The first layer is just inputs so there is no need to save it inside layers
 		for (int i = 1; i < layerSizes.size(); i++)
 		{
 			layers.emplace_back(layerSizes[i - 1], layerSizes[i]);
 		}
+	}
+	
+	float NeuralNetwork::calculateAverageLoss(const Matrix<float>& expectedOutputs)
+	{
+		return 0.0f; // TODO: implement function!!
 	}
 
 	const std::vector<float>& NeuralNetwork::forwardPropagate(const std::vector<float>& inputs)

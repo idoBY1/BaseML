@@ -16,16 +16,19 @@ namespace MachineLearning
 		Matrix<float> weights;
 		std::vector<float> biases, outputs, gradients;
 		float (*activationFunc)(float), (*activationFuncDerivative)(float);
+		float (*lossFunc)(float, float); // Function to minimize
 
 	public:
 		Layer(); // Default constructor for creating an empty object
-		Layer(size_t numInputs, size_t numOutputs);
-		Layer(size_t numInputs, size_t numOutputs, float (*activationFunction)(float), float (*activationFunctionDerivative)(float));
+		Layer(size_t numInputs, size_t numOutputs); // Defaults to the sigmoid activation function
+		Layer(size_t numInputs, size_t numOutputs, float (*activationFunction)(float), 
+			float (*activationFunctionDerivative)(float), float (*lossFunction)(float, float));
 
 		size_t getInputCount();
 		size_t getOutputCount();
 		const std::vector<float>& getOutputs();
 
 		void calculateOutputs(const std::vector<float>& inputs); // Forward propagation
+		float calculateSumLoss(const std::vector<float>& expectedOutputs);
 	};
 }

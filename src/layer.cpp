@@ -9,13 +9,13 @@
 namespace MachineLearning
 {
 	Layer::Layer()
-		:inputCount(0), outputCount(0), weights(), biases(), outputs(), gradients(), activationFunc(nullptr), activationFuncDerivative(nullptr)
+		:inputCount(0), outputCount(0), weights(), biases(), outputs(), gradients(), activationFunc(nullptr), activationFuncDerivative(nullptr), lossFunc(nullptr)
 	{
 	}
 
 	Layer::Layer(size_t numInputs, size_t numOutputs)
-		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs), 
-		biases(numOutputs), outputs(numOutputs), gradients(numOutputs), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative)
+		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs), biases(numOutputs), outputs(numOutputs), 
+		gradients(numOutputs), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative), lossFunc(&Utils::squareError)
 	{
 		// Initialize the biases and weights with random values
 
@@ -31,9 +31,10 @@ namespace MachineLearning
 		}
 	}
 
-	Layer::Layer(size_t numInputs, size_t numOutputs, float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
-		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs),
-		biases(numOutputs), outputs(numOutputs), gradients(numOutputs), activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative)
+	Layer::Layer(size_t numInputs, size_t numOutputs, float(*activationFunction)(float), 
+		float(*activationFunctionDerivative)(float), float (*lossFunction)(float, float))
+		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs), biases(numOutputs), outputs(numOutputs), gradients(numOutputs), 
+		activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative), lossFunc(lossFunction)
 	{
 		// Initialize the biases and weights with random values
 
@@ -77,5 +78,17 @@ namespace MachineLearning
 
 			outputs[i] = (*activationFunc)(outputs[i]);
 		}
+	}
+
+	float Layer::calculateSumLoss(const std::vector<float>& expectedOutputs)
+	{
+		float sumLoss = 0.0f;
+
+		for (int i = 0; i < outputs.size(); i++)
+		{
+			sumLoss += (*lossFunc)(outputs[i], expectedOutputs[i]);
+		}
+
+		return sumLoss;
 	}
 }
