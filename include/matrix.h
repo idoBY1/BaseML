@@ -94,7 +94,7 @@ namespace MachineLearning
         // the column vector should have only one coulumn (should be a Matrix with 
         // one column).
         // Warning: this function doesn't check for the correctness of the input!
-        void addToColumns(const Matrix<T>& columnVec);
+        Matrix<T>& addToColumns(const Matrix<T>& columnVec);
 
         // Sum each row of the Matrix and return a column vector (Matrix 
         // with one column) with each of the rows' sum.
@@ -348,7 +348,7 @@ namespace MachineLearning
     }
 
     template<>
-    inline void Matrix<float>::addToColumns(const Matrix<float>& columnVec)
+    inline Matrix<float>& Matrix<float>::addToColumns(const Matrix<float>& columnVec)
     {
 #ifdef DEBUG
         if (columnVec.cols != 1 || rows != columnVec.rows)
@@ -365,6 +365,8 @@ namespace MachineLearning
                 (*this)(i, j) += columnVec(i);
             }
         }
+        
+        return (*this);
     }
 
     template<>

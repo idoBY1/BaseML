@@ -15,7 +15,7 @@ namespace MachineLearning
 
 	Layer::Layer(size_t numInputs, size_t numOutputs)
 		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, 1), 
-		gradients(1, numOutputs), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative)
+		gradients(numOutputs, 1), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative)
 	{
 		// Initialize the biases and weights with random values
 
@@ -86,7 +86,7 @@ namespace MachineLearning
 		// The result for each neuron is the sum of activations in the previous layer 
 		// weighted by the weights of the connections to each neuron on the previous 
 		// layer.
-		outputs = (weights * inputs) + biases;
+		outputs = (weights * inputs).addToColumns(biases);
 
 		// Pass the results through the activation function
 		for (int i = 0; i < outputCount; i++)
@@ -106,15 +106,15 @@ namespace MachineLearning
 
 	void Layer::calculateGradients(const Layer& nextLayer)
 	{
-		// Multiply nextLayer's gradients matrix with nextLayers weights matrix to get this layer's gradients
-		// (Notice how in this operation the weights are on the right instead of on the left because we are 
-		// going backwards in the layers. The gradients matrix is also rotated from the repressentation of the 
-		// inputs and outputs in forward propagation to compensate for the direction of the data propagation)
-		// The result for each neuron is the sum of all gradients in the next layer weighted by the weights 
-		// of the connections to each neuron on the next layer.
-		gradients = nextLayer.getGradients() * nextLayer.getWeights();
+		// Multiply nextLayer's weights (the weights connecting this layer of neurons and
+		// the next later of neurons) with nextLayer's gradients. The result for each neuron 
+		// will be the sum of gradients in the next layer weighted by their corresponding 
+		// weights. This is the first part of the derivative.
+		gradients = nextLayer.weights.transpose() * nextLayer.getGradients();
 
-		// Add the derivative of the activation function to each neuron's gradient
+		// Add the derivative of the activation function to each neuron's gradient.
+		// This is the second part of the derivative and the last shared part of the 
+		// derivative shared by both the weights and the biases
 		for (int i = 0; i < outputCount; i++)
 		{
 			gradients(i) = gradients(i) * (*activationFuncDerivative)(outputs(i));
