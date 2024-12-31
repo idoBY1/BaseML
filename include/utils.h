@@ -1,5 +1,7 @@
 #pragma once
 
+#include "matrix.h"
+
 namespace MachineLearning::Utils
 {
 	float getRandomFloat(float min, float max);
@@ -8,4 +10,6 @@ namespace MachineLearning::Utils
 	float sigmoidDerivative(float neuronOutput);
 
 	float squareError(float activation, float expected);
+
+	void printFloatMatrix(const Matrix<float>& mat);
 }

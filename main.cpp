@@ -1,18 +1,18 @@
 #include <iostream>
 
+#include "matrix.h"
 #include "utils.h"
 
 int main()
 {
-	std::cout << "Started..." << std::endl;
+	MachineLearning::Matrix<float> mat({
+		1, 
+		2,
+		3, 
+		4
+		});
 
-	for (int i = 1; i <= 100; i++)
-	{
-		std::cout << "Random number " << i << ": " 
-			<< MachineLearning::Utils::getRandomFloat(-0.2f, 0.2f) << "\n";
-	}
-
-	std::cout << "Done." << std::endl;
+	MachineLearning::Utils::printFloatMatrix(mat);
 
 	return 0;
 }

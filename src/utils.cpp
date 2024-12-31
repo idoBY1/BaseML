@@ -1,6 +1,10 @@
 #include "utils.h"
-#include "utils.h"
+
 #include <random>
+#include <iostream>
+#include <iomanip>
+
+#include "matrix.h"
 
 namespace MachineLearning::Utils
 {
@@ -31,5 +35,19 @@ namespace MachineLearning::Utils
         float error = activation - expected;
 
         return error * error;
+    }
+
+    void printFloatMatrix(const Matrix<float>& mat)
+    {
+        for (int i = 0; i < mat.getRows(); i++)
+        {
+            for (int j = 0; j < mat.getColumns(); j++)
+            {
+                std::cout << std::setw(8) << std::setprecision(5) << mat(i, j) << " ";
+            }
+            std::cout << "\n";
+        }
+
+        std::cout << std::endl;
     }
 }
