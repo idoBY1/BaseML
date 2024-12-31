@@ -1,3 +1,5 @@
+#define DEBUG
+
 #include <iostream>
 
 #include "matrix.h"
@@ -20,7 +22,7 @@ int main()
 		{2, 9}
 	};
 
-	(mat1 * mat2).print();
+	(mat1 + mat2).print();
 
 	/*MachineLearning::NeuralNetwork neuralNet = { 2, 4, 4, 3 };
 

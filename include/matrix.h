@@ -86,6 +86,21 @@ namespace MachineLearning
         // Returns the number of elements in the Matrix
         size_t size() const;
 
+        // Returns the transposition of the Matrix
+        Matrix<T> transpose() const;
+
+        // Add a column vector to each column of the Matrix.
+        // The Matrix and the column vector should have the same number of rows and 
+        // the column vector should have only one coulumn (should be a Matrix with 
+        // one column).
+        // Warning: this function doesn't check for the correctness of the input!
+        void addToColumns(const Matrix<T>& columnVec);
+
+        // Sum each row of the Matrix and return a column vector (Matrix 
+        // with one column) with each of the rows' sum.
+        // Warning: this function doesn't check for the correctness of the input!
+        Matrix<T> sumRows() const;
+
         // Prints the Matrix to the console
         void print() const;
     };
@@ -232,6 +247,15 @@ namespace MachineLearning
     {
         Matrix<float> newMat(rows, cols);
 
+#ifdef DEBUG
+        if (size() != other.size())
+        {
+            std::cout << "Invalid sizes in Matrix addition" << std::endl;
+            throw std::runtime_error("Invalid matrix addition");
+        }
+#endif // DEBUG
+
+
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
@@ -263,6 +287,15 @@ namespace MachineLearning
     inline Matrix<float> Matrix<float>::operator*(const Matrix<float>& other) const
     {
         Matrix<float> newMat(rows, other.cols);
+
+#ifdef DEBUG
+        if (cols != other.rows)
+        {
+            std::cout << "Invalid sizes in Matrix multiplication: c=" << cols 
+                << " r=" << other.rows << std::endl;
+            throw std::runtime_error("Invalid matrix multiplication");
+        }
+#endif // DEBUG
 
         for (int i = 0; i < newMat.rows; i++)
         {
@@ -296,6 +329,60 @@ namespace MachineLearning
     inline size_t Matrix<T>::size() const
     {
         return rows * cols;
+    }
+
+    template<typename T>
+    inline Matrix<T> Matrix<T>::transpose() const
+    {
+        Matrix<T> newMat(cols, rows);
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                newMat(j, i) = (*this)(i, j);
+            }
+        }
+
+        return newMat;
+    }
+
+    template<>
+    inline void Matrix<float>::addToColumns(const Matrix<float>& columnVec)
+    {
+#ifdef DEBUG
+        if (columnVec.cols != 1 || rows != columnVec.rows)
+        {
+            std::cout << "Invalid call to addToColumns(columnVec)" << std::endl;
+            throw std::runtime_error("Invalid call");
+        }
+#endif // DEBUG
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                (*this)(i, j) += columnVec(i);
+            }
+        }
+    }
+
+    template<>
+    inline Matrix<float> Matrix<float>::sumRows() const
+    {
+        Matrix<float> newMat(rows, 1);
+
+        for (int i = 0; i < rows; i++)
+        {
+            newMat(i, 0) = 0.0f;
+
+            for (int j = 0; j < cols; j++)
+            {
+                newMat(i, 0) += (*this)(i, j);
+            }
+        }
+
+        return newMat;
     }
 
     template<typename T>
