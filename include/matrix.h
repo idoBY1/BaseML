@@ -59,6 +59,22 @@ namespace MachineLearning
         // 1D const access operator
         const T& operator()(size_t index) const;
 
+        // Matrix addition. This function assumes that the matrices have the 
+        // same size and that they both contain float types.
+        // Warning: this function doesn't check for the correctness of the input!
+        Matrix<T> operator+(const Matrix<T>& other);
+
+        // Multiply the matrix by a scalar. This function assumes that the Matrix 
+        // contains float types.
+        // Warning: this function doesn't check for the correctness of the input!
+        Matrix<T> operator*(T operand);
+
+        // Matrix multiplication. This function assumes that the matrices contain 
+        // floats and that the sizes of the matrices are compatible with each other.
+        // Two matrices are compatible only if mat1.columnsCount() == mat2.rowsCount().
+        // Warning: this function doesn't check for the correctness of the input!
+        Matrix<T> operator*(const Matrix<T>& other);
+
         // Functions
 
         // Returns the number of rows in the Matrix
@@ -209,6 +225,59 @@ namespace MachineLearning
     inline const T& Matrix<T>::operator()(size_t index) const
     {
         return data[index];
+    }
+
+    template<>
+    inline Matrix<float> Matrix<float>::operator+(const Matrix<float>& other)
+    {
+        Matrix<float> newMat(rows, cols);
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                newMat(i, j) = (*this)(i, j) + other(i, j);
+            }
+        }
+
+        return newMat;
+    }
+
+    template<>
+    inline Matrix<float> Matrix<float>::operator*(float operand)
+    {
+        Matrix<float> newMat(rows, cols);
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                newMat(i, j) = (*this)(i, j) * operand;
+            }
+        }
+
+        return newMat;
+    }
+
+    template<>
+    inline Matrix<float> Matrix<float>::operator*(const Matrix<float>& other)
+    {
+        Matrix<float> newMat(rows, other.cols);
+
+        for (int i = 0; i < newMat.rows; i++)
+        {
+            for (int j = 0; j < newMat.cols; j++)
+            {
+                newMat(i, j) = 0.0f;
+
+                for (int k = 0; k < cols; k++)
+                {
+                    newMat(i, j) += (*this)(i, k) * other(k, j);
+                }
+            }
+        }
+
+        return newMat;
     }
 
     template<typename T>

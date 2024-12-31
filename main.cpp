@@ -7,22 +7,22 @@
 
 int main()
 {
-	/*MachineLearning::Matrix<float> mat = {
+	MachineLearning::Matrix<float> mat1 = {
 		{1, 2, 3, 4}, 
-		{5, 6, 7, 8}
+		{5, 6, 7, 8},
+		{1, 8, 3, 2}
 	};
 
-	for (int i = 0; i < mat.rowsCount(); i++)
-	{
-		for (int j = 0; j < mat.columnsCount(); j++)
-		{
-			mat(i, j) = MachineLearning::Utils::getRandomFloat(0.0f, 20.0f);
-		}
-	}
+	MachineLearning::Matrix<float> mat2 = {
+		{5, 3},
+		{5, 2}, 
+		{7, 5},
+		{2, 9}
+	};
 
-	MachineLearning::Utils::printFloatMatrix(mat);*/
+	(mat1 * mat2).print();
 
-	MachineLearning::NeuralNetwork neuralNet = { 2, 4, 4, 3 };
+	/*MachineLearning::NeuralNetwork neuralNet = { 2, 4, 4, 3 };
 
 	const int layerNum = 2;
 
@@ -34,7 +34,7 @@ int main()
 
 	std::cout << "Biases: \n";
 	neuralNet.getLayers()[layerNum].getBiases().print();
-	std::cout << std::endl;
+	std::cout << std::endl;*/
 
 	return 0;
 }
