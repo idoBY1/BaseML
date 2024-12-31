@@ -19,16 +19,36 @@ namespace MachineLearning
 		float (*lossFunc)(float, float); // Function to minimize
 
 	public:
-		Layer(); // Default constructor for creating an empty object
-		Layer(size_t numInputs, size_t numOutputs); // Defaults to the sigmoid activation function
+		// Default constructor for creating an empty object
+		Layer(); 
+
+		// Creates a layer with 'numInputs' inputs and 'numOutputs' outputs.
+		// Defaults to the sigmoid activation function with squareCost as the lost function
+		Layer(size_t numInputs, size_t numOutputs);
+
+		// Creates a layer with 'numInputs' inputs and 'numOutputs' outputs. 
 		Layer(size_t numInputs, size_t numOutputs, float (*activationFunction)(float), 
 			float (*activationFunctionDerivative)(float), float (*lossFunction)(float, float));
 
-		size_t getInputCount();
-		size_t getOutputCount();
-		const std::vector<float>& getOutputs();
+		// Returns the number of inputs of this layer
+		size_t getInputCount() const;
 
-		void calculateOutputs(const std::vector<float>& inputs); // Forward propagation
+		// Returns the number of outputs of this layer
+		size_t getOutputCount() const;
+
+		// Returns the outputs of this layer
+		const std::vector<float>& getOutputs() const;
+
+		// Returns the weights of this layer
+		const Matrix<float>& getWeights() const;
+
+		// Returns the biases of this layer
+		const std::vector<float>& getBiases() const;
+
+		// Perform forward propagation on this layer with the specified inputs
+		void calculateOutputs(const std::vector<float>& inputs); 
+
+		// Calculates the sum of the loss function over all of the layer's outputs
 		float calculateSumLoss(const std::vector<float>& expectedOutputs);
 	};
 }

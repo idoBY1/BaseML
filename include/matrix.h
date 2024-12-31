@@ -62,7 +62,7 @@ namespace MachineLearning
         size_t getColumns() const;
 
         // Prints the Matrix to the console
-        void printMatrix() const;
+        void print() const;
     };
 
     // --- IMPLEMENTATION ---
@@ -203,13 +203,13 @@ namespace MachineLearning
     }
 
     template<typename T>
-    void Matrix<T>::printMatrix() const
+    void Matrix<T>::print() const
     {
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
             {
-                std::cout << (*this)(i, j) << " ";
+                std::cout << (*this)(i, j) << "  ";
             }
             std::cout << "\n";
         }

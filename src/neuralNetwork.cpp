@@ -7,8 +7,9 @@
 namespace MachineLearning
 {
 	NeuralNetwork::NeuralNetwork(std::vector<size_t> layerSizes)
-		:layers(layerSizes.size() - 1)
 	{
+		layers.reserve(layerSizes.size() - 1);
+
 		// The first layer is just inputs so there is no need to save it inside layers
 		for (int i = 1; i < layerSizes.size(); i++)
 		{
@@ -16,6 +17,21 @@ namespace MachineLearning
 		}
 	}
 	
+	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes)
+	{
+		layers.reserve(layerSizes.size() - 1);
+
+		for (auto layerSize = layerSizes.begin() + 1; layerSize < layerSizes.end(); layerSize++)
+		{
+			layers.emplace_back(*(layerSize - 1), *layerSize);
+		}
+	}
+
+	const std::vector<Layer>& NeuralNetwork::getLayers() const
+	{
+		return layers;
+	}
+
 	float NeuralNetwork::calculateAverageLoss(const Matrix<float>& expectedOutputs)
 	{
 		return 0.0f; // TODO: implement function!!

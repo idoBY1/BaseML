@@ -50,19 +50,29 @@ namespace MachineLearning
 		}
 	}
 
-	size_t Layer::getInputCount()
+	size_t Layer::getInputCount() const
 	{
 		return inputCount;
 	}
 
-	size_t Layer::getOutputCount()
+	size_t Layer::getOutputCount() const
 	{
 		return outputCount;
 	}
 
-	const std::vector<float>& Layer::getOutputs()
+	const std::vector<float>& Layer::getOutputs() const
 	{
 		return outputs;
+	}
+
+	const Matrix<float>& Layer::getWeights() const
+	{
+		return weights;
+	}
+
+	const std::vector<float>& Layer::getBiases() const
+	{
+		return biases;
 	}
 
 	void Layer::calculateOutputs(const std::vector<float>& inputs)
