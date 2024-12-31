@@ -64,6 +64,11 @@ namespace MachineLearning
         // Warning: this function doesn't check for the correctness of the input!
         Matrix<T> operator+(const Matrix<T>& other) const;
 
+        // Matrix subtraction. This function assumes that the matrices have the 
+        // same size and that they both contain float types.
+        // Warning: this function doesn't check for the correctness of the input!
+        Matrix<T> operator-(const Matrix<T>& other) const;
+
         // Multiply the matrix by a scalar. This function assumes that the Matrix 
         // contains float types.
         // Warning: this function doesn't check for the correctness of the input!
@@ -255,6 +260,29 @@ namespace MachineLearning
         }
 #endif // DEBUG
 
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                newMat(i, j) = (*this)(i, j) + other(i, j);
+            }
+        }
+
+        return newMat;
+    }
+
+    template<>
+    inline Matrix<float> Matrix<float>::operator-(const Matrix<float>& other) const
+    {
+        Matrix<float> newMat(rows, cols);
+
+#ifdef DEBUG
+        if (size() != other.size())
+        {
+            std::cout << "Invalid sizes in Matrix subtraction" << std::endl;
+            throw std::runtime_error("Invalid matrix subtraction");
+        }
+#endif // DEBUG
 
         for (int i = 0; i < rows; i++)
         {
