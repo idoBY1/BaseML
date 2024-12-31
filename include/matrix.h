@@ -53,13 +53,22 @@ namespace MachineLearning
         // Const access operator
         const T& operator()(size_t row, size_t col) const; 
 
+        // 1D access operator
+        T& operator()(size_t index);
+
+        // 1D const access operator
+        const T& operator()(size_t index) const;
+
         // Functions
 
         // Returns the number of rows in the Matrix
-        size_t getRows() const;
+        size_t rowsCount() const;
 
         // Returns the number of columns in the Matrix
-        size_t getColumns() const;
+        size_t columnsCount() const;
+
+        // Returns the number of elements in the Matrix
+        size_t size() const;
 
         // Prints the Matrix to the console
         void print() const;
@@ -191,15 +200,33 @@ namespace MachineLearning
     }
 
     template<typename T>
-    inline size_t Matrix<T>::getRows() const
+    inline T& Matrix<T>::operator()(size_t index)
+    {
+        return data[index];
+    }
+
+    template<typename T>
+    inline const T& Matrix<T>::operator()(size_t index) const
+    {
+        return data[index];
+    }
+
+    template<typename T>
+    inline size_t Matrix<T>::rowsCount() const
     {
         return rows;
     }
 
     template<typename T>
-    inline size_t Matrix<T>::getColumns() const
+    inline size_t Matrix<T>::columnsCount() const
     {
         return cols;
+    }
+
+    template<typename T>
+    inline size_t Matrix<T>::size() const
+    {
+        return rows * cols;
     }
 
     template<typename T>

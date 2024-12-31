@@ -37,7 +37,7 @@ namespace MachineLearning
 		return 0.0f; // TODO: implement function!!
 	}
 
-	const std::vector<float>& NeuralNetwork::forwardPropagate(const std::vector<float>& inputs)
+	const Matrix<float>& NeuralNetwork::forwardPropagate(const Matrix<float>& inputs)
 	{
 		layers[0].calculateOutputs(inputs);
 

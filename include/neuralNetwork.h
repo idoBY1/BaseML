@@ -23,6 +23,6 @@ namespace MachineLearning
 
 		float calculateAverageLoss(const Matrix<float>& expectedOutputs);
 
-		const std::vector<float>& forwardPropagate(const std::vector<float>& inputs);
+		const Matrix<float>& forwardPropagate(const Matrix<float>& inputs);
 	};
 }

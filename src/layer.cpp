@@ -14,15 +14,15 @@ namespace MachineLearning
 	}
 
 	Layer::Layer(size_t numInputs, size_t numOutputs)
-		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs), biases(numOutputs), outputs(numOutputs), 
-		gradients(numOutputs), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative), lossFunc(&Utils::squareError)
+		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, 1), 
+		gradients(numOutputs, 1), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative), lossFunc(&Utils::squareError)
 	{
 		// Initialize the biases and weights with random values
 
 		for (int i = 0; i < numOutputs; i++)
 		{
 			// Generate a number between MIN_INIT_VAL and MAX_INIT_VAL (the number is a float)
-			biases[i] = Utils::getRandomFloat(MIN_INIT_VAL, MAX_INIT_VAL);
+			biases(i) = Utils::getRandomFloat(MIN_INIT_VAL, MAX_INIT_VAL);
 
 			for (int j = 0; j < numInputs; j++)
 			{
@@ -33,7 +33,7 @@ namespace MachineLearning
 
 	Layer::Layer(size_t numInputs, size_t numOutputs, float(*activationFunction)(float), 
 		float(*activationFunctionDerivative)(float), float (*lossFunction)(float, float))
-		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs), biases(numOutputs), outputs(numOutputs), gradients(numOutputs), 
+		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, 1), gradients(numOutputs, 1), 
 		activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative), lossFunc(lossFunction)
 	{
 		// Initialize the biases and weights with random values
@@ -41,7 +41,7 @@ namespace MachineLearning
 		for (int i = 0; i < numOutputs; i++)
 		{
 			// Generate a number between MIN_INIT_VAL and MAX_INIT_VAL (the number is a float)
-			biases[i] = Utils::getRandomFloat(MIN_INIT_VAL, MAX_INIT_VAL);
+			biases(i) = Utils::getRandomFloat(MIN_INIT_VAL, MAX_INIT_VAL);
 
 			for (int j = 0; j < numInputs; j++)
 			{
@@ -60,7 +60,7 @@ namespace MachineLearning
 		return outputCount;
 	}
 
-	const std::vector<float>& Layer::getOutputs() const
+	const Matrix<float>& Layer::getOutputs() const
 	{
 		return outputs;
 	}
@@ -70,33 +70,33 @@ namespace MachineLearning
 		return weights;
 	}
 
-	const std::vector<float>& Layer::getBiases() const
+	const Matrix<float>& Layer::getBiases() const
 	{
 		return biases;
 	}
 
-	void Layer::calculateOutputs(const std::vector<float>& inputs)
+	void Layer::calculateOutputs(const Matrix<float>& inputs) // TODO: fix compatibility with 2D matrices
 	{
 		for (int i = 0; i < outputCount; i++)
 		{
-			outputs[i] = biases[i]; // Initialize output value with bias
+			outputs(i) = biases(i); // Initialize output value with bias
 
 			for (int j = 0; j < inputCount; j++)
 			{
-				outputs[i] += inputs[j] * weights(i, j);
+				outputs(i) += inputs(j) * weights(i, j);
 			}
 
-			outputs[i] = (*activationFunc)(outputs[i]);
+			outputs(i) = (*activationFunc)(outputs(i));
 		}
 	}
 
-	float Layer::calculateSumLoss(const std::vector<float>& expectedOutputs)
+	float Layer::calculateSumLoss(const Matrix<float>& expectedOutputs) // TODO: fix compatibility with 2D matrices
 	{
 		float sumLoss = 0.0f;
 
 		for (int i = 0; i < outputs.size(); i++)
 		{
-			sumLoss += (*lossFunc)(outputs[i], expectedOutputs[i]);
+			sumLoss += (*lossFunc)(outputs(i), expectedOutputs(i));
 		}
 
 		return sumLoss;

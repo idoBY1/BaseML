@@ -12,9 +12,9 @@ int main()
 		{5, 6, 7, 8}
 	};
 
-	for (int i = 0; i < mat.getRows(); i++)
+	for (int i = 0; i < mat.rowsCount(); i++)
 	{
-		for (int j = 0; j < mat.getColumns(); j++)
+		for (int j = 0; j < mat.columnsCount(); j++)
 		{
 			mat(i, j) = MachineLearning::Utils::getRandomFloat(0.0f, 20.0f);
 		}
@@ -33,8 +33,7 @@ int main()
 	neuralNet.getLayers()[layerNum].getWeights().print();
 
 	std::cout << "Biases: \n";
-	for (auto v = neuralNet.getLayers()[layerNum].getBiases().begin(); v < neuralNet.getLayers()[layerNum].getBiases().end(); ++v)
-		std::cout << *v << " ";
+	neuralNet.getLayers()[layerNum].getBiases().print();
 	std::cout << std::endl;
 
 	return 0;

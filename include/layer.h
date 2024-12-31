@@ -13,8 +13,7 @@ namespace MachineLearning
 	{
 	private:
 		size_t inputCount, outputCount;
-		Matrix<float> weights;
-		std::vector<float> biases, outputs, gradients;
+		Matrix<float> weights, biases, outputs, gradients;
 		float (*activationFunc)(float), (*activationFuncDerivative)(float);
 		float (*lossFunc)(float, float); // Function to minimize
 
@@ -37,18 +36,18 @@ namespace MachineLearning
 		size_t getOutputCount() const;
 
 		// Returns the outputs of this layer
-		const std::vector<float>& getOutputs() const;
+		const Matrix<float>& getOutputs() const;
 
 		// Returns the weights of this layer
 		const Matrix<float>& getWeights() const;
 
 		// Returns the biases of this layer
-		const std::vector<float>& getBiases() const;
+		const Matrix<float>& getBiases() const;
 
 		// Perform forward propagation on this layer with the specified inputs
-		void calculateOutputs(const std::vector<float>& inputs); 
+		void calculateOutputs(const Matrix<float>& inputs); 
 
 		// Calculates the sum of the loss function over all of the layer's outputs
-		float calculateSumLoss(const std::vector<float>& expectedOutputs);
+		float calculateSumLoss(const Matrix<float>& expectedOutputs);
 	};
 }
