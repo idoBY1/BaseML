@@ -24,6 +24,11 @@ namespace MachineLearning
 		return layers;
 	}
 
+	const Matrix<float>& NeuralNetwork::getOutput() const
+	{
+		return layers[layers.size() - 1].getOutputs();
+	}
+
 	const Matrix<float>& NeuralNetwork::forwardPropagate(const Matrix<float>& inputs)
 	{
 		layers[0].calculateOutputs(inputs);
@@ -86,5 +91,11 @@ namespace MachineLearning
 		{
 			layers[i].gradientDescent(layers[i - 1].getOutputs(), learningRate);
 		}
+	}
+
+	void NeuralNetwork::learn(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate) // TODO: expand to work with batches
+	{
+		forwardPropagate(inputs);
+		backPropagation(inputs, expectedOutputs, learningRate);
 	}
 }

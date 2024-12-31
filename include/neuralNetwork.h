@@ -19,6 +19,9 @@ namespace MachineLearning
 		// Returns the layers of the Neural Network
 		const std::vector<Layer>& getLayers() const;
 
+		// Returns the output of the last layer
+		const Matrix<float>& getOutput() const;
+
 		// Runs the input through the network
 		const Matrix<float>& forwardPropagate(const Matrix<float>& inputs);
 
@@ -29,5 +32,7 @@ namespace MachineLearning
 
 		// Calculate gradients and apply gradient descent on every layer of the Neural Network
 		void backPropagation(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate);
+
+		void learn(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate); // TODO: expand to work with batches
 	};
 }

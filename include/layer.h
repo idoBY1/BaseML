@@ -4,8 +4,8 @@
 
 #include "matrix.h"
 
-#define MAX_INIT_VAL 0.2f
-#define MIN_INIT_VAL -0.2f
+#define MAX_INIT_VAL 1.0f
+#define MIN_INIT_VAL -1.0f
 
 namespace MachineLearning
 {
