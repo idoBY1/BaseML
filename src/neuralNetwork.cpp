@@ -4,20 +4,12 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "utils.h"
+
 namespace MachineLearning
 {
-	NeuralNetwork::NeuralNetwork(std::vector<size_t> layerSizes)
-	{
-		layers.reserve(layerSizes.size() - 1);
-
-		// The first layer is just inputs so there is no need to save it inside layers
-		for (int i = 1; i < layerSizes.size(); i++)
-		{
-			layers.emplace_back(layerSizes[i - 1], layerSizes[i]);
-		}
-	}
-	
 	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes)
+		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative)
 	{
 		layers.reserve(layerSizes.size() - 1);
 
@@ -32,11 +24,6 @@ namespace MachineLearning
 		return layers;
 	}
 
-	float NeuralNetwork::calculateAverageLoss(const Matrix<float>& expectedOutputs)
-	{
-		return 0.0f; // TODO: implement function!!
-	}
-
 	const Matrix<float>& NeuralNetwork::forwardPropagate(const Matrix<float>& inputs)
 	{
 		layers[0].calculateOutputs(inputs);
@@ -48,4 +35,37 @@ namespace MachineLearning
 
 		return layers[layers.size() - 1].getOutputs();
 	}
+
+	float NeuralNetwork::calculateSumLoss(const Matrix<float>& expectedOutputs) // TODO: fix compatibility with 2D matrices (after adding batches)
+	{
+		float sumLoss = 0.0f;
+
+		Layer& lastLayer = layers[layers.size() - 1];
+
+		for (int i = 0; i < lastLayer.getOutputCount(); i++)
+		{
+			sumLoss += (*lossFunc)((lastLayer.getOutputs())(i), expectedOutputs(i));
+		}
+
+		return sumLoss;
+	}
+
+	//float NeuralNetwork::calculateAverageLoss(const std::vector<Matrix<float>>& inputs, const std::vector<Matrix<float>>& expectedOutputs) // TODO: Modify to work with batches
+	//{
+	//	if (inputs.size() != expectedOutputs.size())
+	//	{
+	//		std::cout << "Inputs and expected outputs should have the same length!" << std::endl;
+	//		throw std::runtime_error("Inputs size must match expected outputs size");
+	//	}
+
+	//	float sumLoss = 0.0f;
+
+	//	for (int i = 0; i < expectedOutputs.size(); i++)
+	//	{
+	//		forwardPropagate(inputs[i]);
+	//		sumLoss += layers[layers.size() - 1].calculateSumLoss(expectedOutputs[i]);
+	//	}
+
+	//	return sumLoss / expectedOutputs.size();
+	//}
 }

@@ -10,6 +10,7 @@ namespace MachineLearning::Utils
 	float sigmoidDerivative(float neuronOutput);
 
 	float squareError(float activation, float expected);
+	float squareErrorDerivative(float activation, float expected);
 
 	void printFloatMatrix(const Matrix<float>& mat);
 }

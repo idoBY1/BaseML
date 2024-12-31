@@ -15,7 +15,6 @@ namespace MachineLearning
 		size_t inputCount, outputCount;
 		Matrix<float> weights, biases, outputs, gradients;
 		float (*activationFunc)(float), (*activationFuncDerivative)(float);
-		float (*lossFunc)(float, float); // Function to minimize
 
 	public:
 		// Default constructor for creating an empty object
@@ -44,10 +43,19 @@ namespace MachineLearning
 		// Returns the biases of this layer
 		const Matrix<float>& getBiases() const;
 
+		// Returns the gradients of this layer
+		const Matrix<float>& getGradients() const;
+
 		// Perform forward propagation on this layer with the specified inputs
 		void calculateOutputs(const Matrix<float>& inputs); 
 
-		// Calculates the sum of the loss function over all of the layer's outputs
-		float calculateSumLoss(const Matrix<float>& expectedOutputs);
+		// Caculate the gradients of the last layer based on the loss function and the expected outputs
+		void calculateLastLayerGradients(const Matrix<float>& expectedOutputs, float (*lossFunctionDerivative)(float, float));
+
+		// Caculate the gradients of this layer based on the gradients of the next layer
+		void calculateGradients(const Layer& nextLayer);
+
+		// Update the parameters according to the gradients to minimize the loss function
+		void gradientDescent(float learningRate);
 	};
 }

@@ -37,6 +37,11 @@ namespace MachineLearning::Utils
         return error * error;
     }
 
+    float squareErrorDerivative(float activation, float expected)
+    {
+        return 2 * (activation - expected);
+    }
+
     void printFloatMatrix(const Matrix<float>& mat)
     {
         for (int i = 0; i < mat.rowsCount(); i++)

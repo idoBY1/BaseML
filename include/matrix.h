@@ -62,18 +62,18 @@ namespace MachineLearning
         // Matrix addition. This function assumes that the matrices have the 
         // same size and that they both contain float types.
         // Warning: this function doesn't check for the correctness of the input!
-        Matrix<T> operator+(const Matrix<T>& other);
+        Matrix<T> operator+(const Matrix<T>& other) const;
 
         // Multiply the matrix by a scalar. This function assumes that the Matrix 
         // contains float types.
         // Warning: this function doesn't check for the correctness of the input!
-        Matrix<T> operator*(T operand);
+        Matrix<T> operator*(T operand) const;
 
         // Matrix multiplication. This function assumes that the matrices contain 
         // floats and that the sizes of the matrices are compatible with each other.
         // Two matrices are compatible only if mat1.columnsCount() == mat2.rowsCount().
         // Warning: this function doesn't check for the correctness of the input!
-        Matrix<T> operator*(const Matrix<T>& other);
+        Matrix<T> operator*(const Matrix<T>& other) const;
 
         // Functions
 
@@ -228,7 +228,7 @@ namespace MachineLearning
     }
 
     template<>
-    inline Matrix<float> Matrix<float>::operator+(const Matrix<float>& other)
+    inline Matrix<float> Matrix<float>::operator+(const Matrix<float>& other) const
     {
         Matrix<float> newMat(rows, cols);
 
@@ -244,7 +244,7 @@ namespace MachineLearning
     }
 
     template<>
-    inline Matrix<float> Matrix<float>::operator*(float operand)
+    inline Matrix<float> Matrix<float>::operator*(float operand) const
     {
         Matrix<float> newMat(rows, cols);
 
@@ -260,7 +260,7 @@ namespace MachineLearning
     }
 
     template<>
-    inline Matrix<float> Matrix<float>::operator*(const Matrix<float>& other)
+    inline Matrix<float> Matrix<float>::operator*(const Matrix<float>& other) const
     {
         Matrix<float> newMat(rows, other.cols);
 
