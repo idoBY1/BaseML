@@ -56,6 +56,6 @@ namespace MachineLearning
 		void calculateGradients(const Layer& nextLayer);
 
 		// Update the parameters according to the gradients to minimize the loss function
-		void gradientDescent(float learningRate);
+		void gradientDescent(const Matrix<float>& previousLayerOutputs, float learningRate);
 	};
 }

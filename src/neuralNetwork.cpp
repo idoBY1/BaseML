@@ -68,4 +68,23 @@ namespace MachineLearning
 
 	//	return sumLoss / expectedOutputs.size();
 	//}
+
+	void NeuralNetwork::backPropagation(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate)
+	{
+		// Calculate gradients
+		layers[layers.size() - 1].calculateLastLayerGradients(expectedOutputs, lossFuncDerivative);
+
+		for (int i = layers.size() - 2; i >= 0; i--)
+		{
+			layers[i].calculateGradients(layers[i + 1]);
+		}
+
+		// Update parameters
+		layers[0].gradientDescent(inputs, learningRate);
+
+		for (int i = 1; i < layers.size(); i++)
+		{
+			layers[i].gradientDescent(layers[i - 1].getOutputs(), learningRate);
+		}
+	}
 }

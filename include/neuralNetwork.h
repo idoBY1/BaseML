@@ -25,6 +25,9 @@ namespace MachineLearning
 		// Calculates the sum of the loss function over all of the last layer's outputs
 		float calculateSumLoss(const Matrix<float>& expectedOutputs);
 
-		/*float calculateAverageLoss(const std::vector<Matrix<float>>& inputs, const std::vector<Matrix<float>>& expectedOutputs);*/
+		/*float calculateAverageLoss(const std::vector<Matrix<float>>& inputs, const std::vector<Matrix<float>>& expectedOutputs);*/ // TODO: implememt. relevant when training on batches
+
+		// Calculate gradients and apply gradient descent on every layer of the Neural Network
+		void backPropagation(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate);
 	};
 }

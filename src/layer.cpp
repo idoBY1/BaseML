@@ -121,8 +121,15 @@ namespace MachineLearning
 		}
 	}
 
-	void Layer::gradientDescent(float learningRate)
+	void Layer::gradientDescent(const Matrix<float>& previousLayerOutputs, float learningRate)
 	{
-		// TODO: implement
+		// Complete the gradient calculation, multiply by the learning-rate and subtract from
+		// the currect weights. To get the final gradient for the weights, we multiply the shared 
+		// gradients with the outputs of the neurons of the previous layer.
+		weights = weights - ((gradients * previousLayerOutputs.transpose()) * learningRate);
+
+		// Multiply by learning-rate and update biases. Sum the rows of the gradients to add 
+		// all of the gradients from the batch to one update.
+		biases = biases - (gradients.sumRows() * learningRate);
 	}
 }
