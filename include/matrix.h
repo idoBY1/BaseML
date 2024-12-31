@@ -288,7 +288,7 @@ namespace MachineLearning
         {
             for (int j = 0; j < cols; j++)
             {
-                newMat(i, j) = (*this)(i, j) + other(i, j);
+                newMat(i, j) = (*this)(i, j) - other(i, j);
             }
         }
 
