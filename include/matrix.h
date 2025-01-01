@@ -3,6 +3,7 @@
 #include <iostream>
 #include <initializer_list>
 #include <algorithm> // Needed for std::copy
+#include <vector>
 
 namespace MachineLearning
 {
@@ -29,6 +30,16 @@ namespace MachineLearning
         // by default. To change this and make it a row vector instead, set 'columnVector' 
         // to 'false'.
         Matrix(std::initializer_list<T> init, bool columnVector = true);
+
+        // Create a Matrix from a 2 dimensional vector.
+        // The length of every row in the vector should be the same.
+        Matrix(std::vector<std::vector<T>>& vec);
+
+        // Create a Matrix from a single dimesional vector.
+        // The Matrix will have only one row / column. The Matrix will have one column 
+        // by default. To change this and make it a row vector instead, set 'columnVector' 
+        // to 'false'.
+        Matrix(std::vector<T>& vec, bool columnVector = true);
 
         // Destructor
         ~Matrix();
@@ -168,6 +179,51 @@ namespace MachineLearning
         data = new T[rows * cols];
 
         std::copy(init.begin(), init.end(), data);
+    }
+
+    template<typename T>
+    inline Matrix<T>::Matrix(std::vector<std::vector<T>>& vec)
+    {
+        rows = vec.size();
+        cols = vec.begin()->size();
+
+        // Verify that inner lists are of equal size
+        for (const auto& innerVec : vec) {
+            if (innerVec.size() != cols) {
+                throw std::runtime_error("Inner vectors must have equal size");
+            }
+        }
+
+        data = new T[rows * cols];
+
+        size_t row = 0;
+        for (const auto& innerVec : vec) {
+            size_t col = 0;
+            for (const T& value : innerVec) {
+                data[row * cols + col] = value;
+                col++;
+            }
+            row++;
+        }
+    }
+
+    template<typename T>
+    inline Matrix<T>::Matrix(std::vector<T>& vec, bool columnVector)
+    {
+        if (columnVector)
+        {
+            rows = vec.size();
+            cols = 1;
+        }
+        else
+        {
+            rows = 1;
+            cols = vec.size();
+        }
+
+        data = new T[rows * cols];
+
+        std::copy(vec.begin(), vec.end(), data);
     }
 
     template<typename T>

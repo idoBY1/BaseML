@@ -41,38 +41,19 @@ namespace MachineLearning
 		return layers[layers.size() - 1].getOutputs();
 	}
 
-	float NeuralNetwork::calculateSumLoss(const Matrix<float>& expectedOutputs) // TODO: fix compatibility with 2D matrices (after adding batches)
+	float NeuralNetwork::calculateSumLoss(const Matrix<float>& expectedOutputs)
 	{
 		float sumLoss = 0.0f;
 
 		Layer& lastLayer = layers[layers.size() - 1];
 
-		for (int i = 0; i < lastLayer.getOutputCount(); i++)
+		for (int i = 0; i < lastLayer.getOutputs().size(); i++)
 		{
 			sumLoss += (*lossFunc)((lastLayer.getOutputs())(i), expectedOutputs(i));
 		}
 
-		return sumLoss;
+		return (sumLoss / lastLayer.getCurrentBatchSize()); // if multiple data points in the batch, return the average loss
 	}
-
-	//float NeuralNetwork::calculateAverageLoss(const std::vector<Matrix<float>>& inputs, const std::vector<Matrix<float>>& expectedOutputs) // TODO: Modify to work with batches
-	//{
-	//	if (inputs.size() != expectedOutputs.size())
-	//	{
-	//		std::cout << "Inputs and expected outputs should have the same length!" << std::endl;
-	//		throw std::runtime_error("Inputs size must match expected outputs size");
-	//	}
-
-	//	float sumLoss = 0.0f;
-
-	//	for (int i = 0; i < expectedOutputs.size(); i++)
-	//	{
-	//		forwardPropagate(inputs[i]);
-	//		sumLoss += layers[layers.size() - 1].calculateSumLoss(expectedOutputs[i]);
-	//	}
-
-	//	return sumLoss / expectedOutputs.size();
-	//}
 
 	void NeuralNetwork::backPropagation(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate)
 	{
@@ -93,9 +74,17 @@ namespace MachineLearning
 		}
 	}
 
-	void NeuralNetwork::learn(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate) // TODO: expand to work with batches
+	void NeuralNetwork::learn(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate)
 	{
 		forwardPropagate(inputs);
 		backPropagation(inputs, expectedOutputs, learningRate);
+	}
+
+	void NeuralNetwork::learn(const std::vector<std::pair<Matrix<float>, Matrix<float>>>& data, float learningRate)
+	{
+		for (int i = 0; i < data.size(); i++)
+		{
+			learn(data[i].first, data[i].second, learningRate);
+		}
 	}
 }

@@ -26,8 +26,8 @@ int main()
 
 	MachineLearning::NeuralNetwork neuralNet = { 2, 3, 1 };
 
-	std::vector<MachineLearning::Matrix<float>> inputsVec = { {0, 0}, {0, 1}, {1, 0}, {1, 1} };
-	std::vector<MachineLearning::Matrix<float>> expectedOutputsVec = { {0}, {1}, {1}, {0} };
+	MachineLearning::Matrix<float> inputs = MachineLearning::Matrix<float>({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }).transpose();
+	MachineLearning::Matrix<float> expectedOutputs({ 0, 1, 1, 0 }, false);
 
 	neuralNet.forwardPropagate({ 0, 0 });
 	std::cout << "00 -> ";
@@ -47,12 +47,9 @@ int main()
 
 	std::cout << "started learning..." << std::endl;
 
-	for (int i = 0; i < 500; i++)
+	for (int i = 0; i < 1000; i++)
 	{
-		for (int j = 0; j < inputsVec.size(); j++)
-		{
-			neuralNet.learn(inputsVec[j], expectedOutputsVec[j], 10);
-		}
+		neuralNet.learn(inputs, expectedOutputs, 1);
 	}
 
 	std::cout << "finished learning.\n" << std::endl;

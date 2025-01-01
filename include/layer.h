@@ -12,7 +12,7 @@ namespace MachineLearning
 	class Layer
 	{
 	private:
-		size_t inputCount, outputCount;
+		size_t inputCount, outputCount, batchSize;
 		Matrix<float> weights, biases, outputs, gradients;
 		float (*activationFunc)(float), (*activationFuncDerivative)(float);
 
@@ -33,6 +33,9 @@ namespace MachineLearning
 
 		// Returns the number of outputs of this layer
 		size_t getOutputCount() const;
+
+		// Returns the number data points the layer is currently configured to process together
+		size_t getCurrentBatchSize() const;
 
 		// Returns the outputs of this layer
 		const Matrix<float>& getOutputs() const;

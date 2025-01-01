@@ -9,13 +9,13 @@
 namespace MachineLearning
 {
 	Layer::Layer()
-		:inputCount(0), outputCount(0), weights(), biases(), outputs(), gradients(), activationFunc(nullptr), activationFuncDerivative(nullptr)
+		:inputCount(0), outputCount(0), batchSize(1), weights(), biases(), outputs(), gradients(), activationFunc(nullptr), activationFuncDerivative(nullptr)
 	{
 	}
 
 	Layer::Layer(size_t numInputs, size_t numOutputs)
-		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, 1), 
-		gradients(numOutputs, 1), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative)
+		:inputCount(numInputs), outputCount(numOutputs), batchSize(1), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, batchSize), 
+		gradients(numOutputs, batchSize), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative)
 	{
 		// Initialize the biases and weights with random values
 
@@ -33,8 +33,8 @@ namespace MachineLearning
 
 	Layer::Layer(size_t numInputs, size_t numOutputs, float(*activationFunction)(float), 
 		float(*activationFunctionDerivative)(float), float (*lossFunction)(float, float))
-		:inputCount(numInputs), outputCount(numOutputs), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, 1), gradients(numOutputs, 1), 
-		activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative)
+		:inputCount(numInputs), outputCount(numOutputs), batchSize(1), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, batchSize), 
+		gradients(numOutputs, 1), activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative)
 	{
 		// Initialize the biases and weights with random values
 
@@ -60,6 +60,11 @@ namespace MachineLearning
 		return outputCount;
 	}
 
+	size_t Layer::getCurrentBatchSize() const
+	{
+		return batchSize;
+	}
+
 	const Matrix<float>& Layer::getOutputs() const
 	{
 		return outputs;
@@ -82,6 +87,20 @@ namespace MachineLearning
 
 	void Layer::calculateOutputs(const Matrix<float>& inputs)
 	{
+#ifdef DEBUG
+		if (inputCount != inputs.rowsCount())
+		{
+			std::cout << "Invalid input size for layer" << std::endl;
+			throw std::runtime_error("Invalid input size for layer");
+		}
+#endif // DEBUG
+
+		// Update batch size according to the input
+		batchSize = inputs.columnsCount();
+
+		// Reset outputs and resize to fit the input
+		outputs = Matrix<float>(outputCount, batchSize);
+
 		// Multiply and add matrices to calculate the activation of each neuron.
 		// The result for each neuron is the sum of activations in the previous layer 
 		// weighted by the weights of the connections to each neuron on the previous 
@@ -89,7 +108,7 @@ namespace MachineLearning
 		outputs = (weights * inputs).addToColumns(biases);
 
 		// Pass the results through the activation function
-		for (int i = 0; i < outputCount; i++)
+		for (int i = 0; i < outputs.size(); i++)
 		{
 			outputs(i) = (*activationFunc)(outputs(i));
 		}
@@ -97,8 +116,19 @@ namespace MachineLearning
 
 	void Layer::calculateLastLayerGradients(const Matrix<float>& expectedOutputs, float(*lossFunctionDerivative)(float, float))
 	{
+#ifdef DEBUG
+		if (outputCount != expectedOutputs.rowsCount() || outputs.columnsCount() != expectedOutputs.columnsCount())
+		{
+			std::cout << "Invalid expected output size for layer" << std::endl;
+			throw std::runtime_error("Invalid expected output size for layer");
+		}
+#endif // DEBUG
+
+		// Reset gradients and resize to fit the output
+		gradients = Matrix<float>(outputCount, batchSize);
+
 		// The Last layer bases its gradients on the loss function directly
-		for (int i = 0; i < outputCount; i++)
+		for (int i = 0; i < gradients.size(); i++)
 		{
 			gradients(i) = (*lossFunctionDerivative)(outputs(i), expectedOutputs(i)) * (*activationFuncDerivative)(outputs(i));
 		}
@@ -106,6 +136,9 @@ namespace MachineLearning
 
 	void Layer::calculateGradients(const Layer& nextLayer)
 	{
+		// Reset gradients and resize to fit the output
+		gradients = Matrix<float>(outputCount, batchSize);
+
 		// Multiply nextLayer's weights (the weights connecting this layer of neurons and
 		// the next later of neurons) with nextLayer's gradients. The result for each neuron 
 		// will be the sum of gradients in the next layer weighted by their corresponding 
@@ -115,7 +148,7 @@ namespace MachineLearning
 		// Add the derivative of the activation function to each neuron's gradient.
 		// This is the second part of the derivative and the last shared part of the 
 		// derivative shared by both the weights and the biases
-		for (int i = 0; i < outputCount; i++)
+		for (int i = 0; i < gradients.size(); i++)
 		{
 			gradients(i) = gradients(i) * (*activationFuncDerivative)(outputs(i));
 		}

@@ -28,11 +28,17 @@ namespace MachineLearning
 		// Calculates the sum of the loss function over all of the last layer's outputs
 		float calculateSumLoss(const Matrix<float>& expectedOutputs);
 
-		/*float calculateAverageLoss(const std::vector<Matrix<float>>& inputs, const std::vector<Matrix<float>>& expectedOutputs);*/ // TODO: implememt. relevant when training on batches
-
 		// Calculate gradients and apply gradient descent on every layer of the Neural Network
 		void backPropagation(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate);
 
-		void learn(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate); // TODO: expand to work with batches
+		// Pass the data through the Neural Network and perform gradient descent
+		void learn(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate);
+
+		// Pass the data through the Neural Network and perform gradient descent. Each pair of matrices represent 
+		// a mini-batch where the first Matrix represents the inputs of the batch and the second Matrix represents 
+		// the expected outputs of the batch. Each column represents a data point which means that the size of the 
+		// matrices should be inputNeuronCount rows and batchSize columns for the first Matrix and outputNeuronCount 
+		// rows and batchSize columns for the second Matrix (e.g. (inputs x batch) and (outputs x batch))
+		void learn(const std::vector<std::pair<Matrix<float>, Matrix<float>>>& data, float learningRate);
 	};
 }
