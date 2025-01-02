@@ -8,7 +8,7 @@
 
 #include "utils.h"
 
-namespace MachineLearning
+namespace BaseML
 {
 	NeuralNetwork::NeuralNetwork()
 		:lossFunc(nullptr), lossFuncDerivative(nullptr)

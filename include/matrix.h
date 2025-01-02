@@ -7,7 +7,7 @@
 #include <algorithm> // Needed for std::copy
 #include <vector>
 
-namespace MachineLearning
+namespace BaseML
 {
     template<typename T>
     class Matrix

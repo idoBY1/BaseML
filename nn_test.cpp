@@ -10,10 +10,10 @@
 
 void trainXOR()
 {
-	MachineLearning::NeuralNetwork neuralNet = { 2, 3, 1 };
+	BaseML::NeuralNetwork neuralNet = { 2, 3, 1 };
 
-	MachineLearning::Matrix<float> inputs = MachineLearning::Matrix<float>({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }).transpose();
-	MachineLearning::Matrix<float> expectedOutputs({ 0, 1, 1, 0 }, false);
+	BaseML::Matrix<float> inputs = BaseML::Matrix<float>({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }).transpose();
+	BaseML::Matrix<float> expectedOutputs({ 0, 1, 1, 0 }, false);
 
 	neuralNet.forwardPropagate({ 0, 0 });
 	std::cout << "00 -> ";
@@ -62,7 +62,7 @@ void trainXOR()
 
 void testXOR()
 {
-	MachineLearning::NeuralNetwork neuralNet;
+	BaseML::NeuralNetwork neuralNet;
 
 	char fileName[50] = "neural_network--02-01-2025_17-36.nn";
 
@@ -91,10 +91,10 @@ void testXOR()
 
 void testTrainingXOR()
 {
-	MachineLearning::NeuralNetwork neuralNet = { 2, 3, 1 };
+	BaseML::NeuralNetwork neuralNet = { 2, 3, 1 };
 
-	MachineLearning::Matrix<float> inputs = MachineLearning::Matrix<float>({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }).transpose();
-	MachineLearning::Matrix<float> expectedOutputs({ 0, 1, 1, 0 }, false);
+	BaseML::Matrix<float> inputs = BaseML::Matrix<float>({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }).transpose();
+	BaseML::Matrix<float> expectedOutputs({ 0, 1, 1, 0 }, false);
 
 	neuralNet.forwardPropagate({ 0, 0 });
 	std::cout << "00 -> ";

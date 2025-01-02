@@ -5,7 +5,7 @@
 #include "layer.h"
 #include "utils.h"
 
-namespace MachineLearning
+namespace BaseML
 {
 	class NeuralNetwork
 	{

@@ -2,7 +2,7 @@
 
 #include "matrix.h"
 
-namespace MachineLearning::Utils
+namespace BaseML::Utils
 {
 	float getRandomFloat(float min, float max);
 

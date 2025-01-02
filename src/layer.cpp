@@ -7,7 +7,7 @@
 
 #include "utils.h"
 
-namespace MachineLearning
+namespace BaseML
 {
 	Layer::Layer()
 		:inputCount(0), outputCount(0), batchSize(1), weights(), biases(), outputs(), gradients(), activationFunc(nullptr), activationFuncDerivative(nullptr)

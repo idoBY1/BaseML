@@ -8,7 +8,7 @@
 #define MAX_INIT_VAL 1.0f
 #define MIN_INIT_VAL -1.0f
 
-namespace MachineLearning
+namespace BaseML
 {
 	class Layer
 	{

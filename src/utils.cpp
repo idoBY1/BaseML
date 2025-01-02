@@ -6,7 +6,7 @@
 
 #include "matrix.h"
 
-namespace MachineLearning::Utils
+namespace BaseML::Utils
 {
     float getRandomFloat(float min, float max)
     {
@@ -30,7 +30,7 @@ namespace MachineLearning::Utils
         return neuronOutput * (1.0f - neuronOutput);
     }
 
-    float MachineLearning::Utils::squareError(float activation, float expected)
+    float BaseML::Utils::squareError(float activation, float expected)
     {
         float error = activation - expected;
 
