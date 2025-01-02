@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstdlib>
 #include <cmath>
+#include <fstream>
 
 #include "utils.h"
 
@@ -32,7 +33,7 @@ namespace MachineLearning
 	}
 
 	Layer::Layer(size_t numInputs, size_t numOutputs, float(*activationFunction)(float), 
-		float(*activationFunctionDerivative)(float), float (*lossFunction)(float, float))
+		float(*activationFunctionDerivative)(float))
 		:inputCount(numInputs), outputCount(numOutputs), batchSize(1), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, batchSize), 
 		gradients(numOutputs, 1), activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative)
 	{
@@ -164,5 +165,26 @@ namespace MachineLearning
 		// Multiply by learning-rate and update biases. Sum the rows of the gradients to add 
 		// all of the gradients from the batch to one update.
 		biases = biases - (gradients.sumRows() * learningRate);
+	}
+
+	void Layer::save(std::ofstream& outFile)
+	{
+		outFile.write(reinterpret_cast<const char*>(&inputCount), sizeof(inputCount));
+		outFile.write(reinterpret_cast<const char*>(&outputCount), sizeof(outputCount));
+
+		weights.save(outFile);
+		biases.save(outFile);
+	}
+
+	void Layer::load(std::ifstream& inFile, float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
+	{
+		activationFunc = activationFunction;
+		activationFuncDerivative = activationFunctionDerivative;
+
+		inFile.read(reinterpret_cast<char*>(&inputCount), sizeof(inputCount));
+		inFile.read(reinterpret_cast<char*>(&outputCount), sizeof(outputCount));
+
+		weights.load(inFile);
+		biases.load(inFile);
 	}
 }

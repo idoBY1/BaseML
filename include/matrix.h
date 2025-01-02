@@ -123,7 +123,7 @@ namespace MachineLearning
         void save(std::ofstream& outFile);
 
         // Load Matrix from disk. Assumes a binary input stream
-        void load(std::ifstream& infile);
+        void load(std::ifstream& inFile);
 
         // Prints the Matrix to the console
         void print() const;
@@ -488,16 +488,16 @@ namespace MachineLearning
     }
 
     template<typename T>
-    inline void Matrix<T>::load(std::ifstream& infile)
+    inline void Matrix<T>::load(std::ifstream& inFile)
     {
         delete[] data; // Free existing memory
 
-        infile.read(reinterpret_cast<char*>(&rows), sizeof(rows));
-        infile.read(reinterpret_cast<char*>(&cols), sizeof(cols));
+        inFile.read(reinterpret_cast<char*>(&rows), sizeof(rows));
+        inFile.read(reinterpret_cast<char*>(&cols), sizeof(cols));
 
         data = new T[rows * cols]; // Allocate memory for data from disk
 
-        infile.read(reinterpret_cast<char*>(data), rows * cols * sizeof(T));
+        inFile.read(reinterpret_cast<char*>(data), rows * cols * sizeof(T));
     }
 
     template<typename T>

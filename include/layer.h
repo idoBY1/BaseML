@@ -26,7 +26,7 @@ namespace MachineLearning
 
 		// Creates a layer with 'numInputs' inputs and 'numOutputs' outputs. 
 		Layer(size_t numInputs, size_t numOutputs, float (*activationFunction)(float), 
-			float (*activationFunctionDerivative)(float), float (*lossFunction)(float, float));
+			float (*activationFunctionDerivative)(float));
 
 		// Returns the number of inputs of this layer
 		size_t getInputCount() const;
@@ -60,5 +60,12 @@ namespace MachineLearning
 
 		// Update the parameters according to the gradients to minimize the loss function
 		void gradientDescent(const Matrix<float>& previousLayerOutputs, float learningRate);
+
+		// Save Layer to disk. Assumes a binary output stream
+		void save(std::ofstream& outFile);
+
+		// Load Layer from disk. Assumes a binary input stream
+		void load(std::ifstream& inFile, float (*activationFunction)(float) = &Utils::sigmoid, 
+			float (*activationFunctionDerivative)(float) = &Utils::sigmoidDerivative);
 	};
 }

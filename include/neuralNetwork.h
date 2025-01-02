@@ -16,6 +16,16 @@ namespace MachineLearning
 		// Create a Neural Network with layers of the sizes specified in the initializer list
 		NeuralNetwork(std::initializer_list<size_t> layerSizes);
 
+		// Create a Neural Network with layers of the sizes specified in the initializer list. Use the 
+		// activation function provided.
+		NeuralNetwork(std::initializer_list<size_t> layerSizes, float (*activationFunction)(float),
+			float (*activationFunctionDerivative)(float));
+
+		// Create a Neural Network with layers of the sizes specified in the initializer list. Use the 
+		// activation and loss functions provided.
+		NeuralNetwork(std::initializer_list<size_t> layerSizes, float (*activationFunction)(float),
+			float (*activationFunctionDerivative)(float), float (*lossFunction)(float, float), float (*lossFunctionDerivative)(float, float));
+
 		// Returns the layers of the Neural Network
 		const std::vector<Layer>& getLayers() const;
 
@@ -40,5 +50,13 @@ namespace MachineLearning
 		// matrices should be inputNeuronCount rows and batchSize columns for the first Matrix and outputNeuronCount 
 		// rows and batchSize columns for the second Matrix (e.g. (inputs x batch) and (outputs x batch))
 		void learn(const std::vector<std::pair<Matrix<float>, Matrix<float>>>& data, float learningRate);
+
+		// Save Neural Network to disk. Assumes a binary output stream
+		void save(std::ofstream& outFile);
+
+		// Load Neural Network from disk. Assumes a binary input stream
+		void load(std::ifstream& inFile, float (*activationFunction)(float) = &Utils::sigmoid,
+			float (*activationFunctionDerivative)(float) = &Utils::sigmoidDerivative, float (*lossFunction)(float, float) = &Utils::squareError, 
+			float (*lossFunctionDerivative)(float, float) = &Utils::squareErrorDerivative);
 	};
 }

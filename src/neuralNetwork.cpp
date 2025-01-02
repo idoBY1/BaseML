@@ -19,6 +19,29 @@ namespace MachineLearning
 		}
 	}
 
+	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes, float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
+		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative)
+	{
+		layers.reserve(layerSizes.size() - 1);
+
+		for (auto layerSize = layerSizes.begin() + 1; layerSize < layerSizes.end(); layerSize++)
+		{
+			layers.emplace_back(*(layerSize - 1), *layerSize, activationFunction, activationFunctionDerivative);
+		}
+	}
+
+	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes, float(*activationFunction)(float), float(*activationFunctionDerivative)(float), 
+		float(*lossFunction)(float, float), float(*lossFunctionDerivative)(float, float))
+		:lossFunc(lossFunction), lossFuncDerivative(lossFunctionDerivative)
+	{
+		layers.reserve(layerSizes.size() - 1);
+
+		for (auto layerSize = layerSizes.begin() + 1; layerSize < layerSizes.end(); layerSize++)
+		{
+			layers.emplace_back(*(layerSize - 1), *layerSize, activationFunction, activationFunctionDerivative);
+		}
+	}
+
 	const std::vector<Layer>& NeuralNetwork::getLayers() const
 	{
 		return layers;
@@ -86,5 +109,22 @@ namespace MachineLearning
 		{
 			learn(data[i].first, data[i].second, learningRate);
 		}
+	}
+
+	void NeuralNetwork::save(std::ofstream& outFile)
+	{
+		for (int i = 0; i < layers.size(); i++)
+		{
+			layers[i].save(outFile);
+		}
+	}
+
+	void NeuralNetwork::load(std::ifstream& inFile, float(*activationFunction)(float), float(*activationFunctionDerivative)(float), 
+		float(*lossFunction)(float, float), float(*lossFunctionDerivative)(float, float))
+	{
+		lossFunc = lossFunction;
+		lossFuncDerivative = lossFunctionDerivative;
+
+		// TODO: finish
 	}
 }
