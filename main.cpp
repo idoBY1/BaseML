@@ -1,29 +1,15 @@
 #define DEBUG
 
 #include <iostream>
+#include <fstream>
 
 #include "matrix.h"
 #include "utils.h"
 #include "layer.h"
 #include "neuralNetwork.h"
 
-int main()
+void trainXOR()
 {
-	/*MachineLearning::Matrix<float> mat1 = {
-		{1, 2, 3, 4}, 
-		{5, 6, 7, 8},
-		{1, 8, 3, 2}
-	};
-
-	MachineLearning::Matrix<float> mat2 = {
-		{5, 3},
-		{5, 2}, 
-		{7, 5},
-		{2, 9}
-	};
-
-	(mat1 + mat2).print();*/
-
 	MachineLearning::NeuralNetwork neuralNet = { 2, 3, 1 };
 
 	MachineLearning::Matrix<float> inputs = MachineLearning::Matrix<float>({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }).transpose();
@@ -69,6 +55,38 @@ int main()
 	neuralNet.forwardPropagate({ 1, 1 });
 	std::cout << "11 -> ";
 	neuralNet.getOutput().print();
+}
+
+int main()
+{
+	/*std::ofstream ofile;
+
+	ofile.open("matrixTest.dat", std::ios::binary | std::ios::out);
+
+	MachineLearning::Matrix<float> mat = {
+		{1, 2, 3}, 
+		{4, 5, 3.5},
+		{9, 8, 7},
+		{10, 12, 11}
+	};
+
+	mat.save(ofile);
+
+	mat.print();
+
+	ofile.close();*/
+
+	std::ifstream ifile;
+
+	ifile.open("matrixTest.dat", std::ios::binary | std::ios::in);
+
+	MachineLearning::Matrix<float> mat;
+
+	mat.load(ifile);
+
+	mat.print();
+
+	ifile.close();
 
 	return 0;
 }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
+#include <cstdlib>
 #include <initializer_list>
 #include <algorithm> // Needed for std::copy
 #include <vector>
@@ -116,6 +118,12 @@ namespace MachineLearning
         // with one column) with each of the rows' sum.
         // Warning: this function doesn't check for the correctness of the input!
         Matrix<T> sumRows() const;
+
+        // Save Matrix to disk. Assumes a binary output stream
+        void save(std::ofstream& outFile);
+
+        // Load Matrix from disk. Assumes a binary input stream
+        void load(std::ifstream& infile);
 
         // Prints the Matrix to the console
         void print() const;
@@ -469,6 +477,27 @@ namespace MachineLearning
         }
 
         return newMat;
+    }
+
+    template<typename T>
+    inline void Matrix<T>::save(std::ofstream& outFile)
+    {
+        outFile.write(reinterpret_cast<const char*>(&rows), sizeof(rows));
+        outFile.write(reinterpret_cast<const char*>(&cols), sizeof(cols));
+        outFile.write(reinterpret_cast<const char*>(data), rows * cols * sizeof(T));
+    }
+
+    template<typename T>
+    inline void Matrix<T>::load(std::ifstream& infile)
+    {
+        delete[] data; // Free existing memory
+
+        infile.read(reinterpret_cast<char*>(&rows), sizeof(rows));
+        infile.read(reinterpret_cast<char*>(&cols), sizeof(cols));
+
+        data = new T[rows * cols]; // Allocate memory for data from disk
+
+        infile.read(reinterpret_cast<char*>(data), rows * cols * sizeof(T));
     }
 
     template<typename T>
