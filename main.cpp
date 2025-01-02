@@ -55,38 +55,43 @@ void trainXOR()
 	neuralNet.forwardPropagate({ 1, 1 });
 	std::cout << "11 -> ";
 	neuralNet.getOutput().print();
+
+	// Save to disk
+	neuralNet.saveParams();
+}
+
+void testXOR()
+{
+	MachineLearning::NeuralNetwork neuralNet;
+
+	char fileName[50] = "neural_network--02-01-2025_17-36.nn";
+
+	if (!neuralNet.loadFromFile(fileName))
+	{
+		std::cout << "Failed to open file '" << fileName << "'" << std::endl;
+		return;
+	}
+
+	neuralNet.forwardPropagate({ 0, 0 });
+	std::cout << "00 -> ";
+	neuralNet.getOutput().print();
+
+	neuralNet.forwardPropagate({ 0, 1 });
+	std::cout << "01 -> ";
+	neuralNet.getOutput().print();
+
+	neuralNet.forwardPropagate({ 1, 0 });
+	std::cout << "10 -> ";
+	neuralNet.getOutput().print();
+
+	neuralNet.forwardPropagate({ 1, 1 });
+	std::cout << "11 -> ";
+	neuralNet.getOutput().print();
 }
 
 int main()
 {
-	/*std::ofstream ofile;
-
-	ofile.open("matrixTest.dat", std::ios::binary | std::ios::out);
-
-	MachineLearning::Matrix<float> mat = {
-		{1, 2, 3}, 
-		{4, 5, 3.5},
-		{9, 8, 7},
-		{10, 12, 11}
-	};
-
-	mat.save(ofile);
-
-	mat.print();
-
-	ofile.close();*/
-
-	std::ifstream ifile;
-
-	ifile.open("matrixTest.dat", std::ios::binary | std::ios::in);
-
-	MachineLearning::Matrix<float> mat;
-
-	mat.load(ifile);
-
-	mat.print();
-
-	ifile.close();
+	testXOR();
 
 	return 0;
 }

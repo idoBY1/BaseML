@@ -3,11 +3,18 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <string>
+#include <format>
 
 #include "utils.h"
 
 namespace MachineLearning
 {
+	NeuralNetwork::NeuralNetwork()
+		:lossFunc(nullptr), lossFuncDerivative(nullptr)
+	{
+	}
+
 	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes)
 		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative)
 	{
@@ -113,10 +120,48 @@ namespace MachineLearning
 
 	void NeuralNetwork::save(std::ofstream& outFile)
 	{
-		for (int i = 0; i < layers.size(); i++)
+		int numOfLayers = layers.size();
+
+		outFile.write(reinterpret_cast<const char*>(&numOfLayers), sizeof(numOfLayers));
+
+		for (int i = 0; i < numOfLayers; i++)
 		{
 			layers[i].save(outFile);
 		}
+	}
+
+	void NeuralNetwork::saveToFile(const char* fileName)
+	{
+		std::ofstream ofile;
+
+		ofile.open(fileName, std::ios::binary | std::ios::out);
+
+		save(ofile);
+
+		ofile.close();
+	}
+
+	void NeuralNetwork::saveParams(const char* networkName, float networkScore, bool includeTime)
+	{
+		std::string fileName = networkName;
+
+		if (networkScore != -1.0f)
+			fileName += std::format("--Score_{}", networkScore);
+
+		if (includeTime)
+		{
+			char tempTimeStr[50];
+			time_t timestamp = time(NULL);
+			struct tm* datetime = localtime(&timestamp);
+
+			strftime(tempTimeStr, 50, "--%d-%m-%Y_%H-%M", datetime);
+
+			fileName += tempTimeStr;
+		}
+
+		fileName += ".nn";
+
+		saveToFile(fileName.c_str());
 	}
 
 	void NeuralNetwork::load(std::ifstream& inFile, float(*activationFunction)(float), float(*activationFunctionDerivative)(float), 
@@ -125,6 +170,35 @@ namespace MachineLearning
 		lossFunc = lossFunction;
 		lossFuncDerivative = lossFunctionDerivative;
 
-		// TODO: finish
+		int numOfLayers;
+
+		inFile.read(reinterpret_cast<char*>(&numOfLayers), sizeof(numOfLayers));
+
+		layers = std::vector<Layer>(numOfLayers);
+
+		for (int i = 0; i < numOfLayers; i++)
+		{
+			layers[i].load(inFile, activationFunction, activationFunctionDerivative);
+		}
+	}
+
+	bool NeuralNetwork::loadFromFile(const char* fileName, float(*activationFunction)(float), float(*activationFunctionDerivative)(float),
+		float(*lossFunction)(float, float), float(*lossFunctionDerivative)(float, float))
+	{
+		try {
+			std::ifstream ifile;
+
+			ifile.open(fileName, std::ios::binary | std::ios::in);
+
+			load(ifile, activationFunction, activationFunctionDerivative, 
+				lossFunction, lossFunctionDerivative);
+
+			ifile.close();
+
+			return true;
+		}
+		catch(...) {
+			return false;
+		}
 	}
 }

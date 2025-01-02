@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "matrix.h"
+#include "utils.h"
 
 #define MAX_INIT_VAL 1.0f
 #define MIN_INIT_VAL -1.0f

@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "layer.h"
+#include "utils.h"
 
 namespace MachineLearning
 {
@@ -13,6 +14,9 @@ namespace MachineLearning
 		float (*lossFunc)(float, float), (*lossFuncDerivative)(float, float); // Function to minimize
 
 	public:
+		// Create an empty Neural Network
+		NeuralNetwork();
+
 		// Create a Neural Network with layers of the sizes specified in the initializer list
 		NeuralNetwork(std::initializer_list<size_t> layerSizes);
 
@@ -54,9 +58,20 @@ namespace MachineLearning
 		// Save Neural Network to disk. Assumes a binary output stream
 		void save(std::ofstream& outFile);
 
+		// Save The Neuaral Network in its current state to the specified file (if the file doesn't exist, it will be created)
+		void saveToFile(const char* fileName);
+
+		// Save The Neuaral Network to a file. The name of the file will be generated automatically
+		void saveParams(const char* networkName = "neural_network", float networkScore = -1.0f, bool includeTime = true);
+
 		// Load Neural Network from disk. Assumes a binary input stream
 		void load(std::ifstream& inFile, float (*activationFunction)(float) = &Utils::sigmoid,
 			float (*activationFunctionDerivative)(float) = &Utils::sigmoidDerivative, float (*lossFunction)(float, float) = &Utils::squareError, 
+			float (*lossFunctionDerivative)(float, float) = &Utils::squareErrorDerivative);
+
+		// Try to load Neural Network from the specified file. Returns true if successful and false if something went wrong
+		bool loadFromFile(const char* fileName, float (*activationFunction)(float) = &Utils::sigmoid,
+			float (*activationFunctionDerivative)(float) = &Utils::sigmoidDerivative, float (*lossFunction)(float, float) = &Utils::squareError,
 			float (*lossFunctionDerivative)(float, float) = &Utils::squareErrorDerivative);
 	};
 }
