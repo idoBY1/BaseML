@@ -89,9 +89,58 @@ void testXOR()
 	neuralNet.getOutput().print();
 }
 
+void testTrainingXOR()
+{
+	MachineLearning::NeuralNetwork neuralNet = { 2, 3, 1 };
+
+	MachineLearning::Matrix<float> inputs = MachineLearning::Matrix<float>({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }).transpose();
+	MachineLearning::Matrix<float> expectedOutputs({ 0, 1, 1, 0 }, false);
+
+	neuralNet.forwardPropagate({ 0, 0 });
+	std::cout << "00 -> ";
+	neuralNet.getOutput().print();
+
+	neuralNet.forwardPropagate({ 0, 1 });
+	std::cout << "01 -> ";
+	neuralNet.getOutput().print();
+
+	neuralNet.forwardPropagate({ 1, 0 });
+	std::cout << "10 -> ";
+	neuralNet.getOutput().print();
+
+	neuralNet.forwardPropagate({ 1, 1 });
+	std::cout << "11 -> ";
+	neuralNet.getOutput().print();
+
+	std::cout << "started learning..." << std::endl;
+
+	for (int i = 0; i < 1000; i++)
+	{
+		neuralNet.learn(inputs, expectedOutputs, 1);
+	}
+
+	std::cout << "finished learning.\n" << std::endl;
+
+	neuralNet.forwardPropagate({ 0, 0 });
+	std::cout << "00 -> ";
+	neuralNet.getOutput().print();
+
+	neuralNet.forwardPropagate({ 0, 1 });
+	std::cout << "01 -> ";
+	neuralNet.getOutput().print();
+
+	neuralNet.forwardPropagate({ 1, 0 });
+	std::cout << "10 -> ";
+	neuralNet.getOutput().print();
+
+	neuralNet.forwardPropagate({ 1, 1 });
+	std::cout << "11 -> ";
+	neuralNet.getOutput().print();
+}
+
 int main()
 {
-	testXOR();
+	testTrainingXOR();
 
 	return 0;
 }
