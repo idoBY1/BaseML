@@ -23,9 +23,10 @@ namespace BaseML
         // Create an empty Matrix with 'numOfRows' rows and 'numOfCols' columns
         Matrix(size_t numOfRows, size_t numOfCols);
 
-        // Create a Matrix from a 2 dimensional initializer list.
-        // The length of every row in the initializer list should be the same.
-        Matrix(std::initializer_list<std::initializer_list<T>> init);
+        // Create a Matrix from a 2 dimensional initializer list. The length of every 
+        // row in the initializer list should be the same. Set 'transposed' to true to 
+        // make every inner initializer list a column instead of a row in the Matrix
+        Matrix(std::initializer_list<std::initializer_list<T>> init, bool transposed = false);
 
         // Create a Matrix from a single dimesional initializer list.
         // The Matrix will have only one row / column. The Matrix will have one column 
@@ -33,9 +34,10 @@ namespace BaseML
         // to 'false'.
         Matrix(std::initializer_list<T> init, bool columnVector = true);
 
-        // Create a Matrix from a 2 dimensional vector.
-        // The length of every row in the vector should be the same.
-        Matrix(std::vector<std::vector<T>>& vec);
+        // Create a Matrix from a 2 dimensional vector. The length of every 
+        // row in the vector should be the same. Set 'transposed' to true to 
+        // make every inner vector a column instead of a row in the Matrix
+        Matrix(std::vector<std::vector<T>>& vec, bool transposed = false);
 
         // Create a Matrix from a single dimesional vector.
         // The Matrix will have only one row / column. The Matrix will have one column 
@@ -145,28 +147,55 @@ namespace BaseML
     }
 
     template<typename T>
-    Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> init)
+    Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> init, bool transposed)
     {
-        rows = init.size();
-        cols = init.begin()->size();
+        if (!transposed)
+        {
+            rows = init.size();
+            cols = init.begin()->size();
 
-        // Verify that inner lists are of equal size
-        for (const auto& innerList : init) {
-            if (innerList.size() != cols) {
-                throw std::runtime_error("Inner initializer lists must have equal size");
+            // Verify that inner lists are of equal size
+            for (const auto& innerList : init) {
+                if (innerList.size() != cols) {
+                    throw std::runtime_error("Inner initializer lists must have equal size");
+                }
+            }
+
+            data = new T[rows * cols];
+
+            size_t row = 0;
+            for (const auto& innerList : init) {
+                size_t col = 0;
+                for (const T& value : innerList) {
+                    data[row * cols + col] = value;
+                    col++;
+                }
+                row++;
             }
         }
+        else
+        {
+            rows = init.begin()->size();
+            cols = init.size();
 
-        data = new T[rows * cols];
+            // Verify that inner lists are of equal size
+            for (const auto& innerList : init) {
+                if (innerList.size() != rows) {
+                    throw std::runtime_error("Inner initializer lists must have equal size");
+                }
+            }
 
-        size_t row = 0;
-        for (const auto& innerList : init) {
+            data = new T[rows * cols];
+
             size_t col = 0;
-            for (const T& value : innerList) {
-                data[row * cols + col] = value;
+            for (const auto& innerList : init) {
+                size_t row = 0;
+                for (const T& value : innerList) {
+                    data[row * cols + col] = value;
+                    row++;
+                }
                 col++;
             }
-            row++;
         }
     }
 
@@ -190,28 +219,55 @@ namespace BaseML
     }
 
     template<typename T>
-    inline Matrix<T>::Matrix(std::vector<std::vector<T>>& vec)
+    inline Matrix<T>::Matrix(std::vector<std::vector<T>>& vec, bool transposed)
     {
-        rows = vec.size();
-        cols = vec.begin()->size();
+        if (!transposed)
+        {
+            rows = vec.size();
+            cols = vec.begin()->size();
 
-        // Verify that inner lists are of equal size
-        for (const auto& innerVec : vec) {
-            if (innerVec.size() != cols) {
-                throw std::runtime_error("Inner vectors must have equal size");
+            // Verify that inner lists are of equal size
+            for (const auto& innerVec : vec) {
+                if (innerVec.size() != cols) {
+                    throw std::runtime_error("Inner vectors must have equal size");
+                }
+            }
+
+            data = new T[rows * cols];
+
+            size_t row = 0;
+            for (const auto& innerVec : vec) {
+                size_t col = 0;
+                for (const T& value : innerVec) {
+                    data[row * cols + col] = value;
+                    col++;
+                }
+                row++;
             }
         }
+        else
+        {
+            rows = vec.begin()->size();
+            cols = vec.size();
 
-        data = new T[rows * cols];
+            // Verify that inner lists are of equal size
+            for (const auto& innerVec : vec) {
+                if (innerVec.size() != rows) {
+                    throw std::runtime_error("Inner vectors must have equal size");
+                }
+            }
 
-        size_t row = 0;
-        for (const auto& innerVec : vec) {
+            data = new T[rows * cols];
+
             size_t col = 0;
-            for (const T& value : innerVec) {
-                data[row * cols + col] = value;
+            for (const auto& innerVec : vec) {
+                size_t row = 0;
+                for (const T& value : innerVec) {
+                    data[row * cols + col] = value;
+                    row++;
+                }
                 col++;
             }
-            row++;
         }
     }
 
