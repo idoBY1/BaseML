@@ -104,18 +104,24 @@ namespace BaseML
 		}
 	}
 
-	void NeuralNetwork::learn(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate)
+	float NeuralNetwork::learn(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate)
 	{
 		forwardPropagate(inputs);
 		backPropagation(inputs, expectedOutputs, learningRate);
+
+		return calculateSumLoss(expectedOutputs);
 	}
 
-	void NeuralNetwork::learn(const std::vector<std::pair<Matrix<float>, Matrix<float>>>& data, float learningRate)
+	float NeuralNetwork::learn(const std::vector<std::pair<Matrix<float>, Matrix<float>>>& data, float learningRate)
 	{
+		float currLoss;
+
 		for (int i = 0; i < data.size(); i++)
 		{
-			learn(data[i].first, data[i].second, learningRate);
+			currLoss = learn(data[i].first, data[i].second, learningRate);
 		}
+
+		return currLoss;
 	}
 
 	void NeuralNetwork::save(std::ofstream& outFile)

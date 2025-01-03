@@ -114,12 +114,20 @@ void testTrainingXOR()
 
 	std::cout << "started learning..." << std::endl;
 
+	float loss;
+
 	for (int i = 0; i < 1000; i++)
 	{
-		neuralNet.learn(inputs, expectedOutputs, 1);
+		loss = neuralNet.learn(inputs, expectedOutputs, 1);
+
+		if (i % 100 == 0) // every 100 iterations
+		{
+			std::cout << "Current loss is: " << loss << std::endl;
+		}
 	}
 
-	std::cout << "finished learning.\n" << std::endl;
+	std::cout << "finished learning." << std::endl;
+	std::cout << "Final loss is: " << loss << "\n" << std::endl;
 
 	neuralNet.forwardPropagate({ 0, 0 });
 	std::cout << "00 -> ";
