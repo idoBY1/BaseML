@@ -59,6 +59,25 @@ namespace BaseML
 		return layers[layers.size() - 1].getOutputs();
 	}
 
+	int NeuralNetwork::getClassify()
+	{
+		int maxIndex = 0;
+		float maxOutput = 0.0f;
+
+		auto outputs = getOutput();
+
+		for (int i = 0; i < outputs.rowsCount(); i++)
+		{
+			if (outputs(i, 0) > maxOutput)
+			{
+				maxIndex = i;
+				maxOutput = outputs(i, 0);
+			}
+		}
+
+		return maxIndex;
+	}
+
 	const Matrix<float>& NeuralNetwork::forwardPropagate(const Matrix<float>& inputs)
 	{
 		layers[0].calculateOutputs(inputs);

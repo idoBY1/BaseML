@@ -36,6 +36,9 @@ namespace BaseML
 		// Returns the output of the last layer
 		const Matrix<float>& getOutput() const;
 
+		// Returns the index of neuron with highest output. Assumes that the network output contains one data point
+		int getClassify();
+
 		// Runs the input through the network
 		const Matrix<float>& forwardPropagate(const Matrix<float>& inputs);
 
