@@ -15,6 +15,7 @@ namespace BaseML
 	private:
 		size_t inputCount, outputCount, batchSize;
 		Matrix weights, biases, outputs, gradients;
+		const Matrix* inputRef; // A pointer to the output of last layer. This class doesn't manage this memory!
 		float (*activationFunc)(float), (*activationFuncDerivative)(float);
 
 	public:
@@ -51,7 +52,7 @@ namespace BaseML
 		const Matrix& getGradients() const;
 
 		// Perform forward propagation on this layer with the specified inputs
-		void calculateOutputs(const Matrix& inputs); 
+		void calculateOutputs(const Matrix* inputs); 
 
 		// Caculate the gradients of the last layer based on the loss function and the expected outputs
 		void calculateLastLayerGradients(const Matrix& expectedOutputs, float (*lossFunctionDerivative)(float, float));
@@ -60,7 +61,7 @@ namespace BaseML
 		void calculateGradients(const Layer& nextLayer);
 
 		// Update the parameters according to the gradients to minimize the loss function
-		void gradientDescent(const Matrix& previousLayerOutputs, float learningRate);
+		void gradientDescent(float learningRate);
 
 		// Save Layer to disk. Assumes a binary output stream
 		void save(std::ofstream& outFile);

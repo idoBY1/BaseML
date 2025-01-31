@@ -10,13 +10,13 @@
 namespace BaseML
 {
 	Layer::Layer()
-		:inputCount(0), outputCount(0), batchSize(1), weights(), biases(), outputs(), gradients(), activationFunc(nullptr), activationFuncDerivative(nullptr)
+		:inputCount(0), outputCount(0), batchSize(1), weights(), biases(), outputs(), gradients(), activationFunc(nullptr), activationFuncDerivative(nullptr), inputRef(nullptr)
 	{
 	}
 
 	Layer::Layer(size_t numInputs, size_t numOutputs)
 		:inputCount(numInputs), outputCount(numOutputs), batchSize(1), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, batchSize), 
-		gradients(numOutputs, batchSize), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative)
+		gradients(numOutputs, batchSize), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative), inputRef(nullptr)
 	{
 		// Initialize the biases and weights with random values
 
@@ -35,7 +35,7 @@ namespace BaseML
 	Layer::Layer(size_t numInputs, size_t numOutputs, float(*activationFunction)(float), 
 		float(*activationFunctionDerivative)(float))
 		:inputCount(numInputs), outputCount(numOutputs), batchSize(1), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, batchSize), 
-		gradients(numOutputs, 1), activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative)
+		gradients(numOutputs, 1), activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative), inputRef(nullptr)
 	{
 		// Initialize the biases and weights with random values
 
@@ -86,18 +86,27 @@ namespace BaseML
 		return gradients;
 	}
 
-	void Layer::calculateOutputs(const Matrix& inputs)
+	void Layer::calculateOutputs(const Matrix* inputs)
 	{
 #ifdef DEBUG
-		if (inputCount != inputs.rowsCount())
+		if (inputs == nullptr)
+		{
+			std::cout << "Cannot calculate output from null input" << std::endl;
+			throw std::runtime_error("Cannot calculate output from null input");
+		}
+
+		if (inputCount != inputs->rowsCount())
 		{
 			std::cout << "Invalid input size for layer" << std::endl;
 			throw std::runtime_error("Invalid input size for layer");
 		}
 #endif // DEBUG
 
+		// Update input matrix pointer to point to the current input
+		inputRef = inputs;
+
 		// Update batch size according to the input
-		batchSize = inputs.columnsCount();
+		batchSize = inputs->columnsCount();
 
 		// Reset outputs and resize to fit the input
 		outputs = Matrix(outputCount, batchSize);
@@ -106,7 +115,7 @@ namespace BaseML
 		// The result for each neuron is the sum of activations in the previous layer 
 		// weighted by the weights of the connections to each neuron on the previous 
 		// layer.
-		outputs = (weights * inputs).addToColumns(biases);
+		outputs = (weights * (*inputs)).addToColumns(biases);
 
 		// Pass the results through the activation function
 		for (int i = 0; i < outputs.size(); i++)
@@ -155,12 +164,12 @@ namespace BaseML
 		}
 	}
 
-	void Layer::gradientDescent(const Matrix& previousLayerOutputs, float learningRate)
+	void Layer::gradientDescent(float learningRate)
 	{
 		// Complete the gradient calculation, multiply by the learning-rate and subtract from
 		// the currect weights. To get the final gradient for the weights, we multiply the shared 
 		// gradients with the outputs of the neurons of the previous layer.
-		weights = weights - ((gradients * previousLayerOutputs.transpose()) * learningRate);
+		weights = weights - ((gradients * (*inputRef).transpose()) * learningRate);
 
 		// Multiply by learning-rate and update biases. Sum the rows of the gradients to add 
 		// all of the gradients from the batch to one update.
