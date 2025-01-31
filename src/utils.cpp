@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "utils.h"
 
 #include <random>
 #include <iostream>
@@ -17,6 +18,12 @@ namespace BaseML::Utils
 
         std::uniform_real_distribution<float> distrib(min, max);
         return distrib(gen);
+    }
+
+    float initFromNumInputs(int inputNum)
+    {
+        float limit = std::sqrt(6.0f / inputNum);
+        return getRandomFloat(-limit, limit);
     }
 
     float sigmoid(float input)

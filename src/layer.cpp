@@ -24,11 +24,11 @@ namespace BaseML
 		for (int i = 0; i < numOutputs; i++)
 		{
 			// Generate a number between MIN_INIT_VAL and MAX_INIT_VAL (the number is a float)
-			biases(i) = Utils::getRandomFloat(MIN_INIT_VAL, MAX_INIT_VAL);
+			biases(i) = Utils::initFromNumInputs(numInputs);
 
 			for (int j = 0; j < numInputs; j++)
 			{
-				weights(i, j) = Utils::getRandomFloat(MIN_INIT_VAL, MAX_INIT_VAL);
+				weights(i, j) = Utils::initFromNumInputs(numInputs);
 			}
 		}
 	}
@@ -43,11 +43,11 @@ namespace BaseML
 		for (int i = 0; i < numOutputs; i++)
 		{
 			// Generate a number between MIN_INIT_VAL and MAX_INIT_VAL (the number is a float)
-			biases(i) = Utils::getRandomFloat(MIN_INIT_VAL, MAX_INIT_VAL);
+			biases(i) = Utils::initFromNumInputs(numInputs);
 
 			for (int j = 0; j < numInputs; j++)
 			{
-				weights(i, j) = Utils::getRandomFloat(MIN_INIT_VAL, MAX_INIT_VAL);
+				weights(i, j) = Utils::initFromNumInputs(numInputs);
 			}
 		}
 	}
