@@ -21,6 +21,11 @@ namespace BaseML
 		// Create a Neural Network with layers of the sizes specified in the initializer list
 		NeuralNetwork(std::initializer_list<size_t> layerSizes);
 
+		// Create a Neural Network with layers of the sizes specified in the 'layerSizes' initializer list.
+		// Uses the activation functions provided for the hidden layers and last layer.
+		NeuralNetwork(std::initializer_list<size_t> layerSizes, float (*hiddenActFunc)(float),
+			float (*hiddenActFuncDerivative)(float), float (*outputActFunc)(float), float (*outputActFuncDerivative)(float));
+
 		// Create a Neural Network with layers of the sizes specified in the initializer list. Use the 
 		// activation function provided.
 		NeuralNetwork(std::initializer_list<size_t> layerSizes, float (*activationFunction)(float),

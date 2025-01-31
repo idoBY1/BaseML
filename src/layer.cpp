@@ -10,13 +10,14 @@
 namespace BaseML
 {
 	Layer::Layer()
-		:inputCount(0), outputCount(0), batchSize(1), weights(), biases(), outputs(), gradients(), activationFunc(nullptr), activationFuncDerivative(nullptr), inputRef(nullptr)
+		:inputCount(0), outputCount(0), batchSize(1), weights(), biases(), outputs(), gradients(), activationFunc(nullptr), 
+		activationFuncDerivative(nullptr), inputRef(nullptr)
 	{
 	}
 
 	Layer::Layer(size_t numInputs, size_t numOutputs)
 		:inputCount(numInputs), outputCount(numOutputs), batchSize(1), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, batchSize), 
-		gradients(numOutputs, batchSize), activationFunc(&Utils::sigmoid), activationFuncDerivative(&Utils::sigmoidDerivative), inputRef(nullptr)
+		gradients(numOutputs, batchSize), activationFunc(&Utils::leakyReLU), activationFuncDerivative(&Utils::leakyReLUDerivative), inputRef(nullptr)
 	{
 		// Initialize the biases and weights with random values
 

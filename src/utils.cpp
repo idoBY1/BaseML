@@ -30,6 +30,22 @@ namespace BaseML::Utils
         return neuronOutput * (1.0f - neuronOutput);
     }
 
+    float leakyReLU(float input)
+    {
+        if (input > 0.0f)
+            return input;
+        else
+            return 0.01f * input;
+    }
+
+    float leakyReLUDerivative(float neuronOutput)
+    {
+        if (neuronOutput > 0.0f)
+            return 1.0f;
+        else
+            return 0.01f;
+    }
+
     float BaseML::Utils::squareError(float activation, float expected)
     {
         float error = activation - expected;

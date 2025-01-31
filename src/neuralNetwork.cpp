@@ -1,4 +1,5 @@
 #include "neuralNetwork.h"
+#include "neuralNetwork.h"
 
 #include <vector>
 #include <cstdlib>
@@ -20,10 +21,25 @@ namespace BaseML
 	{
 		layers.reserve(layerSizes.size() - 1);
 
-		for (auto layerSize = layerSizes.begin() + 1; layerSize < layerSizes.end(); layerSize++)
+		for (auto layerSize = layerSizes.begin() + 1; layerSize < layerSizes.end() - 1; layerSize++)
 		{
 			layers.emplace_back(*(layerSize - 1), *layerSize);
 		}
+
+		layers.emplace_back(*(layerSizes.end() - 2), *(layerSizes.end() - 1), &Utils::sigmoid, &Utils::sigmoidDerivative);
+	}
+
+	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes, float(*hiddenActFunc)(float), float(*hiddenActFuncDerivative)(float), float(*outputActFunc)(float), float(*outputActFuncDerivative)(float))
+		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative), networkInput()
+	{
+		layers.reserve(layerSizes.size() - 1);
+
+		for (auto layerSize = layerSizes.begin() + 1; layerSize < layerSizes.end() - 1; layerSize++)
+		{
+			layers.emplace_back(*(layerSize - 1), *layerSize, hiddenActFunc, hiddenActFuncDerivative);
+		}
+
+		layers.emplace_back(*(layerSizes.end() - 2), *(layerSizes.end() - 1), outputActFunc, outputActFuncDerivative);
 	}
 
 	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes, float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
