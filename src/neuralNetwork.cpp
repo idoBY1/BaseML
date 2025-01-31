@@ -54,7 +54,7 @@ namespace BaseML
 		return layers;
 	}
 
-	const Matrix<float>& NeuralNetwork::getOutput() const
+	const Matrix& NeuralNetwork::getOutput() const
 	{
 		return layers[layers.size() - 1].getOutputs();
 	}
@@ -78,7 +78,7 @@ namespace BaseML
 		return maxIndex;
 	}
 
-	const Matrix<float>& NeuralNetwork::forwardPropagate(const Matrix<float>& inputs)
+	const Matrix& NeuralNetwork::forwardPropagate(const Matrix& inputs)
 	{
 		layers[0].calculateOutputs(inputs);
 
@@ -90,7 +90,7 @@ namespace BaseML
 		return layers[layers.size() - 1].getOutputs();
 	}
 
-	float NeuralNetwork::calculateSumLoss(const Matrix<float>& expectedOutputs)
+	float NeuralNetwork::calculateSumLoss(const Matrix& expectedOutputs)
 	{
 		float sumLoss = 0.0f;
 
@@ -104,7 +104,7 @@ namespace BaseML
 		return (sumLoss / lastLayer.getCurrentBatchSize()); // if multiple data points in the batch, return the average loss
 	}
 
-	void NeuralNetwork::backPropagation(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate)
+	void NeuralNetwork::backPropagation(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate)
 	{
 		// Calculate gradients
 		layers[layers.size() - 1].calculateLastLayerGradients(expectedOutputs, lossFuncDerivative);
@@ -123,7 +123,7 @@ namespace BaseML
 		}
 	}
 
-	float NeuralNetwork::learn(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate)
+	float NeuralNetwork::learn(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate)
 	{
 		forwardPropagate(inputs);
 		backPropagation(inputs, expectedOutputs, learningRate);
@@ -131,7 +131,7 @@ namespace BaseML
 		return calculateSumLoss(expectedOutputs);
 	}
 
-	float NeuralNetwork::learn(const std::vector<std::pair<Matrix<float>, Matrix<float>>>& data, float learningRate)
+	float NeuralNetwork::learn(const std::vector<std::pair<Matrix, Matrix>>& data, float learningRate)
 	{
 		float currLoss;
 

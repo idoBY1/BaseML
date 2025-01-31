@@ -66,27 +66,27 @@ namespace BaseML
 		return batchSize;
 	}
 
-	const Matrix<float>& Layer::getOutputs() const
+	const Matrix& Layer::getOutputs() const
 	{
 		return outputs;
 	}
 
-	const Matrix<float>& Layer::getWeights() const
+	const Matrix& Layer::getWeights() const
 	{
 		return weights;
 	}
 
-	const Matrix<float>& Layer::getBiases() const
+	const Matrix& Layer::getBiases() const
 	{
 		return biases;
 	}
 
-	const Matrix<float>& Layer::getGradients() const
+	const Matrix& Layer::getGradients() const
 	{
 		return gradients;
 	}
 
-	void Layer::calculateOutputs(const Matrix<float>& inputs)
+	void Layer::calculateOutputs(const Matrix& inputs)
 	{
 #ifdef DEBUG
 		if (inputCount != inputs.rowsCount())
@@ -100,7 +100,7 @@ namespace BaseML
 		batchSize = inputs.columnsCount();
 
 		// Reset outputs and resize to fit the input
-		outputs = Matrix<float>(outputCount, batchSize);
+		outputs = Matrix(outputCount, batchSize);
 
 		// Multiply and add matrices to calculate the activation of each neuron.
 		// The result for each neuron is the sum of activations in the previous layer 
@@ -115,7 +115,7 @@ namespace BaseML
 		}
 	}
 
-	void Layer::calculateLastLayerGradients(const Matrix<float>& expectedOutputs, float(*lossFunctionDerivative)(float, float))
+	void Layer::calculateLastLayerGradients(const Matrix& expectedOutputs, float(*lossFunctionDerivative)(float, float))
 	{
 #ifdef DEBUG
 		if (outputCount != expectedOutputs.rowsCount() || outputs.columnsCount() != expectedOutputs.columnsCount())
@@ -126,7 +126,7 @@ namespace BaseML
 #endif // DEBUG
 
 		// Reset gradients and resize to fit the output
-		gradients = Matrix<float>(outputCount, batchSize);
+		gradients = Matrix(outputCount, batchSize);
 
 		// The Last layer bases its gradients on the loss function directly
 		for (int i = 0; i < gradients.size(); i++)
@@ -138,7 +138,7 @@ namespace BaseML
 	void Layer::calculateGradients(const Layer& nextLayer)
 	{
 		// Reset gradients and resize to fit the output
-		gradients = Matrix<float>(outputCount, batchSize);
+		gradients = Matrix(outputCount, batchSize);
 
 		// Multiply nextLayer's weights (the weights connecting this layer of neurons and
 		// the next later of neurons) with nextLayer's gradients. The result for each neuron 
@@ -155,7 +155,7 @@ namespace BaseML
 		}
 	}
 
-	void Layer::gradientDescent(const Matrix<float>& previousLayerOutputs, float learningRate)
+	void Layer::gradientDescent(const Matrix& previousLayerOutputs, float learningRate)
 	{
 		// Complete the gradient calculation, multiply by the learning-rate and subtract from
 		// the currect weights. To get the final gradient for the weights, we multiply the shared 

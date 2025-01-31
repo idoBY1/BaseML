@@ -34,22 +34,22 @@ namespace BaseML
 		const std::vector<Layer>& getLayers() const;
 
 		// Returns the output of the last layer
-		const Matrix<float>& getOutput() const;
+		const Matrix& getOutput() const;
 
 		// Returns the index of neuron with highest output. Assumes that the network output contains one data point
 		int getClassify();
 
 		// Runs the input through the network
-		const Matrix<float>& forwardPropagate(const Matrix<float>& inputs);
+		const Matrix& forwardPropagate(const Matrix& inputs);
 
 		// Calculates the sum of the loss function over all of the last layer's outputs
-		float calculateSumLoss(const Matrix<float>& expectedOutputs);
+		float calculateSumLoss(const Matrix& expectedOutputs);
 
 		// Calculate gradients and apply gradient descent on every layer of the Neural Network
-		void backPropagation(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate);
+		void backPropagation(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate);
 
 		// Pass the data through the Neural Network and perform gradient descent. Returns the loss
-		float learn(const Matrix<float>& inputs, const Matrix<float>& expectedOutputs, float learningRate);
+		float learn(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate);
 
 		// Pass the data through the Neural Network and perform gradient descent. Each pair of matrices represent 
 		// a mini-batch where the first Matrix represents the inputs of the batch and the second Matrix represents 
@@ -57,7 +57,7 @@ namespace BaseML
 		// matrices should be inputNeuronCount rows and batchSize columns for the first Matrix and outputNeuronCount 
 		// rows and batchSize columns for the second Matrix (e.g. (inputs x batch) and (outputs x batch)).
 		// Returns the loss of the last batch
-		float learn(const std::vector<std::pair<Matrix<float>, Matrix<float>>>& data, float learningRate);
+		float learn(const std::vector<std::pair<Matrix, Matrix>>& data, float learningRate);
 
 		// Save Neural Network to disk. Assumes a binary output stream
 		void save(std::ofstream& outFile);

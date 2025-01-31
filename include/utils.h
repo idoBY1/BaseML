@@ -11,6 +11,4 @@ namespace BaseML::Utils
 
 	float squareError(float activation, float expected);
 	float squareErrorDerivative(float activation, float expected);
-
-	void printFloatMatrix(const Matrix<float>& mat);
 }

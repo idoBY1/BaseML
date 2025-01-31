@@ -14,7 +14,7 @@ namespace BaseML
 	{
 	private:
 		size_t inputCount, outputCount, batchSize;
-		Matrix<float> weights, biases, outputs, gradients;
+		Matrix weights, biases, outputs, gradients;
 		float (*activationFunc)(float), (*activationFuncDerivative)(float);
 
 	public:
@@ -39,28 +39,28 @@ namespace BaseML
 		size_t getCurrentBatchSize() const;
 
 		// Returns the outputs of this layer
-		const Matrix<float>& getOutputs() const;
+		const Matrix& getOutputs() const;
 
 		// Returns the weights of this layer
-		const Matrix<float>& getWeights() const;
+		const Matrix& getWeights() const;
 
 		// Returns the biases of this layer
-		const Matrix<float>& getBiases() const;
+		const Matrix& getBiases() const;
 
 		// Returns the gradients of this layer
-		const Matrix<float>& getGradients() const;
+		const Matrix& getGradients() const;
 
 		// Perform forward propagation on this layer with the specified inputs
-		void calculateOutputs(const Matrix<float>& inputs); 
+		void calculateOutputs(const Matrix& inputs); 
 
 		// Caculate the gradients of the last layer based on the loss function and the expected outputs
-		void calculateLastLayerGradients(const Matrix<float>& expectedOutputs, float (*lossFunctionDerivative)(float, float));
+		void calculateLastLayerGradients(const Matrix& expectedOutputs, float (*lossFunctionDerivative)(float, float));
 
 		// Caculate the gradients of this layer based on the gradients of the next layer
 		void calculateGradients(const Layer& nextLayer);
 
 		// Update the parameters according to the gradients to minimize the loss function
-		void gradientDescent(const Matrix<float>& previousLayerOutputs, float learningRate);
+		void gradientDescent(const Matrix& previousLayerOutputs, float learningRate);
 
 		// Save Layer to disk. Assumes a binary output stream
 		void save(std::ofstream& outFile);

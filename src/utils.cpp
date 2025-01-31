@@ -41,18 +41,4 @@ namespace BaseML::Utils
     {
         return 2 * (activation - expected);
     }
-
-    void printFloatMatrix(const Matrix<float>& mat)
-    {
-        for (int i = 0; i < mat.rowsCount(); i++)
-        {
-            for (int j = 0; j < mat.columnsCount(); j++)
-            {
-                std::cout << std::setw(8) << std::setprecision(5) << mat(i, j) << " ";
-            }
-            std::cout << "\n";
-        }
-
-        std::cout << std::endl;
-    }
 }

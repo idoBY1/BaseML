@@ -12,8 +12,8 @@ void trainXOR()
 {
 	BaseML::NeuralNetwork neuralNet = { 2, 3, 1 };
 
-	BaseML::Matrix<float> inputs = BaseML::Matrix<float>({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }).transpose();
-	BaseML::Matrix<float> expectedOutputs({ 0, 1, 1, 0 }, false);
+	BaseML::Matrix inputs = BaseML::Matrix({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }).transpose();
+	BaseML::Matrix expectedOutputs({ 0, 1, 1, 0 }, false);
 
 	neuralNet.forwardPropagate({ 0, 0 });
 	std::cout << "00 -> ";
@@ -93,8 +93,8 @@ void testTrainingXOR()
 {
 	BaseML::NeuralNetwork neuralNet = { 2, 3, 1 };
 
-	BaseML::Matrix<float> inputs = BaseML::Matrix<float>({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }, true);
-	BaseML::Matrix<float> expectedOutputs({ 0, 1, 1, 0 }, false);
+	BaseML::Matrix inputs = BaseML::Matrix({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }, true);
+	BaseML::Matrix expectedOutputs({ 0, 1, 1, 0 }, false);
 
 	neuralNet.forwardPropagate({ 0, 0 });
 	std::cout << "00 -> ";
