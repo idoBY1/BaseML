@@ -11,6 +11,7 @@ namespace BaseML
 	{
 	private:
 		std::vector<Layer> layers;
+		Matrix networkInput;
 		float (*lossFunc)(float, float), (*lossFuncDerivative)(float, float); // Function to minimize
 
 	public:

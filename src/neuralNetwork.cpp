@@ -11,12 +11,12 @@
 namespace BaseML
 {
 	NeuralNetwork::NeuralNetwork()
-		:lossFunc(nullptr), lossFuncDerivative(nullptr)
+		:lossFunc(nullptr), lossFuncDerivative(nullptr), networkInput()
 	{
 	}
 
 	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes)
-		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative)
+		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative), networkInput()
 	{
 		layers.reserve(layerSizes.size() - 1);
 
@@ -27,7 +27,7 @@ namespace BaseML
 	}
 
 	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes, float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
-		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative)
+		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative), networkInput()
 	{
 		layers.reserve(layerSizes.size() - 1);
 
@@ -39,7 +39,7 @@ namespace BaseML
 
 	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes, float(*activationFunction)(float), float(*activationFunctionDerivative)(float), 
 		float(*lossFunction)(float, float), float(*lossFunctionDerivative)(float, float))
-		:lossFunc(lossFunction), lossFuncDerivative(lossFunctionDerivative)
+		:lossFunc(lossFunction), lossFuncDerivative(lossFunctionDerivative), networkInput()
 	{
 		layers.reserve(layerSizes.size() - 1);
 
@@ -80,11 +80,13 @@ namespace BaseML
 
 	const Matrix& NeuralNetwork::forwardPropagate(const Matrix& inputs)
 	{
-		layers[0].calculateOutputs(inputs);
+		networkInput = inputs;
+
+		layers[0].calculateOutputs(&networkInput);
 
 		for (int i = 1; i < layers.size(); i++)
 		{
-			layers[i].calculateOutputs(layers[i - 1].getOutputs());
+			layers[i].calculateOutputs(&(layers[i - 1].getOutputs()));
 		}
 
 		return layers[layers.size() - 1].getOutputs();
@@ -115,11 +117,11 @@ namespace BaseML
 		}
 
 		// Update parameters
-		layers[0].gradientDescent(inputs, learningRate);
+		layers[0].gradientDescent(learningRate);
 
 		for (int i = 1; i < layers.size(); i++)
 		{
-			layers[i].gradientDescent(layers[i - 1].getOutputs(), learningRate);
+			layers[i].gradientDescent(learningRate);
 		}
 	}
 
