@@ -233,6 +233,7 @@ namespace BaseML
         }
 #endif // DEBUG
 
+        #pragma omp parallel for collapse(2)
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
@@ -256,6 +257,7 @@ namespace BaseML
         }
 #endif // DEBUG
 
+        #pragma omp parallel for collapse(2)
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
@@ -271,6 +273,7 @@ namespace BaseML
     {
         Matrix newMat(rows, cols);
 
+        #pragma omp parallel for collapse(2)
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
@@ -331,6 +334,7 @@ namespace BaseML
     {
         Matrix newMat(cols, rows);
 
+        #pragma omp parallel for collapse(2)
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
@@ -352,6 +356,7 @@ namespace BaseML
         }
 #endif // DEBUG
 
+        #pragma omp parallel for collapse(2)
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
@@ -367,6 +372,7 @@ namespace BaseML
     {
         Matrix newMat(rows, 1);
 
+        #pragma omp parallel for
         for (int i = 0; i < rows; i++)
         {
             newMat(i, 0) = 0.0f;
