@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 #include "matrix.h"
 #include "utils.h"
@@ -91,7 +92,7 @@ void testXOR()
 
 void testTrainingXOR()
 {
-	BaseML::NeuralNetwork neuralNet = { 2, 3, 1 };
+	BaseML::NeuralNetwork neuralNet = { 2, 50, 50, 1 };
 
 	BaseML::Matrix inputs = BaseML::Matrix({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }, true);
 	BaseML::Matrix expectedOutputs({ 0, 1, 1, 0 }, false);
@@ -116,18 +117,21 @@ void testTrainingXOR()
 
 	float loss;
 
-	for (int i = 0; i < 1000; i++)
+	auto last = std::chrono::high_resolution_clock::now();
+	for (int i = 0; i < 10000; i++)
 	{
 		loss = neuralNet.learn(inputs, expectedOutputs, 1);
 
-		if (i % 100 == 0) // every 100 iterations
-		{
-			std::cout << "Current loss is: " << loss << std::endl;
-		}
+		//if (i % 100 == 0) // every 100 iterations
+		//{
+		//	std::cout << "Current loss is: " << loss << std::endl;
+		//}
 	}
+	auto finalTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - last);
 
-	std::cout << "finished learning." << std::endl;
-	std::cout << "Final loss is: " << loss << "\n" << std::endl;
+	std::cout << "Finished learning." << std::endl;
+	std::cout << "Final loss is: " << loss << std::endl;
+	std::cout << "Final time: " << finalTime << " milliseconds\n" << std::endl;
 
 	neuralNet.forwardPropagate({ 0, 0 });
 	std::cout << "00 -> ";
