@@ -5,6 +5,8 @@ cmake_minimum_required (VERSION 3.12)
 
 project ("BasicNeuralNetwork")
 
+find_package(OpenMP REQUIRED)
+
 add_library(BaseML)
 
 # folder of include files
@@ -13,6 +15,10 @@ target_include_directories(BaseML PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 # add all cpp files in src as source code files for this program
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 target_sources(BaseML PRIVATE "${MY_SOURCES}")
+
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(BaseML PRIVATE OpenMP::OpenMP_CXX)
+endif()
 
 set_property(TARGET BaseML PROPERTY CXX_STANDARD 20)
 

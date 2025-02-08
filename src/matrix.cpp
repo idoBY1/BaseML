@@ -295,6 +295,7 @@ namespace BaseML
         }
 #endif // DEBUG
 
+        #pragma omp parallel for collapse(2)
         for (int i = 0; i < newMat.rows; i++)
         {
             for (int j = 0; j < newMat.cols; j++)
