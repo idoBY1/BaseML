@@ -92,7 +92,7 @@ void testXOR()
 
 void testTrainingXOR()
 {
-	BaseML::NeuralNetwork neuralNet = { 2, 50, 50, 1 };
+	BaseML::NeuralNetwork neuralNet = { 2, 3, 1 };
 
 	BaseML::Matrix inputs = BaseML::Matrix({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }, true);
 	BaseML::Matrix expectedOutputs({ 0, 1, 1, 0 }, false);
