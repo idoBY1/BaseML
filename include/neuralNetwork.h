@@ -14,6 +14,8 @@ namespace BaseML
 		Matrix networkInput;
 		float (*lossFunc)(float, float), (*lossFuncDerivative)(float, float); // Function to minimize
 
+		size_t learningTimestep;
+
 	public:
 		// Create an empty Neural Network
 		NeuralNetwork();
@@ -52,10 +54,10 @@ namespace BaseML
 		float calculateSumLoss(const Matrix& expectedOutputs);
 
 		// Calculate gradients and apply gradient descent on every layer of the Neural Network
-		void backPropagation(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate);
+		void backPropagation(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate = 0.001f);
 
 		// Pass the data through the Neural Network and perform gradient descent. Returns the loss
-		float learn(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate);
+		float learn(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate = 0.001f);
 
 		// Pass the data through the Neural Network and perform gradient descent. Each pair of matrices represent 
 		// a mini-batch where the first Matrix represents the inputs of the batch and the second Matrix represents 
@@ -63,7 +65,7 @@ namespace BaseML
 		// matrices should be inputNeuronCount rows and batchSize columns for the first Matrix and outputNeuronCount 
 		// rows and batchSize columns for the second Matrix (e.g. (inputs x batch) and (outputs x batch)).
 		// Returns the loss of the last batch
-		float learn(const std::vector<std::pair<Matrix, Matrix>>& data, float learningRate);
+		float learn(const std::vector<std::pair<Matrix, Matrix>>& data, float learningRate = 0.001f);
 
 		// Save Neural Network to disk. Assumes a binary output stream
 		void save(std::ofstream& outFile);

@@ -172,6 +172,7 @@ namespace BaseML
 		// Add the derivative of the activation function to each neuron's gradient.
 		// This is the second part of the derivative and the last shared part of the 
 		// derivative shared by both the weights and the biases
+		#pragma omp parallel for
 		for (int i = 0; i < gradients.size(); i++)
 		{
 			gradients(i) = gradients(i) * (*activationFuncDerivative)(outputs(i));
@@ -218,7 +219,17 @@ namespace BaseML
 		Matrix vBiasesCorrected = vBiases * (1.0f / (1.0f - std::powf(beta2, timestep)));
 
 		// Update parameters
-		// TODO: implement parameter update
+		#pragma omp parallel for
+		for (int i = 0; i < weights.size(); i++)
+		{
+			weights(i) = weights(i) - mWeightsCorrected(i) * (learningRate / (std::sqrtf(vWeightsCorrected(i)) + epsilon));
+		}
+
+		#pragma omp parallel for
+		for (int i = 0; i < biases.size(); i++)
+		{
+			biases(i) = biases(i) - mBiasesCorrected(i) * (learningRate / (std::sqrtf(vBiasesCorrected(i)) + epsilon));
+		}
 	}
 
 	void Layer::save(std::ofstream& outFile)

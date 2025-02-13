@@ -12,12 +12,12 @@
 namespace BaseML
 {
 	NeuralNetwork::NeuralNetwork()
-		:lossFunc(nullptr), lossFuncDerivative(nullptr), networkInput()
+		:lossFunc(nullptr), lossFuncDerivative(nullptr), networkInput(), learningTimestep(1)
 	{
 	}
 
 	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes)
-		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative), networkInput()
+		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative), networkInput(), learningTimestep(1)
 	{
 		layers.reserve(layerSizes.size() - 1);
 
@@ -30,7 +30,7 @@ namespace BaseML
 	}
 
 	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes, float(*hiddenActFunc)(float), float(*hiddenActFuncDerivative)(float), float(*outputActFunc)(float), float(*outputActFuncDerivative)(float))
-		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative), networkInput()
+		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative), networkInput(), learningTimestep(1)
 	{
 		layers.reserve(layerSizes.size() - 1);
 
@@ -43,7 +43,7 @@ namespace BaseML
 	}
 
 	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes, float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
-		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative), networkInput()
+		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative), networkInput(), learningTimestep(1)
 	{
 		layers.reserve(layerSizes.size() - 1);
 
@@ -55,7 +55,7 @@ namespace BaseML
 
 	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes, float(*activationFunction)(float), float(*activationFunctionDerivative)(float), 
 		float(*lossFunction)(float, float), float(*lossFunctionDerivative)(float, float))
-		:lossFunc(lossFunction), lossFuncDerivative(lossFunctionDerivative), networkInput()
+		:lossFunc(lossFunction), lossFuncDerivative(lossFunctionDerivative), networkInput(), learningTimestep(1)
 	{
 		layers.reserve(layerSizes.size() - 1);
 
@@ -137,8 +137,10 @@ namespace BaseML
 
 		for (int i = 1; i < layers.size(); i++)
 		{
-			layers[i].gradientDescent(learningRate);
+			layers[i].adamGradientDescent(learningRate, learningTimestep);
 		}
+
+		learningTimestep++;
 	}
 
 	float NeuralNetwork::learn(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate)

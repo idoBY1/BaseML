@@ -120,7 +120,7 @@ void testTrainingXOR()
 	auto last = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < 10000; i++)
 	{
-		loss = neuralNet.learn(inputs, expectedOutputs, 1);
+		loss = neuralNet.learn(inputs, expectedOutputs);
 
 		//if (i % 100 == 0) // every 100 iterations
 		//{
@@ -131,7 +131,7 @@ void testTrainingXOR()
 
 	std::cout << "Finished learning." << std::endl;
 	std::cout << "Final loss is: " << loss << std::endl;
-	std::cout << "Final time: " << finalTime << " milliseconds\n" << std::endl;
+	std::cout << "Final time: " << finalTime << "\n" << std::endl;
 
 	neuralNet.forwardPropagate({ 0, 0 });
 	std::cout << "00 -> ";
