@@ -1,4 +1,6 @@
 #include "matrix.h"
+#include "matrix.h"
+#include "matrix.h"
 
 namespace BaseML
 {
@@ -384,6 +386,30 @@ namespace BaseML
         }
 
         return newMat;
+    }
+
+    void Matrix::applyToElements(float(*func)(float))
+    {
+        #pragma omp parallel for collapse(2)
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                (*this)(i, j) = func((*this)(i, j));
+            }
+        }
+    }
+
+    void Matrix::clear()
+    {
+        #pragma omp parallel for collapse(2)
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                (*this)(i, j) = 0.0f;
+            }
+        }
     }
 
     void Matrix::save(std::ofstream& outFile)

@@ -1,4 +1,5 @@
 #include "layer.h"
+#include "layer.h"
 
 #include <vector>
 #include <cstdlib>
@@ -11,16 +12,16 @@ namespace BaseML
 {
 	Layer::Layer()
 		:inputCount(0), outputCount(0), batchSize(1), weights(), biases(), outputs(), gradients(), activationFunc(nullptr), 
-		activationFuncDerivative(nullptr), inputRef(nullptr)
+		activationFuncDerivative(nullptr), inputRef(nullptr), mWeights(), mBiases(), vWeights(), vBiases()
 	{
 	}
 
 	Layer::Layer(size_t numInputs, size_t numOutputs)
 		:inputCount(numInputs), outputCount(numOutputs), batchSize(1), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, batchSize), 
-		gradients(numOutputs, batchSize), activationFunc(&Utils::leakyReLU), activationFuncDerivative(&Utils::leakyReLUDerivative), inputRef(nullptr)
+		gradients(numOutputs, batchSize), activationFunc(&Utils::leakyReLU), activationFuncDerivative(&Utils::leakyReLUDerivative), inputRef(nullptr), 
+		mWeights(numOutputs, numInputs), mBiases(numOutputs, 1), vWeights(numOutputs, numInputs), vBiases(numOutputs, 1)
 	{
 		// Initialize the biases and weights with random values
-
 		for (int i = 0; i < numOutputs; i++)
 		{
 			// Generate a number between MIN_INIT_VAL and MAX_INIT_VAL (the number is a float)
@@ -31,15 +32,21 @@ namespace BaseML
 				weights(i, j) = Utils::initFromNumInputs(numInputs);
 			}
 		}
+
+		// Initialize Adam Optimizer matrices
+		mWeights.clear();
+		mBiases.clear();
+		vWeights.clear();
+		vBiases.clear();
 	}
 
 	Layer::Layer(size_t numInputs, size_t numOutputs, float(*activationFunction)(float), 
 		float(*activationFunctionDerivative)(float))
 		:inputCount(numInputs), outputCount(numOutputs), batchSize(1), weights(numOutputs, numInputs), biases(numOutputs, 1), outputs(numOutputs, batchSize), 
-		gradients(numOutputs, 1), activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative), inputRef(nullptr)
+		gradients(numOutputs, 1), activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative), inputRef(nullptr), 
+		mWeights(numOutputs, numInputs), mBiases(numOutputs, 1), vWeights(numOutputs, numInputs), vBiases(numOutputs, 1)
 	{
 		// Initialize the biases and weights with random values
-
 		for (int i = 0; i < numOutputs; i++)
 		{
 			// Generate a number between MIN_INIT_VAL and MAX_INIT_VAL (the number is a float)
@@ -50,6 +57,12 @@ namespace BaseML
 				weights(i, j) = Utils::initFromNumInputs(numInputs);
 			}
 		}
+
+		// Initialize Adam Optimizer matrices
+		mWeights.clear();
+		mBiases.clear();
+		vWeights.clear();
+		vBiases.clear();
 	}
 
 	size_t Layer::getInputCount() const
@@ -175,6 +188,37 @@ namespace BaseML
 		// Multiply by learning-rate and update biases. Sum the rows of the gradients to add 
 		// all of the gradients from the batch to one update.
 		biases = biases - (gradients.sumRows() * learningRate);
+	}
+
+	void Layer::adamGradientDescent(float learningRate, size_t timestep, float beta1, float beta2, float epsilon)
+	{
+		// Complete the gradient calculation for the weights and biases.
+		Matrix weightsGrads = gradients * (*inputRef).transpose();
+		Matrix biasesGrads = gradients.sumRows();
+		
+		// Calculate m_t using m_t-1
+		mWeights = mWeights * beta1 + weightsGrads * (1.0f - beta1);
+		mBiases = mBiases * beta1 + biasesGrads * (1.0f - beta1);
+
+		// Square the gradients
+		auto square = [](float x) { return x * x; };
+
+		weightsGrads.applyToElements(square);
+		biasesGrads.applyToElements(square);
+
+		// Calculate v_t using v_t-1
+		vWeights = vWeights * beta2 + weightsGrads * (1.0f - beta2);
+		vBiases = vBiases * beta2 + biasesGrads * (1.0f - beta2);
+
+		// Zero bias correction
+		Matrix mWeightsCorrected = mWeights * (1.0f / (1.0f - std::powf(beta1, timestep)));
+		Matrix mBiasesCorrected = mBiases * (1.0f / (1.0f - std::powf(beta1, timestep)));
+
+		Matrix vWeightsCorrected = vWeights * (1.0f / (1.0f - std::powf(beta2, timestep)));
+		Matrix vBiasesCorrected = vBiases * (1.0f / (1.0f - std::powf(beta2, timestep)));
+
+		// Update parameters
+		// TODO: implement parameter update
 	}
 
 	void Layer::save(std::ofstream& outFile)

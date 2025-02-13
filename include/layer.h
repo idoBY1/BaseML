@@ -15,6 +15,9 @@ namespace BaseML
 		const Matrix* inputRef; // A pointer to the output of last layer. This class doesn't manage this memory!
 		float (*activationFunc)(float), (*activationFuncDerivative)(float);
 
+		// Adam Optimizer matrices
+		Matrix mWeights, vWeights, mBiases, vBiases;
+
 	public:
 		// Default constructor for creating an empty object
 		Layer(); 
@@ -60,11 +63,17 @@ namespace BaseML
 		// Update the parameters according to the gradients to minimize the loss function
 		void gradientDescent(float learningRate);
 
+		// Update the parameters according to the gradients to minimize the loss function using Adam Optimizer.
+		// 'timestep' is the number of times the layer's parameters have been updated before. 'beta1' controlls 
+		// the decay rate of the first moment (m) and 'beta2' controlls the decay rate of the second moment (v).
+		// 'epsilon' is a small positive constant to avoid devision by zero. 
+		void adamGradientDescent(float learningRate, size_t timestep, float beta1 = 0.9f, float beta2 = 0.999f, float epsilon = 1.0e-7f);
+
 		// Save Layer to disk. Assumes a binary output stream
 		void save(std::ofstream& outFile);
 
 		// Load Layer from disk. Assumes a binary input stream
-		void load(std::ifstream& inFile, float (*activationFunction)(float) = &Utils::sigmoid, 
+		void load(std::ifstream& inFile, float (*activationFunction)(float) = &Utils::sigmoid,
 			float (*activationFunctionDerivative)(float) = &Utils::sigmoidDerivative);
 	};
 }

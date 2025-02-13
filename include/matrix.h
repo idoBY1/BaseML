@@ -120,6 +120,12 @@ namespace BaseML
         // Warning: this function doesn't check for the correctness of the input!
         Matrix sumRows() const;
 
+        // Apply the given function on every element of the Matrix
+        void applyToElements(float (*func)(float));
+
+        // Replaces all of the values of the Matrix with 0
+        void clear();
+
         // Save Matrix to disk. Assumes a binary output stream
         void save(std::ofstream& outFile);
 
