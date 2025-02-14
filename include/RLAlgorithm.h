@@ -18,7 +18,7 @@ namespace BaseML
 
 		virtual ~RLAlgorithm() = default; // Default destructor.
 
-		// Learn for 'maxIter' iterations.
+		// Learn the environment using the algorithm for 'maxIter' iterations.
 		virtual void learn(size_t maxIter) = 0;
 	};
 }
