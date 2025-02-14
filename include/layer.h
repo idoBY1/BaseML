@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "matrix.h"
-#include "utils.h"
+#include "Matrix.h"
+#include "Utils.h"
 
 namespace BaseML
 {

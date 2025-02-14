@@ -1,11 +1,11 @@
-#include "utils.h"
-#include "utils.h"
+#include "Utils.h"
+#include "Utils.h"
 
 #include <random>
 #include <iostream>
 #include <iomanip>
 
-#include "matrix.h"
+#include "Matrix.h"
 
 namespace BaseML::Utils
 {

@@ -1,6 +1,6 @@
-#include "matrix.h"
-#include "matrix.h"
-#include "matrix.h"
+#include "Matrix.h"
+#include "Matrix.h"
+#include "Matrix.h"
 
 namespace BaseML
 {

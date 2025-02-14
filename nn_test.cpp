@@ -4,10 +4,10 @@
 #include <fstream>
 #include <chrono>
 
-#include "matrix.h"
-#include "utils.h"
-#include "layer.h"
-#include "neuralNetwork.h"
+#include "Matrix.h"
+#include "Utils.h"
+#include "Layer.h"
+#include "NeuralNetwork.h"
 
 void trainXOR()
 {

@@ -1,5 +1,5 @@
-#include "neuralNetwork.h"
-#include "neuralNetwork.h"
+#include "NeuralNetwork.h"
+#include "NeuralNetwork.h"
 
 #include <vector>
 #include <cstdlib>
@@ -7,7 +7,7 @@
 #include <string>
 #include <format>
 
-#include "utils.h"
+#include "Utils.h"
 
 namespace BaseML
 {

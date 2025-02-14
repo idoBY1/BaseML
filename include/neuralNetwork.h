@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "layer.h"
-#include "utils.h"
+#include "Layer.h"
+#include "Utils.h"
 
 namespace BaseML
 {
