@@ -6,6 +6,8 @@ namespace BaseML
 {
 	class IEnvironment
 	{
+		virtual ~IEnvironment() = default; // Default destructor.
+
 		// Update the environment's state. 'deltaTime' is the amount of time to assume that 
 		// have passed since the last update.
 		virtual void update(float deltaTime) = 0;
@@ -14,7 +16,7 @@ namespace BaseML
 		virtual const Matrix& getState(const char* playerId) = 0;
 
 		// Set the action that the player will perform in the next update.
-		virtual void setAction(const char* playerId, Matrix action) = 0;
+		virtual void setAction(const char* playerId, const Matrix& action) = 0;
 
 		// Get the reward of the current state of the player.
 		virtual float getReward(const char* playerId) = 0;
