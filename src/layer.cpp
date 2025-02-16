@@ -194,8 +194,8 @@ namespace BaseML
 	void Layer::adamGradientDescent(float learningRate, size_t timestep, float beta1, float beta2, float epsilon)
 	{
 		// Complete the gradient calculation for the weights and biases.
-		Matrix weightsGrads = (gradients * (*inputRef).transpose()) * (1 / batchSize);
-		Matrix biasesGrads = gradients.sumRows() * (1 / batchSize);
+		Matrix weightsGrads = (gradients * (*inputRef).transpose()) * (1.0f / batchSize);
+		Matrix biasesGrads = gradients.sumRows() * (1.0f / batchSize);
 		
 		// Calculate m_t using m_t-1
 		mWeights = mWeights * beta1 + weightsGrads * (1.0f - beta1);
