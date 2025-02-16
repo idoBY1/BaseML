@@ -184,18 +184,18 @@ namespace BaseML
 		// Complete the gradient calculation, multiply by the learning-rate and subtract from
 		// the currect weights. To get the final gradient for the weights, we multiply the shared 
 		// gradients with the outputs of the neurons of the previous layer.
-		weights = weights - ((gradients * (*inputRef).transpose()) * learningRate);
+		weights = weights - ((gradients * (*inputRef).transpose()) * (learningRate / batchSize));
 
 		// Multiply by learning-rate and update biases. Sum the rows of the gradients to add 
 		// all of the gradients from the batch to one update.
-		biases = biases - (gradients.sumRows() * learningRate);
+		biases = biases - (gradients.sumRows() * (learningRate / batchSize));
 	}
 
 	void Layer::adamGradientDescent(float learningRate, size_t timestep, float beta1, float beta2, float epsilon)
 	{
 		// Complete the gradient calculation for the weights and biases.
-		Matrix weightsGrads = gradients * (*inputRef).transpose();
-		Matrix biasesGrads = gradients.sumRows();
+		Matrix weightsGrads = (gradients * (*inputRef).transpose()) * (1 / batchSize);
+		Matrix biasesGrads = gradients.sumRows() * (1 / batchSize);
 		
 		// Calculate m_t using m_t-1
 		mWeights = mWeights * beta1 + weightsGrads * (1.0f - beta1);
