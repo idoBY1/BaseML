@@ -13,8 +13,12 @@ namespace BaseML
 		size_t timeStepsPerBatch, maxTimeStepsPerEpisode, updatesPerIter;
 
 	public:
-		PPO(); // TODO: initialize fields in constructor
+		PPO(const IEnvironment& environment, const char* neuralNetworkFileName, float learningRate = 0.005f, float discountFactor = 0.95f, float clipThreshold = 0.2f, 
+			size_t timeStepsPerBatch = 4800, size_t maxTimeStepsPerEpisode = 1600, size_t updatesPerIteration = 5);
 
-		// TODO: implement RLAlgorithm methods
+		PPO(std::unique_ptr<IEnvironment> environment, const char* neuralNetworkFileName, float learningRate = 0.005f, float discountFactor = 0.95f, float clipThreshold = 0.2f,
+			size_t timeStepsPerBatch = 4800, size_t maxTimeStepsPerEpisode = 1600, size_t updatesPerIteration = 5);
+
+		void learn(size_t maxIter) override;
 	};
 }

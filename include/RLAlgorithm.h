@@ -7,7 +7,7 @@ namespace BaseML
 	class RLAlgorithm
 	{
 	protected:
-		IEnvironment* environment; // switch to unique_ptr
+		std::unique_ptr<IEnvironment> environment;
 
 	public:
 		// Create a new RLAlgorithm. Clones 'environment'.
@@ -16,13 +16,9 @@ namespace BaseML
 		{}
 
 		// Create a new RLAlgorithm. Assumes ownership on 'environment'.
-		RLAlgorithm(IEnvironment* environment) 
-			:environment(environment) 
+		RLAlgorithm(std::unique_ptr<IEnvironment> environment) 
+			:environment(std::move(environment)) 
 		{}
-
-		virtual ~RLAlgorithm() {
-			delete environment; // Free environment when destroyed.
-		}
 
 		// Learn the environment using the algorithm for 'maxIter' iterations.
 		virtual void learn(size_t maxIter) = 0;
