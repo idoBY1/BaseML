@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NeuralNetwork.h"
 #include "RLAlgorithm.h"
 
 namespace BaseML
@@ -8,6 +9,8 @@ namespace BaseML
 	{
 	private:
 		std::string neuralNetFile;
+
+		NeuralNetwork neuralNet;
 
 		float learningRate, rewardDiscountFactor, clipThreshold;
 		size_t timeStepsPerBatch, maxTimeStepsPerEpisode, updatesPerIter;

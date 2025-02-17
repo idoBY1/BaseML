@@ -133,7 +133,7 @@ namespace BaseML
 		}
 
 		// Update parameters
-		layers[0].gradientDescent(learningRate);
+		layers[0].adamGradientDescent(learningRate, learningTimestep);
 
 		for (int i = 1; i < layers.size(); i++)
 		{
