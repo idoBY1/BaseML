@@ -9,8 +9,6 @@ namespace BaseML
 	public:
 		virtual ~IEnvironment() = default; // Default destructor.
 
-		virtual std::unique_ptr<IEnvironment> clone() const = 0; // clone method for polymorphic copying (switch to unique_ptr)
-
 		// Update the environment's state. 'deltaTime' is the amount of time to assume that 
 		// have passed since the last update.
 		virtual void update(float deltaTime) = 0;

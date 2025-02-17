@@ -10,12 +10,7 @@ namespace BaseML
 		std::unique_ptr<IEnvironment> environment;
 
 	public:
-		// Create a new RLAlgorithm. Clones 'environment'.
-		RLAlgorithm(const IEnvironment& environment) 
-			:environment(environment.clone()) 
-		{}
-
-		// Create a new RLAlgorithm. Assumes ownership on 'environment'.
+		// Create a new RLAlgorithm. Takes ownership on 'environment'.
 		RLAlgorithm(std::unique_ptr<IEnvironment> environment) 
 			:environment(std::move(environment)) 
 		{}
