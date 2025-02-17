@@ -1,5 +1,7 @@
 #include "NeuralNetwork.h"
 #include "NeuralNetwork.h"
+#include "NeuralNetwork.h"
+#include "NeuralNetwork.h"
 
 #include <vector>
 #include <cstdlib>
@@ -68,6 +70,16 @@ namespace BaseML
 	const std::vector<Layer>& NeuralNetwork::getLayers() const
 	{
 		return layers;
+	}
+
+	size_t NeuralNetwork::getInputCount() const
+	{
+		return layers[0].getInputCount();
+	}
+
+	size_t NeuralNetwork::getOutputCount() const
+	{
+		return layers[layers.size() - 1].getOutputCount();
 	}
 
 	const Matrix& NeuralNetwork::getOutput() const

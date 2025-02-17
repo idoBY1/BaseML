@@ -41,6 +41,12 @@ namespace BaseML
 		// Returns the layers of the Neural Network
 		const std::vector<Layer>& getLayers() const;
 
+		// Returns the number of inputs of this network
+		size_t getInputCount() const;
+
+		// Returns the number of outputs of this network
+		size_t getOutputCount() const;
+
 		// Returns the output of the last layer
 		const Matrix& getOutput() const;
 
