@@ -4,10 +4,28 @@
 
 namespace BaseML
 {
-	class IEnvironment
+	class Environment
 	{
+	protected:
+		size_t obsDim, actDim;
+
 	public:
-		virtual ~IEnvironment() = default; // Default destructor.
+		Environment(size_t observationDim, size_t actionDim)
+			:obsDim(observationDim), actDim(actionDim)
+		{
+		}
+
+		virtual ~Environment() = default; // Default destructor.
+
+		size_t getObservationDimension()
+		{
+			return obsDim;
+		}
+
+		size_t getActionDimension()
+		{
+			return actDim;
+		}
 
 		// Update the environment's state. 'deltaTime' is the amount of time to assume that 
 		// have passed since the last update.
