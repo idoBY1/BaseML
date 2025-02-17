@@ -209,7 +209,8 @@ namespace BaseML
 		saveToFile(fileName.c_str());
 	}
 
-	void NeuralNetwork::load(std::ifstream& inFile, float(*activationFunction)(float), float(*activationFunctionDerivative)(float), 
+	void NeuralNetwork::load(std::ifstream& inFile, float (*hiddenActFunc)(float), float (*hiddenActFuncDerivative)(float),
+		float(*activationFunction)(float), float(*activationFunctionDerivative)(float),
 		float(*lossFunction)(float, float), float(*lossFunctionDerivative)(float, float))
 	{
 		lossFunc = lossFunction;
@@ -221,13 +222,16 @@ namespace BaseML
 
 		layers = std::vector<Layer>(numOfLayers);
 
-		for (int i = 0; i < numOfLayers; i++)
+		for (int i = 0; i < numOfLayers - 1; i++)
 		{
-			layers[i].load(inFile, activationFunction, activationFunctionDerivative);
+			layers[i].load(inFile, hiddenActFunc, hiddenActFuncDerivative);
 		}
+
+		layers[numOfLayers - 1].load(inFile, activationFunction, activationFunctionDerivative);
 	}
 
-	bool NeuralNetwork::loadFromFile(const char* fileName, float(*activationFunction)(float), float(*activationFunctionDerivative)(float),
+	bool NeuralNetwork::loadFromFile(const char* fileName, float (*hiddenActFunc)(float), float (*hiddenActFuncDerivative)(float),
+		float(*activationFunction)(float), float(*activationFunctionDerivative)(float),
 		float(*lossFunction)(float, float), float(*lossFunctionDerivative)(float, float))
 	{
 		try {
@@ -235,7 +239,8 @@ namespace BaseML
 
 			ifile.open(fileName, std::ios::binary | std::ios::in);
 
-			load(ifile, activationFunction, activationFunctionDerivative, 
+			load(ifile, hiddenActFunc, hiddenActFuncDerivative, 
+				activationFunction, activationFunctionDerivative,
 				lossFunction, lossFunctionDerivative);
 
 			ifile.close();

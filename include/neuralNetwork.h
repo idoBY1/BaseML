@@ -77,12 +77,14 @@ namespace BaseML
 		void saveParams(const char* networkName = "neural_network", float networkScore = -1.0f, bool includeTime = true);
 
 		// Load Neural Network from disk. Assumes a binary input stream
-		void load(std::ifstream& inFile, float (*activationFunction)(float) = &Utils::sigmoid,
+		void load(std::ifstream& inFile, float (*hiddenActFunc)(float) = &Utils::leakyReLU,
+			float (*hiddenActFuncDerivative)(float) = &Utils::leakyReLUDerivative, float (*activationFunction)(float) = &Utils::sigmoid,
 			float (*activationFunctionDerivative)(float) = &Utils::sigmoidDerivative, float (*lossFunction)(float, float) = &Utils::squareError, 
 			float (*lossFunctionDerivative)(float, float) = &Utils::squareErrorDerivative);
 
 		// Try to load Neural Network from the specified file. Returns true if successful and false if something went wrong
-		bool loadFromFile(const char* fileName, float (*activationFunction)(float) = &Utils::sigmoid,
+		bool loadFromFile(const char* fileName, float (*hiddenActFunc)(float) = &Utils::leakyReLU,
+			float (*hiddenActFuncDerivative)(float) = &Utils::leakyReLUDerivative, float (*activationFunction)(float) = &Utils::sigmoid,
 			float (*activationFunctionDerivative)(float) = &Utils::sigmoidDerivative, float (*lossFunction)(float, float) = &Utils::squareError,
 			float (*lossFunctionDerivative)(float, float) = &Utils::squareErrorDerivative);
 	};
