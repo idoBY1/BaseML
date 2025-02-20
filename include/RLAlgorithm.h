@@ -16,9 +16,16 @@ namespace BaseML::RL
 		// Create a new RLAlgorithm. Takes ownership on 'environment'.
 		RLAlgorithm(std::unique_ptr<Environment> environment) 
 			:environment(std::move(environment)) 
-		{}
+		{
+			if (!environment->isInitialized())
+				environment->initialize();
+		}
 
-		virtual ~RLAlgorithm() = default;
+		virtual ~RLAlgorithm()
+		{
+			if (environment->isInitialized())
+				environment->close();
+		}
 
 		// Learn the environment using the algorithm for 'maxIter' iterations.
 		virtual void learn(size_t maxIter) = 0;

@@ -24,5 +24,7 @@ namespace BaseML::RL
 	RLTrainingData PPO::collectTrajectories()
 	{
 		RLTrainingData data;
+
+		environment->reset();
 	}
 }

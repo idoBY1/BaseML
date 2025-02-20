@@ -43,6 +43,10 @@ namespace BaseML::RL
 		// Initialize the environment.
 		virtual void initialize() = 0;
 
+		// Check if the environment is already initialized to avoid closing an uninitialized environment 
+		// or initializing an environment twice
+		virtual bool isInitialized() = 0;
+
 		// Closes the environment's resources.
 		virtual void close() = 0;
 
