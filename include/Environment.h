@@ -2,7 +2,7 @@
 
 #include "Matrix.h"
 
-namespace BaseML
+namespace BaseML::RL
 {
 	class Environment
 	{

@@ -1,6 +1,6 @@
 #include "PPO.h"
 
-namespace BaseML
+namespace BaseML::RL
 {
 	PPO::PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate, float discountFactor,
 		float clipThreshold, size_t timeStepsPerBatch, size_t maxTimeStepsPerEpisode, size_t updatesPerIteration)
@@ -11,7 +11,18 @@ namespace BaseML
 	{
 	}
 
-	void PPO::learn(size_t maxIter)
+	void PPO::learn(size_t maxTimeSteps)
 	{
+		size_t timeStepsPassed = 0; // Total time steps so far
+		
+		while (timeStepsPassed < maxTimeSteps)
+		{
+
+		}
+	}
+
+	RLTrainingData PPO::collectTrajectories()
+	{
+		RLTrainingData data;
 	}
 }

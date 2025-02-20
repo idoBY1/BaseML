@@ -4,7 +4,7 @@
 #include "Environment.h"
 #include "RLAlgorithm.h"
 
-namespace BaseML
+namespace BaseML::RL
 {
 	class PPO : public RLAlgorithm
 	{
@@ -22,6 +22,9 @@ namespace BaseML
 		PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate = 0.005f,
 			float discountFactor = 0.95f, float clipThreshold = 0.2f, size_t timeStepsPerBatch = 4800, size_t maxTimeStepsPerEpisode = 1600, size_t updatesPerIteration = 5);
 
-		void learn(size_t maxIter) override;
+		void learn(size_t maxTimeSteps) override;
+
+	private:
+		RLTrainingData collectTrajectories();
 	};
 }
