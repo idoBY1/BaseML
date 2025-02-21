@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <string>
+
 #include "Matrix.h"
 
 namespace BaseML::RL
@@ -17,15 +20,17 @@ namespace BaseML::RL
 
 		virtual ~Environment() = default; // Default destructor.
 
-		size_t getObservationDimension()
+		size_t getObservationDimension() const
 		{
 			return obsDim;
 		}
 
-		size_t getActionDimension()
+		size_t getActionDimension() const
 		{
 			return actDim;
 		}
+
+		virtual const std::vector<std::string>& getPlayers() const = 0;
 
 		// Update the environment's state. 'deltaTime' is the amount of time to assume that 
 		// have passed since the last update.

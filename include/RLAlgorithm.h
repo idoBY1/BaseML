@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <deque>
 
 #include "Matrix.h"
@@ -11,14 +12,20 @@ namespace BaseML::RL
 	{
 	protected:
 		std::unique_ptr<Environment> environment;
+		std::string playerId;
 
 	public:
 		// Create a new RLAlgorithm. Takes ownership on 'environment'.
-		RLAlgorithm(std::unique_ptr<Environment> environment) 
+		RLAlgorithm(std::unique_ptr<Environment> environment, const char* playerId = NULL)
 			:environment(std::move(environment)) 
 		{
-			if (!environment->isInitialized())
-				environment->initialize();
+			if (!this->environment->isInitialized())
+				this->environment->initialize();
+
+			if (playerId)
+				this->playerId = playerId;
+			else
+				this->playerId = this->environment->getPlayers().at(0);
 		}
 
 		virtual ~RLAlgorithm()
@@ -28,7 +35,7 @@ namespace BaseML::RL
 		}
 
 		// Learn the environment using the algorithm for 'maxIter' iterations.
-		virtual void learn(size_t maxIter) = 0;
+		virtual void learn(int maxIter) = 0;
 	};
 
 	// Training data to be used by classes implementing RLAlgorithm

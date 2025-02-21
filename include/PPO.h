@@ -16,13 +16,13 @@ namespace BaseML::RL
 		NeuralNetwork criticNetwork, actorNetwork;
 
 		float learningRate, rewardDiscountFactor, clipThreshold;
-		size_t timeStepsPerBatch, maxTimeStepsPerEpisode, updatesPerIter;
+		int timeStepsPerBatch, maxTimeStepsPerEpisode, updatesPerIter;
 
 	public:
-		PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate = 0.005f,
-			float discountFactor = 0.95f, float clipThreshold = 0.2f, size_t timeStepsPerBatch = 4800, size_t maxTimeStepsPerEpisode = 1600, size_t updatesPerIteration = 5);
+		PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, const char* playerId = NULL, float learningRate = 0.005f,
+			float discountFactor = 0.95f, float clipThreshold = 0.2f, int timeStepsPerBatch = 4800, int maxTimeStepsPerEpisode = 1600, int updatesPerIteration = 5);
 
-		void learn(size_t maxTimeSteps) override;
+		void learn(int maxTimeSteps) override;
 
 	private:
 		RLTrainingData collectTrajectories();

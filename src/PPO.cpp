@@ -2,18 +2,18 @@
 
 namespace BaseML::RL
 {
-	PPO::PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate, float discountFactor,
-		float clipThreshold, size_t timeStepsPerBatch, size_t maxTimeStepsPerEpisode, size_t updatesPerIteration)
-		:RLAlgorithm(std::move(environment)), criticNetFile(criticFileName), actorNetFile(actorFileName), learningRate(learningRate), rewardDiscountFactor(discountFactor),
+	PPO::PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, const char* playerId, float learningRate, float discountFactor,
+		float clipThreshold, int timeStepsPerBatch, int maxTimeStepsPerEpisode, int updatesPerIteration)
+		:RLAlgorithm(std::move(environment), playerId), criticNetFile(criticFileName), actorNetFile(actorFileName), learningRate(learningRate), rewardDiscountFactor(discountFactor),
 		clipThreshold(clipThreshold), timeStepsPerBatch(timeStepsPerBatch), maxTimeStepsPerEpisode(maxTimeStepsPerEpisode), updatesPerIter(updatesPerIteration), 
 		criticNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, 1 }), 
 		actorNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, this->environment->getActionDimension() })
 	{
 	}
 
-	void PPO::learn(size_t maxTimeSteps)
+	void PPO::learn(int maxTimeSteps)
 	{
-		size_t timeStepsPassed = 0; // Total time steps so far
+		int timeStepsPassed = 0; // Total time steps so far
 		
 		while (timeStepsPassed < maxTimeSteps)
 		{
@@ -24,7 +24,21 @@ namespace BaseML::RL
 	RLTrainingData PPO::collectTrajectories()
 	{
 		RLTrainingData data;
+		bool episodeFinished;
 
-		environment->reset();
+		int tBatch = 0;
+
+		while (tBatch < timeStepsPerBatch)
+		{
+			environment->reset();
+			episodeFinished = false;
+
+			for (int i = 0; i < maxTimeStepsPerEpisode; i++)
+			{
+				tBatch++;
+
+				data.observations.push_back(environment->getState(playerId.c_str()));
+			}
+		}
 	}
 }
