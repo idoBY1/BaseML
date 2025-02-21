@@ -59,6 +59,8 @@ namespace BaseML::RL
 				data.logProbabilities.push_back(logProbability);
 				data.rewards.push_back(reward);
 			}
+
+			data.episodeLengths.push_back(tEpisode);
 		}
 	}
 }
