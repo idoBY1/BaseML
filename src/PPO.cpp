@@ -21,23 +21,43 @@ namespace BaseML::RL
 		}
 	}
 
+	std::pair<const Matrix&, float> PPO::getAction(const Matrix& observation)
+	{
+		// TODO: implement
+	}
+
 	RLTrainingData PPO::collectTrajectories()
 	{
 		RLTrainingData data;
-		bool episodeFinished;
 
-		int tBatch = 0;
+		int tBatch = 0, tEpisode;
 
 		while (tBatch < timeStepsPerBatch)
 		{
 			environment->reset();
-			episodeFinished = false;
 
-			for (int i = 0; i < maxTimeStepsPerEpisode; i++)
+			for (tEpisode = 0; tEpisode < maxTimeStepsPerEpisode && !environment->isFinished(); tEpisode++)
 			{
 				tBatch++;
 
-				data.observations.push_back(environment->getState(playerId.c_str()));
+				// Get environment state
+				const Matrix& observation = environment->getState(playerId.c_str());
+
+				// Get action from actor network
+				auto [action, logProbability] = getAction(observation);
+
+				// Update environment
+				environment->setAction(playerId.c_str(), action);
+				environment->update(1.0f / 60.0f);
+
+				// Get reward of action
+				float reward = environment->getReward(playerId.c_str());
+
+				// Collect time step data
+				data.observations.push_back(observation);
+				data.actions.push_back(action);
+				data.logProbabilities.push_back(logProbability);
+				data.rewards.push_back(reward);
 			}
 		}
 	}

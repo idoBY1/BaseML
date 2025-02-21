@@ -52,6 +52,10 @@ namespace BaseML::RL
 		// or initializing an environment twice
 		virtual bool isInitialized() = 0;
 
+		// Check if the environment reached a terminal state. After reaching a terminal state, the 
+		// environment should be reset before the next update is called.
+		virtual bool isFinished() = 0;
+
 		// Closes the environment's resources.
 		virtual void close() = 0;
 

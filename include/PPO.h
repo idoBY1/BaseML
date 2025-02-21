@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <utility>
+
 #include "NeuralNetwork.h"
 #include "Environment.h"
 #include "RLAlgorithm.h"
@@ -25,6 +28,11 @@ namespace BaseML::RL
 		void learn(int maxTimeSteps) override;
 
 	private:
+		// Get an action and its log probability from an observation. The first element in the returned pair 
+		// is the action and the second is its log probability.
+		std::pair<const Matrix&, float> getAction(const Matrix& observation);
+
+		// Run the actor in the environment and collect data
 		RLTrainingData collectTrajectories();
 	};
 }
