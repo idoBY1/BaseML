@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "Layer.h"
-#include "Utils.h"
+#include "UtilsFunctions.h"
 
 namespace BaseML
 {

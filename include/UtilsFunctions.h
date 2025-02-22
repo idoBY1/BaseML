@@ -4,9 +4,6 @@
 
 namespace BaseML::Utils
 {
-	float getRandomFloat(float min, float max);
-	float initFromNumInputs(int inputNum);
-
 	float sigmoid(float input);
 	float sigmoidDerivative(float neuronOutput);
 

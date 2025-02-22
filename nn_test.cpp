@@ -5,7 +5,7 @@
 #include <chrono>
 
 #include "Matrix.h"
-#include "Utils.h"
+#include "UtilsFunctions.h"
 #include "Layer.h"
 #include "NeuralNetwork.h"
 

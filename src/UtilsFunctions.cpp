@@ -1,7 +1,5 @@
-#include "Utils.h"
-#include "Utils.h"
+#include "UtilsFunctions.h"
 
-#include <random>
 #include <iostream>
 #include <iomanip>
 
@@ -9,23 +7,6 @@
 
 namespace BaseML::Utils
 {
-    float getRandomFloat(float min, float max)
-    {
-        // Initialize the random number generator engine with a seed
-        // Declared as static to initialize the seed only once
-        static std::random_device rd;
-        static std::mt19937 gen(rd()); // Use Mersenne Twister engine
-
-        std::uniform_real_distribution<float> distrib(min, max);
-        return distrib(gen);
-    }
-
-    float initFromNumInputs(int inputNum)
-    {
-        float limit = std::sqrt(6.0f / inputNum);
-        return getRandomFloat(-limit, limit);
-    }
-
     float sigmoid(float input)
     {
         return 1.0f / (1.0f + expf(-input));

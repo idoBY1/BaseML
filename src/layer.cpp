@@ -6,7 +6,8 @@
 #include <cmath>
 #include <fstream>
 
-#include "Utils.h"
+#include "UtilsFunctions.h"
+#include "UtilsRandom.h"
 
 namespace BaseML
 {
