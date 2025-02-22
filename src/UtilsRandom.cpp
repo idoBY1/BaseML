@@ -15,10 +15,46 @@ namespace BaseML::Utils
         return mean + distrib(gen);
     }
 
+    Matrix GaussianSampler::sample(const Matrix& mean)
+    {
+        Matrix sample(mean);
+
+        #pragma omp parallel for
+        for (int i = 0; i < sample.size(); i++)
+        {
+            sample(i) += distrib(gen);
+        }
+
+        return sample;
+    }
+
     float GaussianSampler::logProbabiltiy(float mean, float sample)
     {
         float diff = sample - mean;
         return -std::log(distrib.stddev() * std::sqrt(2.0f * PI)) - 0.5f * (diff * diff) / (distrib.stddev() * distrib.stddev());
+    }
+
+    float GaussianSampler::logProbabiltiy(const Matrix& mean, const Matrix& sample)
+    {
+#ifdef DEBUG
+        if (mean.size() != sample.size())
+        {
+            std::cout << "Invalid sizes in log probability calculation" << std::endl;
+            throw std::runtime_error("Invalid sizes in log probability");
+        }
+#endif // DEBUG
+
+        float logProbability = 0.0f;
+
+        float sharedPart = std::log(distrib.stddev() * std::sqrt(2.0f * PI));
+
+        for (int i = 0; i < sample.size(); i++)
+        {
+            float diff = sample(i) - mean(i);
+            logProbability += -sharedPart - 0.5f * (diff * diff) / (distrib.stddev() * distrib.stddev());
+        }
+
+        return logProbability;
     }
 
     float getRandomFloat(float min, float max)
