@@ -34,6 +34,11 @@ namespace BaseML::RL
 				environment->close();
 		}
 
+		void setPlayerId(const char* id)
+		{
+			playerId = id;
+		}
+
 		// Learn the environment using the algorithm for 'maxIter' iterations.
 		virtual void learn(int maxIter) = 0;
 	};

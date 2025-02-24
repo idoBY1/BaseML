@@ -6,6 +6,7 @@
 #include "NeuralNetwork.h"
 #include "Environment.h"
 #include "RLAlgorithm.h"
+#include "UtilsRandom.h"
 
 namespace BaseML::RL
 {
@@ -18,21 +19,27 @@ namespace BaseML::RL
 
 		NeuralNetwork criticNetwork, actorNetwork;
 
+		Utils::GaussianSampler sampler;
+
 		float learningRate, rewardDiscountFactor, clipThreshold;
 		int timeStepsPerBatch, maxTimeStepsPerEpisode, updatesPerIter;
 
 	public:
-		PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, const char* playerId = NULL, float learningRate = 0.005f,
-			float discountFactor = 0.95f, float clipThreshold = 0.2f, int timeStepsPerBatch = 4800, int maxTimeStepsPerEpisode = 1600, int updatesPerIteration = 5);
+		PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate = 0.005f,
+			float discountFactor = 0.95f, float clipThreshold = 0.2f, int timeStepsPerBatch = 4800, int maxTimeStepsPerEpisode = 1600, 
+			int updatesPerIteration = 5, float actionSigma = 0.3f);
+
+		// Set the standard deviation of the distribution from which the algorithm samples actions during training
+		void setActionSigma(float actionSigma);
 
 		void learn(int maxTimeSteps) override;
 
 	private:
-		//// Get an action and its log probability from an observation. The first element in the returned pair 
-		//// is the action and the second is its log probability.
-		//std::pair<const Matrix&, float> getAction(const Matrix& observation);
+		// Get an action and its log probability from an observation. The first element in the returned pair 
+		// is the action and the second is its log probability.
+		std::pair<const Matrix&, float> getAction(const Matrix& observation);
 
-		//// Run the actor in the environment and collect data
-		//RLTrainingData collectTrajectories();
+		// Run the actor in the environment and collect data
+		RLTrainingData collectTrajectories();
 	};
 }
