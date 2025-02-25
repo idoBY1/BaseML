@@ -49,8 +49,7 @@ namespace BaseML::RL
 		std::deque<Matrix> observations;
 		std::deque<Matrix> actions;
 		std::deque<float> logProbabilities;
-		std::deque<float> rewards;
-		std::deque<float> rtgs; // Reward-to-gos
+		std::deque<float> rtgs; // Rewards-to-go
 		std::deque<size_t> episodeLengths;
 	};
 }

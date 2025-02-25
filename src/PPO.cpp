@@ -1,5 +1,7 @@
 #include "PPO.h"
 
+#include <deque>
+
 namespace BaseML::RL
 {
 	PPO::PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate, float discountFactor,
@@ -37,6 +39,25 @@ namespace BaseML::RL
 		return { action, logProbability };
 	}
 
+	void PPO::calculateRewardsToGo(std::deque<float>& dest, const std::deque<float>& src)
+	{
+		std::deque<float> temp;
+		float discountedReward = 0.0f;
+
+		// Start computing from last reward to compute rtgs correctly
+		for (auto r = src.end(); r != src.begin(); r--)
+		{
+			discountedReward = *r + discountedReward * rewardDiscountFactor;
+			temp.push_front(discountedReward); // Insert in reverse order
+		}
+
+		// Append the rtgs to the queue of the batch
+		for (auto rtg = src.begin(); rtg != src.end(); rtg++)
+		{
+			dest.push_back(*rtg);
+		}
+	}
+
 	RLTrainingData PPO::collectTrajectories()
 	{
 		RLTrainingData data;
@@ -46,6 +67,8 @@ namespace BaseML::RL
 		while (tBatch < timeStepsPerBatch)
 		{
 			environment->reset();
+
+			std::deque<float> episodeRewards;
 
 			for (tEpisode = 0; tEpisode < maxTimeStepsPerEpisode && !environment->isFinished(); tEpisode++)
 			{
@@ -68,13 +91,15 @@ namespace BaseML::RL
 				data.observations.push_back(observation);
 				data.actions.push_back(action);
 				data.logProbabilities.push_back(logProbability);
-				data.rewards.push_back(reward);
+				episodeRewards.push_back(reward);
 			}
 
+			// Compute rewards-to-go
+			calculateRewardsToGo(data.rtgs, episodeRewards);
+
+			// Collect the length of this episode
 			data.episodeLengths.push_back(tEpisode);
 		}
-
-		// TODO: compute reward-to-gos
 
 		return data;
 	}

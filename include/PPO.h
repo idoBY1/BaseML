@@ -39,6 +39,10 @@ namespace BaseML::RL
 		// is the action and the second is its log probability.
 		std::pair<const Matrix&, float> getAction(const Matrix& observation);
 
+		// Calculate rewards-to-go for an episode based on the rewards from 'src'. The rtgs will be appended
+		// in the right order to 'dest'.
+		void calculateRewardsToGo(std::deque<float>& dest, const std::deque<float>& src);
+
 		// Run the actor in the environment and collect data
 		RLTrainingData collectTrajectories();
 	};
