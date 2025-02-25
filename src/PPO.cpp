@@ -2,6 +2,8 @@
 
 #include <deque>
 
+#include "RLAlgorithm.h"
+
 namespace BaseML::RL
 {
 	PPO::PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate, float discountFactor,
@@ -25,7 +27,7 @@ namespace BaseML::RL
 		
 		while (timeStepsPassed < maxTimeSteps)
 		{
-
+			RLTrainingData data = collectTrajectories();
 		}
 	}
 
