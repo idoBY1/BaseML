@@ -10,6 +10,11 @@ namespace BaseML::Utils
     {
     }
 
+    float GaussianSampler::getSigma()
+    {
+        return distrib.stddev();
+    }
+
     float GaussianSampler::sample(float mean)
     {
         return mean + distrib(gen);

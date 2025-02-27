@@ -18,6 +18,9 @@ namespace BaseML::Utils
 		// Create a new normal distribution with the given standard deviation
 		GaussianSampler(float stddev);
 
+		// Get the standard deviation of the sampler
+		float getSigma();
+
 		// Sample a value randomly from the normal distribution
 		float sample(float mean);
 

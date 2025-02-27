@@ -55,8 +55,10 @@ namespace BaseML::RL
 		// Compute the estimated advantage using the critic network
 		Matrix computeAdvantageEstimates(const RLTrainingData& data);
 
-		// Calculate the log probabilities of the current network choosing the given actions for the given observations
-		Matrix logProbabilitiesUnderCurrentPolicy(const Matrix& observations, const Matrix& actions);
+		// Get the current action means from the actor based on the observations and calculate the log probabilities 
+		// of the current network choosing the given actions for the given observations. The first element in the returned 
+		// pair is the action means and the second is the log probabilities.
+		std::pair<const Matrix&, const Matrix&> checkActorUnderCurrentPolicy(const Matrix& observations, const Matrix& actions);
 
 		// Calculate the gradients of the PPO-Clip objective and update the parameters of the actor network
 		void updatePolicy(const RLTrainingData& data, const Matrix& advantages);

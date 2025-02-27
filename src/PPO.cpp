@@ -35,7 +35,9 @@ namespace BaseML::RL
 
 			for (int i = 0; i < updatesPerIter; i++)
 			{
-
+				updatePolicy(data, advantage);
+				
+				// TODO: Update critic network
 			}
 		}
 	}
@@ -173,20 +175,58 @@ namespace BaseML::RL
 		return advantages;
 	}
 
-	Matrix PPO::logProbabilitiesUnderCurrentPolicy(const Matrix& observations, const Matrix& actions)
+	std::pair<const Matrix&, const Matrix&> PPO::checkActorUnderCurrentPolicy(const Matrix& observations, const Matrix& actions)
 	{
 		Matrix actionMeans = actorNetwork.forwardPropagate(observations);
-		return sampler.batchLogProbabilities(actionMeans, actions);
+
+		return { actionMeans, sampler.batchLogProbabilities(actionMeans, actions) };
 	}
 
 	void PPO::updatePolicy(const RLTrainingData& data, const Matrix& advantages)
 	{
-		Matrix currentLogProbabilities = logProbabilitiesUnderCurrentPolicy(data.observations, data.actions);
+		auto [currentActionMeans, currentLogProbabilities] = checkActorUnderCurrentPolicy(data.observations, data.actions);
 
 		// Calculate the action-probability ratio of the current policy to the old policy
 		Matrix ratios = currentLogProbabilities - data.logProbabilities;
 		ratios.applyToElements([](float x) { return std::exp(x); });
 
+		// Calculate gradients
+		Matrix gradients(data.actions.rowsCount(), data.actions.columnsCount());
 
+		// Iterate over all timesteps
+		#pragma omp parallel for
+		for (int i = 0; i < gradients.columnsCount(); i++)
+		{
+			// This 'if' statement calculates the gradients of the clip function and min function
+			if (
+				(advantages(i) > 0 && ratios(i) < 1 + clipThreshold) 
+				|| 
+				(advantages(i) < 0 && ratios(i) > 1 - clipThreshold)
+				)
+			{
+				// Gradient of the advantage and probability ratio. The stddev is from the 
+				// distribution's gradient calculation, but since it stays the same for all 
+				// states we can divide by it here to save calculations. The minus (-) is 
+				// here because we need to flip the sign of the gradient since we later use 
+				// a gradient descent algorithm (instead of gradient ascent).
+				float actionGradient = -advantages(i) * ratios(i) / (sampler.getSigma() * sampler.getSigma());
+
+				for (int j = 0; j < gradients.rowsCount(); j++)
+				{
+					gradients(j, i) = actionGradient * (data.actions(j, i) - currentActionMeans(j, i));
+				}
+			}
+			else // The clip is the smaller value and is outside of the clip range
+			{
+				// The gradient for this timestep should be 0
+				for (int j = 0; j < gradients.rowsCount(); j++)
+				{
+					gradients(j, i) = 0.0f;
+				}
+			}
+		}
+
+		// Update actor network
+		actorNetwork.backPropagation(gradients, learningRate);
 	}
 }
