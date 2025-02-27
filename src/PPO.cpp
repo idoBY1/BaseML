@@ -29,6 +29,8 @@ namespace BaseML::RL
 		while (timeStepsPassed < maxTimeSteps)
 		{
 			RLTrainingData data = collectTrajectories();
+
+			Matrix advantage = computeAdvantageEstimates(data);
 		}
 	}
 
