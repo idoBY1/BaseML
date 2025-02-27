@@ -46,10 +46,10 @@ namespace BaseML::RL
 	// Training data to be used by classes implementing RLAlgorithm
 	struct RLTrainingData
 	{
-		std::deque<Matrix> observations;
-		std::deque<Matrix> actions;
-		std::deque<float> logProbabilities;
-		std::deque<float> rtgs; // Rewards-to-go
+		Matrix observations;
+		Matrix actions;
+		Matrix logProbabilities;
+		Matrix rtgs; // Rewards-to-go
 		std::deque<size_t> episodeLengths;
 	};
 }

@@ -1,5 +1,4 @@
 #include "Layer.h"
-#include "Layer.h"
 
 #include <vector>
 #include <cstdlib>

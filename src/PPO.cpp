@@ -3,6 +3,7 @@
 #include <deque>
 
 #include "RLAlgorithm.h"
+#include "UtilsGeneral.h"
 
 namespace BaseML::RL
 {
@@ -60,11 +61,50 @@ namespace BaseML::RL
 		}
 	}
 
+	Matrix PPO::scalarDataToMatrix(const std::deque<float>& data)
+	{
+		Matrix converted(1, data.size());
+
+		for (int i = 0; i < data.size(); i++)
+		{
+			converted(i) = data[i];
+		}
+
+		return converted;
+	}
+
+	Matrix PPO::vectorDataToMatrix(const std::deque<Matrix>& data)
+	{
+		if (data.size() == 0)
+		{
+			std::cout << "Cannot convert an empty collection" << std::endl;
+			throw std::runtime_error("Cannot convert an empty collection");
+		}
+
+		Matrix converted(data[0].size(), data.size());
+
+		for (int i = 0; i < converted.columnsCount(); i++)
+		{
+			for (int j = 0; j < converted.rowsCount(); j++)
+			{
+				converted(j, i) = data[i](j);
+			}
+		}
+
+		return converted;
+	}
+
 	RLTrainingData PPO::collectTrajectories()
 	{
 		RLTrainingData data;
 
 		int tBatch = 0, tEpisode;
+
+		// Deques for collecting data (will be converted to objects of type Matrix)
+		std::deque<Matrix> observations;
+		std::deque<Matrix> actions;
+		std::deque<float> logProbabilities;
+		std::deque<float> rtgs; // Rewards-to-go
 
 		while (tBatch < timeStepsPerBatch)
 		{
@@ -90,19 +130,38 @@ namespace BaseML::RL
 				float reward = environment->getReward(playerId.c_str());
 
 				// Collect time step data
-				data.observations.push_back(observation);
-				data.actions.push_back(action);
-				data.logProbabilities.push_back(logProbability);
+				observations.push_back(observation);
+				actions.push_back(action);
+				logProbabilities.push_back(logProbability);
 				episodeRewards.push_back(reward);
 			}
 
 			// Compute rewards-to-go
-			calculateRewardsToGo(data.rtgs, episodeRewards);
+			calculateRewardsToGo(rtgs, episodeRewards);
 
 			// Collect the length of this episode
 			data.episodeLengths.push_back(tEpisode);
 		}
 
+		// Convert to matrices
+		data.observations = vectorDataToMatrix(observations);
+		data.actions = vectorDataToMatrix(actions);
+		data.logProbabilities = scalarDataToMatrix(logProbabilities);
+		data.rtgs = scalarDataToMatrix(rtgs);
+
 		return data;
+	}
+
+	Matrix PPO::computeAdvantageEstimates(const RLTrainingData& data)
+	{
+		Matrix criticStateValues = criticNetwork.forwardPropagate(data.observations);
+
+		// Calculate advantages
+		Matrix advantages = data.rtgs - criticStateValues;
+
+		// Normalize advanteges for numerical stability
+		advantages = Utils::zScoreNormalize(advantages);
+
+		return advantages;
 	}
 }

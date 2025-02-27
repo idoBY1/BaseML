@@ -67,7 +67,7 @@ namespace BaseML
 		// 'timestep' is the number of times the layer's parameters have been updated before. 'beta1' controlls 
 		// the decay rate of the first moment (m) and 'beta2' controlls the decay rate of the second moment (v).
 		// 'epsilon' is a small positive constant to avoid devision by zero. 
-		void adamGradientDescent(float learningRate, size_t timestep, float beta1 = 0.9f, float beta2 = 0.999f, float epsilon = 1.0e-7f);
+		void adamGradientDescent(float learningRate, size_t timestep, float beta1 = 0.9f, float beta2 = 0.999f, float epsilon = 1.0e-8f);
 
 		// Save Layer to disk. Assumes a binary output stream
 		void save(std::ofstream& outFile);

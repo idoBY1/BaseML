@@ -43,7 +43,16 @@ namespace BaseML::RL
 		// in the right order to 'dest'.
 		void calculateRewardsToGo(std::deque<float>& dest, const std::deque<float>& src);
 
+		// Convert a deque containing single value numbers to a row vector represented by a Matrix
+		Matrix scalarDataToMatrix(const std::deque<float>& data);
+
+		// Convert a deque containing 1 dimensional vectors (represented as Matrix) to a 2 dimensional Matrix
+		Matrix vectorDataToMatrix(const std::deque<Matrix>& data);
+
 		// Run the actor in the environment and collect data
 		RLTrainingData collectTrajectories();
+
+		// Compute the estimated advantage using the critic network
+		Matrix computeAdvantageEstimates(const RLTrainingData& data);
 	};
 }

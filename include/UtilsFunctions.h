@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Matrix.h"
-
 namespace BaseML::Utils
 {
 	float sigmoid(float input);
