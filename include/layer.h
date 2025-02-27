@@ -54,10 +54,14 @@ namespace BaseML
 		// Perform forward propagation on this layer with the specified inputs
 		void calculateOutputs(const Matrix* inputs); 
 
-		// Caculate the gradients of the last layer based on the loss function and the expected outputs
-		void calculateLastLayerGradients(const Matrix& expectedOutputs, float (*lossFunctionDerivative)(float, float));
+		// Calculate the gradients of the last layer based on the loss function and the expected outputs
+		void calculateLastLayerGradientsToTarget(const Matrix& expectedOutputs, float (*lossFunctionDerivative)(float, float));
 
-		// Caculate the gradients of this layer based on the gradients of the next layer
+		// Calculate the gradients of the last layer based on the gradients given. The given gradients should be 
+		// the gradients of the optimization objective with respect to the network's output.
+		void calculateLastLayerGradients(const Matrix& externalGradients);
+
+		// Calculate the gradients of this layer based on the gradients of the next layer
 		void calculateGradients(const Layer& nextLayer);
 
 		// Update the parameters according to the gradients to minimize the loss function

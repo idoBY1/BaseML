@@ -62,6 +62,12 @@ namespace BaseML
 		// Calculate gradients and apply gradient descent on every layer of the Neural Network
 		void backPropagation(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate = 0.001f);
 
+		// Calculate gradients for the network's parameters using the external gradients and apply gradient descent 
+		// on every layer of the Neural Network. The given gradients should be the gradients of the optimization 
+		// objective with respect to the network's output. Make sure that the given gradients match the last forward 
+		// propagation of the network for the update to occur correctly.
+		void backPropagation(const Matrix& externalGradients, float learningRate = 0.001f);
+
 		// Pass the data through the Neural Network and perform gradient descent. Returns the loss
 		float learn(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate = 0.001f);
 

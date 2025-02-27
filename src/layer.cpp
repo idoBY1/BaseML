@@ -132,13 +132,14 @@ namespace BaseML
 		outputs = (weights * (*inputs)).addToColumns(biases);
 
 		// Pass the results through the activation function
+		#pragma omp parallel for
 		for (int i = 0; i < outputs.size(); i++)
 		{
 			outputs(i) = (*activationFunc)(outputs(i));
 		}
 	}
 
-	void Layer::calculateLastLayerGradients(const Matrix& expectedOutputs, float(*lossFunctionDerivative)(float, float))
+	void Layer::calculateLastLayerGradientsToTarget(const Matrix& expectedOutputs, float(*lossFunctionDerivative)(float, float))
 	{
 #ifdef DEBUG
 		if (outputCount != expectedOutputs.rowsCount() || outputs.columnsCount() != expectedOutputs.columnsCount())
@@ -152,9 +153,31 @@ namespace BaseML
 		gradients = Matrix(outputCount, batchSize);
 
 		// The Last layer bases its gradients on the loss function directly
+		#pragma omp parallel for
 		for (int i = 0; i < gradients.size(); i++)
 		{
 			gradients(i) = (*lossFunctionDerivative)(outputs(i), expectedOutputs(i)) * (*activationFuncDerivative)(outputs(i));
+		}
+	}
+
+	void Layer::calculateLastLayerGradients(const Matrix& externalGradients)
+	{
+#ifdef DEBUG
+		if (outputCount != externalGradients.rowsCount() || outputs.columnsCount() != externalGradients.columnsCount())
+		{
+			std::cout << "Invalid external gradients size for layer" << std::endl;
+			throw std::runtime_error("Invalid external gradients size for layer");
+		}
+#endif // DEBUG
+
+		// Reset gradients and resize to fit the output
+		gradients = Matrix(outputCount, batchSize);
+
+		// The Last layer bases its gradients on the loss function directly
+		#pragma omp parallel for
+		for (int i = 0; i < gradients.size(); i++)
+		{
+			gradients(i) = externalGradients(i) * (*activationFuncDerivative)(outputs(i));
 		}
 	}
 
