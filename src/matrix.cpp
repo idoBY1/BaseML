@@ -386,6 +386,30 @@ namespace BaseML
         return newMat;
     }
 
+    Matrix Matrix::multElementwise(const Matrix& other) const
+    {
+        Matrix newMat(rows, cols);
+
+#ifdef DEBUG
+        if (size() != other.size())
+        {
+            std::cout << "Invalid sizes in Matrix elementwise multiplication" << std::endl;
+            throw std::runtime_error("Invalid matrix elementwise multiplication");
+        }
+#endif // DEBUG
+
+        #pragma omp parallel for collapse(2)
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                newMat(i, j) = (*this)(i, j) * other(i, j);
+            }
+        }
+
+        return newMat;
+    }
+
     void Matrix::applyToElements(float(*func)(float))
     {
         #pragma omp parallel for collapse(2)

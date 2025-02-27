@@ -57,6 +57,36 @@ namespace BaseML::Utils
         return logProbability;
     }
 
+    Matrix GaussianSampler::batchLogProbabilities(const Matrix& means, const Matrix& samples)
+    {
+#ifdef DEBUG
+        if (means.rowsCount() != samples.rowsCount() || means.columnsCount() != samples.columnsCount())
+        {
+            std::cout << "Invalid sizes in log probability calculation" << std::endl;
+            throw std::runtime_error("Invalid sizes in log probability");
+        }
+#endif // DEBUG
+
+        Matrix logProbs(1, samples.columnsCount());
+
+        float sharedPart = std::log(distrib.stddev() * std::sqrt(2.0f * PI));
+
+        for (int i = 0; i < samples.columnsCount(); i++)
+        {
+            float logProbability = 0.0f;
+
+            for (int j = 0; j < samples.rowsCount(); j++)
+            {
+                float diff = samples(j, i) - means(j, i);
+                logProbability += -sharedPart - 0.5f * (diff * diff) / (distrib.stddev() * distrib.stddev());
+            }
+
+            logProbs(i) = logProbability;
+        }
+
+        return logProbs;
+    }
+
     float getRandomFloat(float min, float max)
     {
         // Initialize the random number generator engine with a seed

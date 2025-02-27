@@ -29,6 +29,12 @@ namespace BaseML::Utils
 
 		// Get the log probability density of a sample given the mean of the distibution
 		float logProbabiltiy(const Matrix& mean, const Matrix& sample);
+
+		// Get the log probability density of samples given the means of the distibutions. This function 
+		// assumes that each mean and sample is a column in the matrices and that the standard deviation 
+		// of the distributions is the same. The function returns a row vector (as a Matrix) of the 
+		// log-probabilities of the actions.
+		Matrix batchLogProbabilities(const Matrix& means, const Matrix& samples);
 	};
 
 	float getRandomFloat(float min, float max);

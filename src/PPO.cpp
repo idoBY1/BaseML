@@ -1,6 +1,7 @@
 #include "PPO.h"
 
 #include <deque>
+#include <cmath>
 
 #include "RLAlgorithm.h"
 #include "UtilsGeneral.h"
@@ -31,6 +32,11 @@ namespace BaseML::RL
 			RLTrainingData data = collectTrajectories();
 
 			Matrix advantage = computeAdvantageEstimates(data);
+
+			for (int i = 0; i < updatesPerIter; i++)
+			{
+
+			}
 		}
 	}
 
@@ -165,5 +171,22 @@ namespace BaseML::RL
 		advantages = Utils::zScoreNormalize(advantages);
 
 		return advantages;
+	}
+
+	Matrix PPO::logProbabilitiesUnderCurrentPolicy(const Matrix& observations, const Matrix& actions)
+	{
+		Matrix actionMeans = actorNetwork.forwardPropagate(observations);
+		return sampler.batchLogProbabilities(actionMeans, actions);
+	}
+
+	void PPO::updatePolicy(const RLTrainingData& data, const Matrix& advantages)
+	{
+		Matrix currentLogProbabilities = logProbabilitiesUnderCurrentPolicy(data.observations, data.actions);
+
+		// Calculate the action-probability ratio of the current policy to the old policy
+		Matrix ratios = currentLogProbabilities - data.logProbabilities;
+		ratios.applyToElements([](float x) { return std::exp(x); });
+
+
 	}
 }

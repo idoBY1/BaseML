@@ -74,22 +74,21 @@ namespace BaseML
         const float& operator()(size_t index) const;
 
         // Matrix addition. This function assumes that the matrices have the 
-        // same size and that they both contain float types.
+        // same size.
         // Warning: this function doesn't check for the correctness of the input!
         Matrix operator+(const Matrix& other) const;
 
         // Matrix subtraction. This function assumes that the matrices have the 
-        // same size and that they both contain float types.
+        // same size.
         // Warning: this function doesn't check for the correctness of the input!
         Matrix operator-(const Matrix& other) const;
 
-        // Multiply the matrix by a scalar. This function assumes that the Matrix 
-        // contains float types.
+        // Multiply the matrix by a scalar.
         // Warning: this function doesn't check for the correctness of the input!
         Matrix operator*(float operand) const;
 
-        // Matrix multiplication. This function assumes that the matrices contain 
-        // floats and that the sizes of the matrices are compatible with each other.
+        // Matrix multiplication. This function assumes that the sizes of the matrices 
+        // are compatible with each other.
         // Two matrices are compatible only if mat1.columnsCount() == mat2.rowsCount().
         // Warning: this function doesn't check for the correctness of the input!
         Matrix operator*(const Matrix& other) const;
@@ -119,6 +118,12 @@ namespace BaseML
         // with one column) with each of the rows' sum.
         // Warning: this function doesn't check for the correctness of the input!
         Matrix sumRows() const;
+
+        // Matrix elementwise multiplication. This function multiplies each element in 
+        // this Matrix with the corresponding element of the other Matrix and returns 
+        // the result. This function assumes that the matrices have the same size.
+        // Warning: this function doesn't check for the correctness of the input!
+        Matrix multElementwise(const Matrix& other) const;
 
         // Apply the given function on every element of the Matrix
         void applyToElements(float (*func)(float));
