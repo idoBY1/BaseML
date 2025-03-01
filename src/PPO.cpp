@@ -16,6 +16,8 @@ namespace BaseML::RL
 		actorNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, this->environment->getActionDimension() }),
 		sampler(actionSigma)
 	{
+		criticNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
+		actorNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
 	}
 
 	void PPO::setActionSigma(float actionSigma)
