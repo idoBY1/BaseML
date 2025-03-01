@@ -40,7 +40,7 @@ namespace BaseML::RL
 		}
 
 		// Learn the environment using the algorithm for 'maxIter' iterations.
-		virtual void learn(int maxIter) = 0;
+		virtual void learn(size_t maxIter) = 0;
 	};
 
 	// Training data to be used by classes implementing RLAlgorithm

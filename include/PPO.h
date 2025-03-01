@@ -32,7 +32,7 @@ namespace BaseML::RL
 		// Set the standard deviation of the distribution from which the algorithm samples actions during training
 		void setActionSigma(float actionSigma);
 
-		void learn(int maxTimesteps) override;
+		void learn(size_t maxTimesteps) override;
 
 	private:
 		// Get an action and its log probability from an observation. The first element in the returned pair 

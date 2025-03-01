@@ -23,9 +23,9 @@ namespace BaseML::RL
 		sampler = Utils::GaussianSampler(actionSigma);
 	}
 
-	void PPO::learn(int maxTimesteps)
+	void PPO::learn(size_t maxTimesteps)
 	{
-		int timestepsPassed = 0; // Total time steps so far
+		size_t timestepsPassed = 0; // Total time steps so far
 		
 		while (timestepsPassed < maxTimesteps)
 		{
@@ -227,10 +227,14 @@ namespace BaseML::RL
 
 		// Update actor network
 		actorNetwork.backPropagation(gradients, learningRate);
+
+		actorNetwork.saveToFile(actorNetFile.c_str());
 	}
 
 	void PPO::fitValueFunction(const RLTrainingData& data)
 	{
 		criticNetwork.learn(data.observations, data.rtgs, learningRate);
+
+		criticNetwork.saveToFile(criticNetFile.c_str());
 	}
 }
