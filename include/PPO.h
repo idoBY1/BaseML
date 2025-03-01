@@ -27,7 +27,7 @@ namespace BaseML::RL
 	public:
 		PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate = 0.005f,
 			float discountFactor = 0.95f, float clipThreshold = 0.2f, int timestepsPerBatch = 4800, int maxTimestepsPerEpisode = 1600, 
-			int updatesPerIteration = 5, float actionSigma = 0.3f);
+			int updatesPerIteration = 5, float actionSigma = 0.5f);
 
 		// Set the standard deviation of the distribution from which the algorithm samples actions during training
 		void setActionSigma(float actionSigma);
@@ -39,7 +39,7 @@ namespace BaseML::RL
 	private:
 		// Get an action and its log probability from an observation. The first element in the returned pair 
 		// is the action and the second is its log probability.
-		std::pair<const Matrix&, float> getAction(const Matrix& observation);
+		std::pair<Matrix, float> getAction(const Matrix& observation);
 
 		// Calculate rewards-to-go for an episode based on the rewards from 'src'. The rtgs will be appended
 		// in the right order to 'dest'.
@@ -65,7 +65,7 @@ namespace BaseML::RL
 		// Get the current action means from the actor based on the observations and calculate the log probabilities 
 		// of the current network choosing the given actions for the given observations. The first element in the returned 
 		// pair is the action means and the second is the log probabilities.
-		std::pair<const Matrix&, const Matrix&> checkActorUnderCurrentPolicy(const Matrix& observations, const Matrix& actions);
+		std::pair<Matrix, Matrix> checkActorUnderCurrentPolicy(const Matrix& observations, const Matrix& actions);
 
 		// Calculate the gradients of the PPO-Clip objective and update the parameters of the actor network
 		void updatePolicy(const RLTrainingData& data, const Matrix& advantages);

@@ -69,7 +69,7 @@ namespace BaseML::RL
 		}
 	}
 
-	std::pair<const Matrix&, float> PPO::getAction(const Matrix& observation)
+	std::pair<Matrix, float> PPO::getAction(const Matrix& observation)
 	{
 		Matrix actionMean = actorNetwork.forwardPropagate(observation);
 
@@ -85,16 +85,16 @@ namespace BaseML::RL
 		float discountedReward = 0.0f;
 
 		// Start computing from last reward to compute rtgs correctly
-		for (auto r = src.end(); r != src.begin(); r--)
+		for (int i = src.size() - 1; i >= 0; i--)
 		{
-			discountedReward = *r + discountedReward * rewardDiscountFactor;
+			discountedReward = src[i] + discountedReward * rewardDiscountFactor;
 			temp.push_front(discountedReward); // Insert in reverse order
 		}
 
 		// Append the rtgs to the queue of the batch
-		for (auto rtg = src.begin(); rtg != src.end(); rtg++)
+		for (int i = 0; i < temp.size(); i++)
 		{
-			dest.push_back(*rtg);
+			dest.push_back(temp[i]);
 		}
 	}
 
@@ -143,11 +143,16 @@ namespace BaseML::RL
 		std::deque<float> logProbabilities;
 		std::deque<float> rtgs; // Rewards-to-go
 
+		// for monitoring reward
+		float totalBatchReward = 0.0f; 
+		int numEpisodes = 0;
+
 		while (tBatch < timestepsPerBatch)
 		{
 			environment->reset();
 
 			std::deque<float> episodeRewards;
+			numEpisodes++;
 
 			for (tEpisode = 0; tEpisode < maxTimestepsPerEpisode && !environment->isFinished(); tEpisode++)
 			{
@@ -166,6 +171,8 @@ namespace BaseML::RL
 				// Get reward of action
 				float reward = environment->getReward(playerId.c_str());
 
+				totalBatchReward += reward;
+
 				// Collect time step data
 				observations.push_back(observation);
 				actions.push_back(action);
@@ -176,6 +183,8 @@ namespace BaseML::RL
 			// Compute rewards-to-go
 			calculateRewardsToGo(rtgs, episodeRewards);
 		}
+
+		std::cout << "Average episode reward: " << totalBatchReward / (float)numEpisodes << std::endl;
 
 		// Convert to matrices
 		data.observations = vectorDataToMatrix(observations);
@@ -199,12 +208,14 @@ namespace BaseML::RL
 		std::deque<float> rtgs; // Rewards-to-go
 
 		float totalBatchReward = 0.0f; // for monitoring reward
+		int numEpisodes = 0;
 
 		while (tBatch < timestepsPerBatch)
 		{
 			environment->reset();
 
 			std::deque<float> episodeRewards;
+			numEpisodes++;
 
 			for (tEpisode = 0; tEpisode < maxTimestepsPerEpisode && !environment->isFinished(); tEpisode++)
 			{
@@ -239,7 +250,7 @@ namespace BaseML::RL
 			calculateRewardsToGo(rtgs, episodeRewards);
 		}
 
-		std::cout << "Total reward: " << totalBatchReward << std::endl;
+		std::cout << "Average episode reward: " << totalBatchReward / (float)numEpisodes << std::endl;
 
 		// Convert to matrices
 		data.observations = vectorDataToMatrix(observations);
@@ -263,7 +274,7 @@ namespace BaseML::RL
 		return advantages;
 	}
 
-	std::pair<const Matrix&, const Matrix&> PPO::checkActorUnderCurrentPolicy(const Matrix& observations, const Matrix& actions)
+	std::pair<Matrix, Matrix> PPO::checkActorUnderCurrentPolicy(const Matrix& observations, const Matrix& actions)
 	{
 		Matrix actionMeans = actorNetwork.forwardPropagate(observations);
 
