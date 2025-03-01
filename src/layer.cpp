@@ -1,4 +1,5 @@
 #include "Layer.h"
+#include "Layer.h"
 
 #include <vector>
 #include <cstdlib>
@@ -63,6 +64,12 @@ namespace BaseML
 		mBiases.clear();
 		vWeights.clear();
 		vBiases.clear();
+	}
+
+	void Layer::setActivationFunction(float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
+	{
+		activationFunc = activationFunction;
+		activationFuncDerivative = activationFunctionDerivative;
 	}
 
 	size_t Layer::getInputCount() const

@@ -1,4 +1,6 @@
 #include "NeuralNetwork.h"
+#include "NeuralNetwork.h"
+#include "NeuralNetwork.h"
 
 #include <vector>
 #include <cstdlib>
@@ -61,6 +63,19 @@ namespace BaseML
 		for (auto layerSize = layerSizes.begin() + 1; layerSize < layerSizes.end(); layerSize++)
 		{
 			layers.emplace_back(*(layerSize - 1), *layerSize, activationFunction, activationFunctionDerivative);
+		}
+	}
+
+	void NeuralNetwork::setOutputActivationFunction(float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
+	{
+		layers[layers.size() - 1].setActivationFunction(activationFunction, activationFunctionDerivative);
+	}
+
+	void NeuralNetwork::setHiddenActivationFunction(float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
+	{
+		for (auto layer = layers.begin(); layer < layers.end() - 1; layer++)
+		{
+			layer->setActivationFunction(activationFunction, activationFunctionDerivative);
 		}
 	}
 

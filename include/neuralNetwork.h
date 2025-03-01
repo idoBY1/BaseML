@@ -38,6 +38,14 @@ namespace BaseML
 		NeuralNetwork(std::initializer_list<size_t> layerSizes, float (*activationFunction)(float),
 			float (*activationFunctionDerivative)(float), float (*lossFunction)(float, float), float (*lossFunctionDerivative)(float, float));
 
+		// Set the last layer's activation function
+		void setOutputActivationFunction(float (*activationFunction)(float),
+			float (*activationFunctionDerivative)(float));
+
+		// Set the activation function of the hidden layers
+		void setHiddenActivationFunction(float (*activationFunction)(float),
+			float (*activationFunctionDerivative)(float));
+
 		// Returns the layers of the Neural Network
 		const std::vector<Layer>& getLayers() const;
 

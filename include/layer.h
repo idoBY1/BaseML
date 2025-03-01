@@ -30,6 +30,10 @@ namespace BaseML
 		Layer(size_t numInputs, size_t numOutputs, float (*activationFunction)(float), 
 			float (*activationFunctionDerivative)(float));
 
+		// Set the activation function of this layer
+		void setActivationFunction(float (*activationFunction)(float),
+			float (*activationFunctionDerivative)(float));
+
 		// Returns the number of inputs of this layer
 		size_t getInputCount() const;
 
