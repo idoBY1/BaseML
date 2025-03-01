@@ -8,9 +8,6 @@
 #include "UtilsFunctions.h"
 #include "Layer.h"
 #include "NeuralNetwork.h"
-#include "CartPoleEnvironment.h"
-#include "PendulumEnvironment.h"
-#include "PPO.h"
 
 void trainXOR()
 {
@@ -156,15 +153,7 @@ void testTrainingXOR()
 
 int main()
 {
-	//testTrainingXOR();
-
-	auto env = std::make_unique<BaseML::RL::Tests::PendulumEnvironment>();
-
-	// Provide file names for your actor and critic network parameters.
-	BaseML::RL::PPO ppo(std::move(env), "networks/critic_net.dat", "networks/actor_net.dat", 0.001f, 0.95f, 0.2f, 20000, 1600, 5);
-
-	// Run training for a desired number of timesteps.
-	ppo.learn(1000000);
+	testTrainingXOR();
 
 	return 0;
 }
