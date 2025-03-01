@@ -131,7 +131,7 @@ namespace BaseML
 		return (sumLoss / lastLayer.getCurrentBatchSize()); // if multiple data points in the batch, return the average loss
 	}
 
-	void NeuralNetwork::backPropagation(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate)
+	void NeuralNetwork::backPropagationToTarget(const Matrix& expectedOutputs, float learningRate)
 	{
 		// Calculate gradients
 		layers[layers.size() - 1].calculateLastLayerGradientsToTarget(expectedOutputs, lossFuncDerivative);
@@ -176,7 +176,7 @@ namespace BaseML
 	float NeuralNetwork::learn(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate)
 	{
 		forwardPropagate(inputs);
-		backPropagation(inputs, expectedOutputs, learningRate);
+		backPropagationToTarget(expectedOutputs, learningRate);
 
 		return calculateSumLoss(expectedOutputs);
 	}

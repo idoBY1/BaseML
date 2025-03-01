@@ -59,8 +59,8 @@ namespace BaseML
 		// Calculates the sum of the loss function over all of the last layer's outputs
 		float calculateSumLoss(const Matrix& expectedOutputs);
 
-		// Calculate gradients and apply gradient descent on every layer of the Neural Network
-		void backPropagation(const Matrix& inputs, const Matrix& expectedOutputs, float learningRate = 0.001f);
+		// Calculate gradients and apply gradient descent on every layer of the Neural Network to fit the network to the expected outputs
+		void backPropagationToTarget(const Matrix& expectedOutputs, float learningRate = 0.001f);
 
 		// Calculate gradients for the network's parameters using the external gradients and apply gradient descent 
 		// on every layer of the Neural Network. The given gradients should be the gradients of the optimization 

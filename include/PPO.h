@@ -22,17 +22,17 @@ namespace BaseML::RL
 		Utils::GaussianSampler sampler;
 
 		float learningRate, rewardDiscountFactor, clipThreshold;
-		int timeStepsPerBatch, maxTimeStepsPerEpisode, updatesPerIter;
+		int timestepsPerBatch, maxTimestepsPerEpisode, updatesPerIter;
 
 	public:
 		PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate = 0.005f,
-			float discountFactor = 0.95f, float clipThreshold = 0.2f, int timeStepsPerBatch = 4800, int maxTimeStepsPerEpisode = 1600, 
+			float discountFactor = 0.95f, float clipThreshold = 0.2f, int timestepsPerBatch = 4800, int maxTimestepsPerEpisode = 1600, 
 			int updatesPerIteration = 5, float actionSigma = 0.3f);
 
 		// Set the standard deviation of the distribution from which the algorithm samples actions during training
 		void setActionSigma(float actionSigma);
 
-		void learn(int maxTimeSteps) override;
+		void learn(int maxTimesteps) override;
 
 	private:
 		// Get an action and its log probability from an observation. The first element in the returned pair 
@@ -49,8 +49,9 @@ namespace BaseML::RL
 		// Convert a deque containing 1 dimensional vectors (represented as Matrix) to a 2 dimensional Matrix
 		Matrix vectorDataToMatrix(const std::deque<Matrix>& data);
 
-		// Run the actor in the environment and collect data
-		RLTrainingData collectTrajectories();
+		// Run the actor in the environment and collect data. Returns a pair of the data collected and the 
+		// number of simulated timesteps.
+		std::pair<RLTrainingData, size_t> collectTrajectories();
 
 		// Compute the estimated advantage using the critic network
 		Matrix computeAdvantageEstimates(const RLTrainingData& data);
@@ -62,5 +63,9 @@ namespace BaseML::RL
 
 		// Calculate the gradients of the PPO-Clip objective and update the parameters of the actor network
 		void updatePolicy(const RLTrainingData& data, const Matrix& advantages);
+
+		// Calculate the gradient of the mean-squared error to the real value of the states and update the 
+		// parameters of the critic network
+		void fitValueFunction(const RLTrainingData& data);
 	};
 }

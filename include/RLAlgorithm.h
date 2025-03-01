@@ -50,6 +50,5 @@ namespace BaseML::RL
 		Matrix actions;
 		Matrix logProbabilities;
 		Matrix rtgs; // Rewards-to-go
-		std::deque<size_t> episodeLengths;
 	};
 }

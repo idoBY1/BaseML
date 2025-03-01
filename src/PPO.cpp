@@ -9,9 +9,9 @@
 namespace BaseML::RL
 {
 	PPO::PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate, float discountFactor,
-		float clipThreshold, int timeStepsPerBatch, int maxTimeStepsPerEpisode, int updatesPerIteration, float actionSigma)
+		float clipThreshold, int timestepsPerBatch, int maxTimestepsPerEpisode, int updatesPerIteration, float actionSigma)
 		:RLAlgorithm(std::move(environment)), criticNetFile(criticFileName), actorNetFile(actorFileName), learningRate(learningRate), rewardDiscountFactor(discountFactor),
-		clipThreshold(clipThreshold), timeStepsPerBatch(timeStepsPerBatch), maxTimeStepsPerEpisode(maxTimeStepsPerEpisode), updatesPerIter(updatesPerIteration), 
+		clipThreshold(clipThreshold), timestepsPerBatch(timestepsPerBatch), maxTimestepsPerEpisode(maxTimestepsPerEpisode), updatesPerIter(updatesPerIteration), 
 		criticNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, 1 }), 
 		actorNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, this->environment->getActionDimension() }),
 		sampler(actionSigma)
@@ -23,22 +23,24 @@ namespace BaseML::RL
 		sampler = Utils::GaussianSampler(actionSigma);
 	}
 
-	void PPO::learn(int maxTimeSteps)
+	void PPO::learn(int maxTimesteps)
 	{
-		int timeStepsPassed = 0; // Total time steps so far
+		int timestepsPassed = 0; // Total time steps so far
 		
-		while (timeStepsPassed < maxTimeSteps)
+		while (timestepsPassed < maxTimesteps)
 		{
-			RLTrainingData data = collectTrajectories();
+			auto [data, collectedTimesteps] = collectTrajectories();
 
 			Matrix advantage = computeAdvantageEstimates(data);
 
 			for (int i = 0; i < updatesPerIter; i++)
 			{
 				updatePolicy(data, advantage);
-				
-				// TODO: Update critic network
+
+				fitValueFunction(data);
 			}
+
+			timestepsPassed += collectedTimesteps;
 		}
 	}
 
@@ -104,7 +106,7 @@ namespace BaseML::RL
 		return converted;
 	}
 
-	RLTrainingData PPO::collectTrajectories()
+	std::pair<RLTrainingData, size_t> PPO::collectTrajectories()
 	{
 		RLTrainingData data;
 
@@ -116,13 +118,13 @@ namespace BaseML::RL
 		std::deque<float> logProbabilities;
 		std::deque<float> rtgs; // Rewards-to-go
 
-		while (tBatch < timeStepsPerBatch)
+		while (tBatch < timestepsPerBatch)
 		{
 			environment->reset();
 
 			std::deque<float> episodeRewards;
 
-			for (tEpisode = 0; tEpisode < maxTimeStepsPerEpisode && !environment->isFinished(); tEpisode++)
+			for (tEpisode = 0; tEpisode < maxTimestepsPerEpisode && !environment->isFinished(); tEpisode++)
 			{
 				tBatch++;
 
@@ -148,9 +150,6 @@ namespace BaseML::RL
 
 			// Compute rewards-to-go
 			calculateRewardsToGo(rtgs, episodeRewards);
-
-			// Collect the length of this episode
-			data.episodeLengths.push_back(tEpisode);
 		}
 
 		// Convert to matrices
@@ -159,7 +158,7 @@ namespace BaseML::RL
 		data.logProbabilities = scalarDataToMatrix(logProbabilities);
 		data.rtgs = scalarDataToMatrix(rtgs);
 
-		return data;
+		return { data, tBatch };
 	}
 
 	Matrix PPO::computeAdvantageEstimates(const RLTrainingData& data)
@@ -228,5 +227,10 @@ namespace BaseML::RL
 
 		// Update actor network
 		actorNetwork.backPropagation(gradients, learningRate);
+	}
+
+	void PPO::fitValueFunction(const RLTrainingData& data)
+	{
+		criticNetwork.learn(data.observations, data.rtgs, learningRate);
 	}
 }
