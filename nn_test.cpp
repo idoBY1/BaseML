@@ -93,6 +93,7 @@ void testXOR()
 void testTrainingXOR()
 {
 	BaseML::NeuralNetwork neuralNet = { 2, 3, 1 };
+	neuralNet.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; }); // Set output activation function to linear
 
 	BaseML::Matrix inputs = BaseML::Matrix({ {0, 0}, {0, 1}, {1, 0}, {1, 1} }, true);
 	BaseML::Matrix expectedOutputs({ 0, 1, 1, 0 }, false);
