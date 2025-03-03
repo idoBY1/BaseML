@@ -24,6 +24,8 @@ namespace BaseML::RL
 		float learningRate, rewardDiscountFactor, clipThreshold;
 		int timestepsPerBatch, maxTimestepsPerEpisode, updatesPerIter;
 
+		size_t timestepsLearned;
+
 	public:
 		PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate = 0.005f,
 			float discountFactor = 0.95f, float clipThreshold = 0.2f, int timestepsPerBatch = 4800, int maxTimestepsPerEpisode = 1600, 
@@ -32,7 +34,26 @@ namespace BaseML::RL
 		// Set the standard deviation of the distribution from which the algorithm samples actions during training
 		void setActionSigma(float actionSigma);
 
+		// Set the layer sizes of the critic network. 
+		// Warning! This function deletes the old network parameters and resets the network's settings.
+		void setCriticNetworkLayers(std::initializer_list<size_t> layerSizes);
+
+		// Set the layer sizes of the actor network. 
+		// Warning! This function deletes the old network parameters and resets the network's settings.
+		void setActorNetworkLayers(std::initializer_list<size_t> layerSizes);
+
+		// Set the output activation function of the actor network
+		void setActorOutputActivationFunction(float (*activationFunction)(float),
+			float (*activationFunctionDerivative)(float));
+
+		// Loads the Networks from the files. Notice that the critic network file has additional data 
+		// not related to the network. Returns true if successful and false if failed.
+		bool loadFromFiles();
+
 		void learn(size_t maxTimesteps) override;
+
+		// Render and show the agent's performance in the environment in real time
+		void showRealTime();
 
 	private:
 		// Get an action and its log probability from an observation. The first element in the returned pair 
@@ -67,5 +88,8 @@ namespace BaseML::RL
 		// Calculate the gradient of the mean-squared error to the real value of the states and update the 
 		// parameters of the critic network
 		void fitValueFunction(const RLTrainingData& data);
+
+		// Save Neural Networks to disk. Assumes a binary output stream
+		void save();
 	};
 }

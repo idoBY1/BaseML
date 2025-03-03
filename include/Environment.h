@@ -11,6 +11,9 @@ namespace BaseML::RL
 	{
 	protected:
 		size_t obsDim, actDim;
+		
+		// 'deltaTime' is the amount of time to assume that have passed since the last update
+		float deltaTime; 
 
 	public:
 		Environment(size_t observationDim, size_t actionDim)
@@ -32,9 +35,8 @@ namespace BaseML::RL
 
 		virtual const std::vector<std::string>& getPlayers() const = 0;
 
-		// Update the environment's state. 'deltaTime' is the amount of time to assume that 
-		// have passed since the last update.
-		virtual void update(float deltaTime) = 0;
+		// Update the environment's state
+		virtual void update() = 0;
 
 		// Get the current state of the player as a column matrix.
 		virtual const Matrix& getState(const char* playerId) const = 0;

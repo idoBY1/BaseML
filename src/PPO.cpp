@@ -14,7 +14,7 @@ namespace BaseML::RL
 		clipThreshold(clipThreshold), timestepsPerBatch(timestepsPerBatch), maxTimestepsPerEpisode(maxTimestepsPerEpisode), updatesPerIter(updatesPerIteration), 
 		criticNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, 1 }), 
 		actorNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, this->environment->getActionDimension() }),
-		sampler(actionSigma)
+		sampler(actionSigma), timestepsLearned(0)
 	{
 		criticNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
 		actorNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
@@ -23,6 +23,43 @@ namespace BaseML::RL
 	void PPO::setActionSigma(float actionSigma)
 	{
 		sampler = Utils::GaussianSampler(actionSigma);
+	}
+
+	void PPO::setCriticNetworkLayers(std::initializer_list<size_t> layerSizes)
+	{
+		criticNetwork = NeuralNetwork(layerSizes);
+	}
+
+	void PPO::setActorNetworkLayers(std::initializer_list<size_t> layerSizes)
+	{
+		actorNetwork = NeuralNetwork(layerSizes);
+	}
+
+	void PPO::setActorOutputActivationFunction(float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
+	{
+		actorNetwork.setOutputActivationFunction(activationFunction, activationFunctionDerivative);
+	}
+
+	bool PPO::loadFromFiles()
+	{
+		if (!actorNetwork.loadFromFile(actorNetFile.c_str()))
+			return false;
+
+		try {
+			std::ifstream ifile;
+
+			ifile.open(criticNetFile, std::ios::binary | std::ios::in);
+
+			ifile.read(reinterpret_cast<char*>(&timestepsLearned), sizeof(timestepsLearned));
+			criticNetwork.load(ifile);
+
+			ifile.close();
+		}
+		catch (...) {
+			return false;
+		}
+
+		return true;
 	}
 
 	void PPO::learn(size_t maxTimesteps)
@@ -44,6 +81,36 @@ namespace BaseML::RL
 
 			timestepsPassed += collectedTimesteps;
 		}
+	}
+
+	void PPO::showRealTime()
+	{
+		float episodeReward = 0.0f;
+		int totalTimesteps = 0;
+
+		environment->reset();
+
+		while (!environment->isFinished() && totalTimesteps < maxTimestepsPerEpisode)
+		{
+			totalTimesteps++;
+
+			// Get environment state
+			const Matrix& observation = environment->getState(playerId.c_str());
+
+			// Get action from actor network
+			auto [action, logProbability] = getAction(observation);
+
+			// Update environment
+			environment->setAction(playerId.c_str(), action);
+			environment->update();
+
+			// Get reward of action
+			float reward = environment->getReward(playerId.c_str());
+
+			episodeReward += reward;
+		}
+
+		std::cout << "Total episode reward: " << episodeReward << std::endl;
 	}
 
 	std::pair<Matrix, float> PPO::getAction(const Matrix& observation)
@@ -143,7 +210,7 @@ namespace BaseML::RL
 
 				// Update environment
 				environment->setAction(playerId.c_str(), action);
-				environment->update(1.0f / 60.0f);
+				environment->update();
 
 				// Get reward of action
 				float reward = environment->getReward(playerId.c_str());
@@ -247,5 +314,19 @@ namespace BaseML::RL
 		criticNetwork.learn(data.observations, data.rtgs, learningRate);
 
 		criticNetwork.saveToFile(criticNetFile.c_str());
+	}
+
+	void PPO::save()
+	{
+		actorNetwork.saveToFile(actorNetFile.c_str());
+
+		std::ofstream ofile;
+
+		ofile.open(criticNetFile.c_str(), std::ios::binary | std::ios::out);
+
+		ofile.write(reinterpret_cast<const char*>(&timestepsLearned), sizeof(timestepsLearned));
+		criticNetwork.save(ofile);
+
+		ofile.close();
 	}
 }
