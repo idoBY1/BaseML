@@ -34,8 +34,6 @@ namespace BaseML::RL
 
 		void learn(size_t maxTimesteps) override;
 
-		void learnAndRender(size_t maxTimesteps);
-
 	private:
 		// Get an action and its log probability from an observation. The first element in the returned pair 
 		// is the action and the second is its log probability.
@@ -54,10 +52,6 @@ namespace BaseML::RL
 		// Run the actor in the environment and collect data. Returns a pair of the data collected and the 
 		// number of simulated timesteps.
 		std::pair<RLTrainingData, size_t> collectTrajectories();
-
-		// Run the actor in the environment and collect data. Returns a pair of the data collected and the 
-		// number of simulated timesteps. Render the environment during the data collection.
-		std::pair<RLTrainingData, size_t> collectTrajectoriesRender();
 
 		// Compute the estimated advantage using the critic network
 		Matrix computeAdvantageEstimates(const RLTrainingData& data);

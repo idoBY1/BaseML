@@ -46,29 +46,6 @@ namespace BaseML::RL
 		}
 	}
 
-	void PPO::learnAndRender(size_t maxTimesteps)
-	{
-		size_t timestepsPassed = 0; // Total time steps so far
-
-		while (timestepsPassed < maxTimesteps)
-		{
-			std::cout << "Started collecting data. current timestep: " << timestepsPassed << std::endl;
-			auto [data, collectedTimesteps] = collectTrajectoriesRender();
-			std::cout << "Finished collecting data. current timestep: " << timestepsPassed + collectedTimesteps << std::endl;
-
-			Matrix advantage = computeAdvantageEstimates(data);
-
-			for (int i = 0; i < updatesPerIter; i++)
-			{
-				updatePolicy(data, advantage);
-
-				fitValueFunction(data);
-			}
-
-			timestepsPassed += collectedTimesteps;
-		}
-	}
-
 	std::pair<Matrix, float> PPO::getAction(const Matrix& observation)
 	{
 		Matrix actionMean = actorNetwork.forwardPropagate(observation);
@@ -167,72 +144,6 @@ namespace BaseML::RL
 				// Update environment
 				environment->setAction(playerId.c_str(), action);
 				environment->update(1.0f / 60.0f);
-
-				// Get reward of action
-				float reward = environment->getReward(playerId.c_str());
-
-				totalBatchReward += reward;
-
-				// Collect time step data
-				observations.push_back(observation);
-				actions.push_back(action);
-				logProbabilities.push_back(logProbability);
-				episodeRewards.push_back(reward);
-			}
-
-			// Compute rewards-to-go
-			calculateRewardsToGo(rtgs, episodeRewards);
-		}
-
-		std::cout << "Average episode reward: " << totalBatchReward / (float)numEpisodes << std::endl;
-
-		// Convert to matrices
-		data.observations = vectorDataToMatrix(observations);
-		data.actions = vectorDataToMatrix(actions);
-		data.logProbabilities = scalarDataToMatrix(logProbabilities);
-		data.rtgs = scalarDataToMatrix(rtgs);
-
-		return { data, tBatch };
-	}
-
-	std::pair<RLTrainingData, size_t> PPO::collectTrajectoriesRender()
-	{
-		RLTrainingData data;
-
-		int tBatch = 0, tEpisode;
-
-		// Deques for collecting data (will be converted to objects of type Matrix)
-		std::deque<Matrix> observations;
-		std::deque<Matrix> actions;
-		std::deque<float> logProbabilities;
-		std::deque<float> rtgs; // Rewards-to-go
-
-		float totalBatchReward = 0.0f; // for monitoring reward
-		int numEpisodes = 0;
-
-		while (tBatch < timestepsPerBatch)
-		{
-			environment->reset();
-
-			std::deque<float> episodeRewards;
-			numEpisodes++;
-
-			for (tEpisode = 0; tEpisode < maxTimestepsPerEpisode && !environment->isFinished(); tEpisode++)
-			{
-				tBatch++;
-
-				// Get environment state
-				const Matrix& observation = environment->getState(playerId.c_str());
-
-				// Get action from actor network
-				auto [action, logProbability] = getAction(observation);
-
-				// Update environment
-				environment->setAction(playerId.c_str(), action);
-				environment->update(1.0f / 60.0f);
-
-				// Render environment
-				environment->render();
 
 				// Get reward of action
 				float reward = environment->getReward(playerId.c_str());
