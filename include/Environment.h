@@ -47,8 +47,8 @@ namespace BaseML::RL
 		// Get the reward of the current state of the player.
 		virtual float getReward(const char* playerId) const = 0;
 
-		// Initialize the environment.
-		virtual void initialize() = 0;
+		// Initialize the environment. Set 'renderMode' to true to call the render() function.
+		virtual void initialize(bool renderMode = false) = 0;
 
 		// Check if the environment is already initialized to avoid closing an uninitialized environment 
 		// or initializing an environment twice
@@ -65,7 +65,7 @@ namespace BaseML::RL
 		// to be already initialized).
 		virtual void reset() = 0;
 
-		// Display the current state of the environment.
+		// Display the current state of the environment. Environment must be in "render mode".
 		virtual void render() = 0;
 	};
 }

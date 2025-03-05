@@ -313,7 +313,15 @@ namespace BaseML::RL
 	{
 		criticNetwork.learn(data.observations, data.rtgs, learningRate);
 
-		criticNetwork.saveToFile(criticNetFile.c_str());
+		// Save network
+		std::ofstream ofile;
+
+		ofile.open(criticNetFile.c_str(), std::ios::binary | std::ios::out);
+
+		ofile.write(reinterpret_cast<const char*>(&timestepsLearned), sizeof(timestepsLearned));
+		criticNetwork.save(ofile);
+
+		ofile.close();
 	}
 
 	void PPO::save()
