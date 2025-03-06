@@ -83,11 +83,11 @@ namespace BaseML::RL
 		std::pair<Matrix, Matrix> checkActorUnderCurrentPolicy(const Matrix& observations, const Matrix& actions);
 
 		// Calculate the gradients of the PPO-Clip objective and update the parameters of the actor network
-		void updatePolicy(const RLTrainingData& data, const Matrix& advantages);
+		void updatePolicy(const RLTrainingData& data, const Matrix& advantages, float currentLearningRate);
 
 		// Calculate the gradient of the mean-squared error to the real value of the states and update the 
 		// parameters of the critic network
-		void fitValueFunction(const RLTrainingData& data);
+		void fitValueFunction(const RLTrainingData& data, float currentLearningRate);
 
 		// Save Neural Networks to disk. Assumes a binary output stream
 		void save();

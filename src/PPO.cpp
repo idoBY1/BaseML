@@ -82,9 +82,11 @@ namespace BaseML::RL
 
 			for (int i = 0; i < updatesPerIter; i++)
 			{
-				updatePolicy(data, advantage);
+				// Calculate learning rate for current step
+				float currentLearningRate = learningRate * (1.0f - ((timestepsPassed + i) / maxTimesteps));
 
-				fitValueFunction(data);
+				updatePolicy(data, advantage, currentLearningRate);
+				fitValueFunction(data, currentLearningRate);
 			}
 
 			timestepsPassed += collectedTimesteps;
@@ -277,7 +279,7 @@ namespace BaseML::RL
 		return { actionMeans, sampler.batchLogProbabilities(actionMeans, actions) };
 	}
 
-	void PPO::updatePolicy(const RLTrainingData& data, const Matrix& advantages)
+	void PPO::updatePolicy(const RLTrainingData& data, const Matrix& advantages, float currentLearningRate)
 	{
 		auto [currentActionMeans, currentLogProbabilities] = checkActorUnderCurrentPolicy(data.observations, data.actions);
 
@@ -322,14 +324,14 @@ namespace BaseML::RL
 		}
 
 		// Update actor network
-		actorNetwork.backPropagation(gradients, learningRate);
+		actorNetwork.backPropagation(gradients, currentLearningRate);
 
 		actorNetwork.saveToFile(actorNetFile.c_str());
 	}
 
-	void PPO::fitValueFunction(const RLTrainingData& data)
+	void PPO::fitValueFunction(const RLTrainingData& data, float currentLearningRate)
 	{
-		criticNetwork.learn(data.observations, data.rtgs, learningRate);
+		criticNetwork.learn(data.observations, data.rtgs, currentLearningRate);
 
 		// Save network
 		std::ofstream ofile;
