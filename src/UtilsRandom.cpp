@@ -2,6 +2,9 @@
 
 #include <random>
 #include <cmath>
+#include <vector>
+#include <algorithm>
+#include <numeric>
 
 namespace BaseML::Utils
 {
@@ -107,5 +110,19 @@ namespace BaseML::Utils
     {
         float limit = std::sqrt(6.0f / inputNum);
         return getRandomFloat(-limit, limit);
+    }
+
+    std::vector<int> generateShuffledNumberSequence(int rangeLength)
+    {
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+
+        std::vector<int> values(rangeLength);
+
+        std::iota(values.begin(), values.end(), 0); // Fill the vector with a sequence of values
+
+        std::shuffle(values.begin(), values.end(), gen);
+
+        return values;
     }
 }

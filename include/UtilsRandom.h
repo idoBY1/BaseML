@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <vector>
 
 #include "Matrix.h"
 
@@ -40,6 +41,12 @@ namespace BaseML::Utils
 		Matrix batchLogProbabilities(const Matrix& means, const Matrix& samples);
 	};
 
+	// Returns a randomly generated floating point number
 	float getRandomFloat(float min, float max);
+
+	// Given the number of inputs, generates a random starting value for a network parameter in the appropriate range 
 	float initFromNumInputs(int inputNum);
+
+	// Generate a sequence of numbers from 0 to 'rangeLength'-1 and shuffle them randomly
+	std::vector<int> generateShuffledNumberSequence(int rangeLength);
 }
