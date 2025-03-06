@@ -20,6 +20,9 @@ namespace BaseML
 		// Create an empty Neural Network
 		NeuralNetwork();
 
+		// Create a Neural Network with layers of the sizes specified in the vector
+		NeuralNetwork(std::vector<size_t> layerSizes);
+
 		// Create a Neural Network with layers of the sizes specified in the initializer list
 		NeuralNetwork(std::initializer_list<size_t> layerSizes);
 

@@ -25,13 +25,19 @@ namespace BaseML::RL
 		sampler = Utils::GaussianSampler(actionSigma);
 	}
 
-	void PPO::setCriticNetworkLayers(std::initializer_list<size_t> layerSizes)
+	void PPO::setCriticNetworkLayers(std::vector<size_t> layerSizes)
 	{
+		layerSizes.insert(layerSizes.begin(), this->environment->getObservationDimension());
+		layerSizes.push_back(1);
+
 		criticNetwork = NeuralNetwork(layerSizes);
 	}
 
-	void PPO::setActorNetworkLayers(std::initializer_list<size_t> layerSizes)
+	void PPO::setActorNetworkLayers(std::vector<size_t> layerSizes)
 	{
+		layerSizes.insert(layerSizes.begin(), this->environment->getObservationDimension());
+		layerSizes.push_back(this->environment->getActionDimension());
+
 		actorNetwork = NeuralNetwork(layerSizes);
 	}
 

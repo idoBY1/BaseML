@@ -36,11 +36,11 @@ namespace BaseML::RL
 
 		// Set the layer sizes of the critic network. 
 		// Warning! This function deletes the old network parameters and resets the network's settings.
-		void setCriticNetworkLayers(std::initializer_list<size_t> layerSizes);
+		void setCriticNetworkLayers(std::vector<size_t> layerSizes);
 
 		// Set the layer sizes of the actor network. 
 		// Warning! This function deletes the old network parameters and resets the network's settings.
-		void setActorNetworkLayers(std::initializer_list<size_t> layerSizes);
+		void setActorNetworkLayers(std::vector<size_t> layerSizes);
 
 		// Set the output activation function of the actor network
 		void setActorOutputActivationFunction(float (*activationFunction)(float),

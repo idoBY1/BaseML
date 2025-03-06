@@ -1,6 +1,4 @@
-#include "NeuralNetwork.h"
-#include "NeuralNetwork.h"
-#include "NeuralNetwork.h"
+#include "neuralNetwork.h"
 
 #include <vector>
 #include <cstdlib>
@@ -15,6 +13,19 @@ namespace BaseML
 	NeuralNetwork::NeuralNetwork()
 		:lossFunc(nullptr), lossFuncDerivative(nullptr), networkInput(), learningTimestep(1)
 	{
+	}
+
+	NeuralNetwork::NeuralNetwork(std::vector<size_t> layerSizes)
+		:lossFunc(&Utils::squareError), lossFuncDerivative(&Utils::squareErrorDerivative), networkInput(), learningTimestep(1)
+	{
+		layers.reserve(layerSizes.size() - 1);
+
+		for (auto layerSize = layerSizes.begin() + 1; layerSize < layerSizes.end() - 1; layerSize++)
+		{
+			layers.emplace_back(*(layerSize - 1), *layerSize);
+		}
+
+		layers.emplace_back(*(layerSizes.end() - 2), *(layerSizes.end() - 1), &Utils::sigmoid, &Utils::sigmoidDerivative);
 	}
 
 	NeuralNetwork::NeuralNetwork(std::initializer_list<size_t> layerSizes)
