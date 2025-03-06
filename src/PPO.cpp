@@ -88,6 +88,9 @@ namespace BaseML::RL
 		float episodeReward = 0.0f;
 		int totalTimesteps = 0;
 
+		environment->close();
+		environment->initialize(true);
+
 		environment->reset();
 
 		while (!environment->isFinished() && totalTimesteps < maxTimestepsPerEpisode)
@@ -104,6 +107,9 @@ namespace BaseML::RL
 			environment->setAction(playerId.c_str(), action);
 			environment->update();
 
+			// Render environment
+			environment->render();
+
 			// Get reward of action
 			float reward = environment->getReward(playerId.c_str());
 
@@ -111,6 +117,9 @@ namespace BaseML::RL
 		}
 
 		std::cout << "Total episode reward: " << episodeReward << std::endl;
+
+		environment->close();
+		environment->initialize(false);
 	}
 
 	std::pair<Matrix, float> PPO::getAction(const Matrix& observation)
