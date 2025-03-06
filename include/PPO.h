@@ -91,5 +91,8 @@ namespace BaseML::RL
 
 		// Save Neural Networks to disk. Assumes a binary output stream
 		void save();
+
+		// Generates a minibatch from the collected data using a pre-calculated randomly shaffled sequence
+		RLTrainingData generateMinibatch(const RLTrainingData& data, const std::vector<int>& sequence, int start, int minibatchSize);
 	};
 }

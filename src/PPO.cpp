@@ -357,4 +357,11 @@ namespace BaseML::RL
 
 		ofile.close();
 	}
+
+	RLTrainingData PPO::generateMinibatch(const RLTrainingData& data, const std::vector<int>& sequence, int start, int minibatchSize)
+	{
+		RLTrainingData minibatch;
+
+		// TODO: implement function
+	}
 }
