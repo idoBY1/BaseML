@@ -59,6 +59,8 @@ namespace BaseML::RL
 			return false;
 		}
 
+		std::cout << "Continuing from step: " << timestepsLearned << std::endl;
+
 		return true;
 	}
 
