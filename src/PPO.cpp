@@ -101,7 +101,7 @@ namespace BaseML::RL
 			const Matrix& observation = environment->getState(playerId.c_str());
 
 			// Get action from actor network
-			auto [action, logProbability] = getAction(observation);
+			Matrix action = actorNetwork.forwardPropagate(observation);
 
 			// Update environment
 			environment->setAction(playerId.c_str(), action);
