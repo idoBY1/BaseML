@@ -9,7 +9,7 @@ namespace BaseML::Utils
 	class GaussianSampler
 	{
 	private:
-		static constexpr float PI = 3.14159265359f;
+		static constexpr float SAMPLER_PI = 3.14159265359f; // Called SAMPLER_PI and not PI to avoid name conflicts
 
 		std::mt19937 gen; // RNG engine
 		std::normal_distribution<float> distrib;

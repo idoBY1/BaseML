@@ -36,7 +36,7 @@ namespace BaseML::Utils
     float GaussianSampler::logProbabiltiy(float mean, float sample)
     {
         float diff = sample - mean;
-        return -std::log(distrib.stddev() * std::sqrt(2.0f * PI)) - 0.5f * (diff * diff) / (distrib.stddev() * distrib.stddev());
+        return -std::log(distrib.stddev() * std::sqrt(2.0f * SAMPLER_PI)) - 0.5f * (diff * diff) / (distrib.stddev() * distrib.stddev());
     }
 
     float GaussianSampler::logProbabiltiy(const Matrix& mean, const Matrix& sample)
@@ -51,7 +51,7 @@ namespace BaseML::Utils
 
         float logProbability = 0.0f;
 
-        float sharedPart = std::log(distrib.stddev() * std::sqrt(2.0f * PI));
+        float sharedPart = std::log(distrib.stddev() * std::sqrt(2.0f * SAMPLER_PI));
 
         for (int i = 0; i < sample.size(); i++)
         {
@@ -74,7 +74,7 @@ namespace BaseML::Utils
 
         Matrix logProbs(1, samples.columnsCount());
 
-        float sharedPart = std::log(distrib.stddev() * std::sqrt(2.0f * PI));
+        float sharedPart = std::log(distrib.stddev() * std::sqrt(2.0f * SAMPLER_PI));
 
         for (int i = 0; i < samples.columnsCount(); i++)
         {
