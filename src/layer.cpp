@@ -281,5 +281,10 @@ namespace BaseML
 
 		weights.load(inFile);
 		biases.load(inFile);
+
+		mWeights = Matrix(outputCount, inputCount);
+		mBiases = Matrix(outputCount, 1);
+		vWeights = Matrix(outputCount, inputCount);
+		vBiases = Matrix(outputCount, 1);
 	}
 }
