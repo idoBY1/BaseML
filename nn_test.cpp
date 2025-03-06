@@ -149,6 +149,8 @@ void testTrainingXOR()
 	neuralNet.forwardPropagate({ 1, 1 });
 	std::cout << "11 -> ";
 	neuralNet.getOutput().print();
+
+	neuralNet.saveToFile("net.n");
 }
 
 int main()

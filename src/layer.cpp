@@ -286,5 +286,11 @@ namespace BaseML
 		mBiases = Matrix(outputCount, 1);
 		vWeights = Matrix(outputCount, inputCount);
 		vBiases = Matrix(outputCount, 1);
+
+		// Initialize Adam Optimizer matrices
+		mWeights.clear();
+		mBiases.clear();
+		vWeights.clear();
+		vBiases.clear();
 	}
 }
