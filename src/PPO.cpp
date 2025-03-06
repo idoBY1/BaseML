@@ -82,6 +82,7 @@ namespace BaseML::RL
 			}
 
 			timestepsPassed += collectedTimesteps;
+			timestepsLearned += collectedTimesteps;
 		}
 	}
 
