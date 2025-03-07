@@ -11,13 +11,13 @@ namespace BaseML::RL
 	class RLAlgorithm
 	{
 	protected:
-		std::unique_ptr<Environment> environment;
+		std::shared_ptr<Environment> environment;
 		std::string playerId;
 
 	public:
-		// Create a new RLAlgorithm. Takes ownership on 'environment'.
-		RLAlgorithm(std::unique_ptr<Environment> environment, const char* playerId = NULL)
-			:environment(std::move(environment)) 
+		// Create a new RLAlgorithm.
+		RLAlgorithm(std::shared_ptr<Environment> environment, const char* playerId = NULL)
+			:environment(environment) 
 		{
 			if (!this->environment->isInitialized())
 				this->environment->initialize();

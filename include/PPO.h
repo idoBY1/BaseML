@@ -27,7 +27,7 @@ namespace BaseML::RL
 		size_t timestepsLearned;
 
 	public:
-		PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate = 0.005f,
+		PPO(std::shared_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate = 0.005f,
 			float discountFactor = 0.95f, float clipThreshold = 0.2f, int timestepsPerBatch = 4800, int maxTimestepsPerEpisode = 1600, 
 			int updatesPerIteration = 5, float actionSigma = 0.5f);
 
@@ -45,6 +45,9 @@ namespace BaseML::RL
 		// Set the output activation function of the actor network
 		void setActorOutputActivationFunction(float (*activationFunction)(float),
 			float (*activationFunctionDerivative)(float));
+
+		// Get a weak pointer to the environment of the algorithm
+		std::weak_ptr<Environment> getEnvironment();
 
 		// Loads the Networks from the files. Notice that the critic network file has additional data 
 		// not related to the network. Returns true if successful and false if failed.

@@ -8,9 +8,9 @@
 
 namespace BaseML::RL
 {
-	PPO::PPO(std::unique_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate, float discountFactor,
+	PPO::PPO(std::shared_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate, float discountFactor,
 		float clipThreshold, int timestepsPerBatch, int maxTimestepsPerEpisode, int updatesPerIteration, float actionSigma)
-		:RLAlgorithm(std::move(environment)), criticNetFile(criticFileName), actorNetFile(actorFileName), learningRate(learningRate), rewardDiscountFactor(discountFactor),
+		:RLAlgorithm(environment), criticNetFile(criticFileName), actorNetFile(actorFileName), learningRate(learningRate), rewardDiscountFactor(discountFactor),
 		clipThreshold(clipThreshold), timestepsPerBatch(timestepsPerBatch), maxTimestepsPerEpisode(maxTimestepsPerEpisode), updatesPerIter(updatesPerIteration), 
 		criticNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, 1 }), 
 		actorNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, this->environment->getActionDimension() }),
@@ -44,6 +44,11 @@ namespace BaseML::RL
 	void PPO::setActorOutputActivationFunction(float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
 	{
 		actorNetwork.setOutputActivationFunction(activationFunction, activationFunctionDerivative);
+	}
+
+	std::weak_ptr<Environment> PPO::getEnvironment()
+	{
+		return environment;
 	}
 
 	bool PPO::loadFromFiles()
@@ -362,6 +367,34 @@ namespace BaseML::RL
 	{
 		RLTrainingData minibatch;
 
-		// TODO: implement function
+		minibatch.observations = Matrix(environment->getObservationDimension(), minibatchSize);
+		minibatch.actions = Matrix(environment->getActionDimension(), minibatchSize);
+		minibatch.logProbabilities = Matrix(1, minibatchSize);
+		minibatch.rtgs = Matrix(1, minibatchSize);
+
+		for (int step = 0; step < minibatchSize; step++)
+		{
+			int shuffledTimestep = sequence[start + step];
+
+			// Copy observations
+			for (int obsIndx = 0; obsIndx < environment->getObservationDimension(); obsIndx++)
+			{
+				minibatch.observations(obsIndx, step) = data.observations(obsIndx, shuffledTimestep);
+			}
+
+			// Copy actions
+			for (int actIndx = 0; actIndx < environment->getActionDimension(); actIndx++)
+			{
+				minibatch.actions(actIndx, step) = data.actions(actIndx, shuffledTimestep);
+			}
+
+			// Copy log probabilities
+			minibatch.logProbabilities(step) = data.logProbabilities(shuffledTimestep);
+
+			// Copy rtgs
+			minibatch.rtgs(step) = data.rtgs(shuffledTimestep);
+		}
+
+		return minibatch;
 	}
 }
