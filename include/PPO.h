@@ -22,14 +22,14 @@ namespace BaseML::RL
 		Utils::GaussianSampler sampler;
 
 		float learningRate, rewardDiscountFactor, clipThreshold;
-		int timestepsPerBatch, maxTimestepsPerEpisode, updatesPerIter;
+		int timestepsPerBatch, maxTimestepsPerEpisode, minibatchSize, updatesPerIter;
 
 		size_t timestepsLearned;
 
 	public:
 		PPO(std::shared_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate = 0.005f,
 			float discountFactor = 0.95f, float clipThreshold = 0.2f, int timestepsPerBatch = 4800, int maxTimestepsPerEpisode = 1600, 
-			int updatesPerIteration = 5, float actionSigma = 0.5f);
+			int minibatchSize = 800, int updatesPerIteration = 5, float actionSigma = 0.5f);
 
 		// Set the standard deviation of the distribution from which the algorithm samples actions during training
 		void setActionSigma(float actionSigma);
@@ -96,6 +96,6 @@ namespace BaseML::RL
 		void save();
 
 		// Generates a minibatch from the collected data using a pre-calculated randomly shaffled sequence
-		RLTrainingData generateMinibatch(const RLTrainingData& data, const std::vector<int>& sequence, int start, int minibatchSize);
+		std::pair<RLTrainingData, Matrix> generateMinibatch(const RLTrainingData& data, const Matrix& advantages, const std::vector<int>& sequence, int start);
 	};
 }

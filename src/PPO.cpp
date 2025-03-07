@@ -9,9 +9,10 @@
 namespace BaseML::RL
 {
 	PPO::PPO(std::shared_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate, float discountFactor,
-		float clipThreshold, int timestepsPerBatch, int maxTimestepsPerEpisode, int updatesPerIteration, float actionSigma)
+		float clipThreshold, int timestepsPerBatch, int maxTimestepsPerEpisode, int minibatchSize, int updatesPerIteration, float actionSigma)
 		:RLAlgorithm(environment), criticNetFile(criticFileName), actorNetFile(actorFileName), learningRate(learningRate), rewardDiscountFactor(discountFactor),
-		clipThreshold(clipThreshold), timestepsPerBatch(timestepsPerBatch), maxTimestepsPerEpisode(maxTimestepsPerEpisode), updatesPerIter(updatesPerIteration), 
+		clipThreshold(clipThreshold), timestepsPerBatch(timestepsPerBatch), maxTimestepsPerEpisode(maxTimestepsPerEpisode), minibatchSize(minibatchSize), 
+		updatesPerIter(updatesPerIteration), 
 		criticNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, 1 }), 
 		actorNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, this->environment->getActionDimension() }),
 		sampler(actionSigma), timestepsLearned(0)
@@ -87,11 +88,22 @@ namespace BaseML::RL
 
 			for (int i = 0; i < updatesPerIter; i++)
 			{
-				// Calculate learning rate for current step
-				float currentLearningRate = learningRate * (1.0f - ((timestepsPassed + i) / maxTimesteps));
+				int timestepsUsedFromBatch = 0;
+				std::vector<int> shuffledIndexes = Utils::generateShuffledNumberSequence(collectedTimesteps);
 
-				updatePolicy(data, advantage, currentLearningRate);
-				fitValueFunction(data, currentLearningRate);
+				while (timestepsUsedFromBatch < collectedTimesteps)
+				{
+					auto [minibatch, minibatchAdvatage] = generateMinibatch(data, advantage, shuffledIndexes, timestepsUsedFromBatch);
+
+					// Calculate learning rate for current step
+					float currentLearningRate = learningRate * (1.0f - ((timestepsPassed + timestepsUsedFromBatch) / maxTimesteps));
+
+					// Update networks
+					updatePolicy(minibatch, minibatchAdvatage, currentLearningRate);
+					fitValueFunction(minibatch, currentLearningRate);
+
+					timestepsUsedFromBatch += minibatchSize;
+				}
 			}
 
 			timestepsPassed += collectedTimesteps;
@@ -363,16 +375,19 @@ namespace BaseML::RL
 		ofile.close();
 	}
 
-	RLTrainingData PPO::generateMinibatch(const RLTrainingData& data, const std::vector<int>& sequence, int start, int minibatchSize)
+	std::pair<RLTrainingData, Matrix> PPO::generateMinibatch(const RLTrainingData& data, const Matrix& advantages, const std::vector<int>& sequence, int start)
 	{
 		RLTrainingData minibatch;
+		int actualMinibatchSize = (minibatchSize < (sequence.size() - start)) ? minibatchSize : (sequence.size() - start);
 
-		minibatch.observations = Matrix(environment->getObservationDimension(), minibatchSize);
-		minibatch.actions = Matrix(environment->getActionDimension(), minibatchSize);
-		minibatch.logProbabilities = Matrix(1, minibatchSize);
-		minibatch.rtgs = Matrix(1, minibatchSize);
+		Matrix minibatchAdvantages(1, actualMinibatchSize);
 
-		for (int step = 0; step < minibatchSize; step++)
+		minibatch.observations = Matrix(environment->getObservationDimension(), actualMinibatchSize);
+		minibatch.actions = Matrix(environment->getActionDimension(), actualMinibatchSize);
+		minibatch.logProbabilities = Matrix(1, actualMinibatchSize);
+		minibatch.rtgs = Matrix(1, actualMinibatchSize);
+
+		for (int step = 0; step < actualMinibatchSize; step++)
 		{
 			int shuffledTimestep = sequence[start + step];
 
@@ -393,8 +408,11 @@ namespace BaseML::RL
 
 			// Copy rtgs
 			minibatch.rtgs(step) = data.rtgs(shuffledTimestep);
+
+			// Copy advantage
+			minibatchAdvantages(step) = advantages(shuffledTimestep);
 		}
 
-		return minibatch;
+		return { minibatch, minibatchAdvantages };
 	}
 }
