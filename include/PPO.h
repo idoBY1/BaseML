@@ -35,7 +35,7 @@ namespace BaseML::RL
 		void setLearningRate(float learningRate = 0.005f);
 
 		// Set the standard deviation of the distribution from which the algorithm samples actions during training
-		void setActionSigma(float actionSigma);
+		void setActionSigma(float actionSigma = 0.5f);
 
 		// Set the size of the max episode length and the size of a single batch of data
 		void setEpisodeAndBatchSize(int timestepsPerBatch = 4800, int maxTimestepsPerEpisode = 1600);
@@ -75,9 +75,9 @@ namespace BaseML::RL
 		// is the action and the second is its log probability.
 		std::pair<Matrix, float> getAction(const Matrix& observation);
 
-		// Calculate rewards-to-go for an episode based on the rewards from 'src'. The rtgs will be appended
-		// in the right order to 'dest'.
-		void calculateRewardsToGo(std::deque<float>& dest, const std::deque<float>& src);
+		// Calculate Generalized Advantage Estimates for an episode based on the rewards and values of the episode. The calculated 
+		// advantages will be appended in the right order to 'dest'.
+		void computeGeneralizedAdvantageEstimates(std::deque<float>& dest, const std::deque<float>& rewards, const std::deque<float>& values);
 
 		// Convert a deque containing single value numbers to a row vector represented by a Matrix
 		Matrix scalarDataToMatrix(const std::deque<float>& data);
@@ -89,16 +89,13 @@ namespace BaseML::RL
 		// number of simulated timesteps.
 		std::pair<RLTrainingData, size_t> collectTrajectories();
 
-		// Compute the estimated advantage using the critic network
-		Matrix computeAdvantageEstimates(const RLTrainingData& data);
-
 		// Get the current action means from the actor based on the observations and calculate the log probabilities 
 		// of the current network choosing the given actions for the given observations. The first element in the returned 
 		// pair is the action means and the second is the log probabilities.
 		std::pair<Matrix, Matrix> checkActorUnderCurrentPolicy(const Matrix& observations, const Matrix& actions);
 
 		// Calculate the gradients of the PPO-Clip objective and update the parameters of the actor network
-		void updatePolicy(const RLTrainingData& data, const Matrix& advantages, float currentLearningRate);
+		void updatePolicy(const RLTrainingData& data, float currentLearningRate);
 
 		// Calculate the gradient of the mean-squared error to the real value of the states and update the 
 		// parameters of the critic network
@@ -108,6 +105,6 @@ namespace BaseML::RL
 		void save();
 
 		// Generates a minibatch from the collected data using a pre-calculated randomly shaffled sequence
-		std::pair<RLTrainingData, Matrix> generateMinibatch(const RLTrainingData& data, const Matrix& advantages, const std::vector<int>& sequence, int start);
+		RLTrainingData generateMinibatch(const RLTrainingData& data, const std::vector<int>& sequence, int start);
 	};
 }

@@ -49,6 +49,7 @@ namespace BaseML::RL
 		Matrix observations;
 		Matrix actions;
 		Matrix logProbabilities;
-		Matrix rtgs; // Rewards-to-go
+		Matrix advantages;
+		Matrix stateValues;
 	};
 }

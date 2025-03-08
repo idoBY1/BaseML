@@ -105,8 +105,6 @@ namespace BaseML::RL
 		{
 			auto [data, collectedTimesteps] = collectTrajectories();
 
-			Matrix advantage = computeAdvantageEstimates(data);
-
 			for (int i = 0; i < updatesPerIter; i++)
 			{
 				int timestepsUsedFromBatch = 0;
@@ -114,13 +112,13 @@ namespace BaseML::RL
 
 				while (timestepsUsedFromBatch < collectedTimesteps)
 				{
-					auto [minibatch, minibatchAdvatage] = generateMinibatch(data, advantage, shuffledIndexes, timestepsUsedFromBatch);
+					RLTrainingData minibatch = generateMinibatch(data, shuffledIndexes, timestepsUsedFromBatch);
 
 					// Calculate learning rate for current step
 					float currentLearningRate = learningRate * (1.0f - ((timestepsPassed + timestepsUsedFromBatch) / maxTimesteps));
 
 					// Update networks
-					updatePolicy(minibatch, minibatchAdvatage, currentLearningRate);
+					updatePolicy(minibatch, currentLearningRate);
 					fitValueFunction(minibatch, currentLearningRate);
 
 					timestepsUsedFromBatch += minibatchSize;
@@ -183,19 +181,24 @@ namespace BaseML::RL
 		return { action, logProbability };
 	}
 
-	void PPO::calculateRewardsToGo(std::deque<float>& dest, const std::deque<float>& src)
+	void PPO::computeGeneralizedAdvantageEstimates(std::deque<float>& dest, const std::deque<float>& rewards, const std::deque<float>& values)
 	{
 		std::deque<float> temp;
-		float discountedReward = 0.0f;
 
-		// Start computing from last reward to compute rtgs correctly
-		for (int i = src.size() - 1; i >= 0; i--)
+		float delta, gae;
+
+		gae = rewards[rewards.size() - 1] - values[values.size() - 1];
+
+		temp.push_front(gae); // The last GAE doesn't have future values to account for
+
+		for (int i = rewards.size() - 2; i >= 0; i--)
 		{
-			discountedReward = src[i] + discountedReward * rewardDiscountFactor;
-			temp.push_front(discountedReward); // Insert in reverse order
+			delta = rewards[i] + rewardDiscountFactor * values[i + 1] - values[i];
+			gae = delta + rewardDiscountFactor * gaeLambda * gae;
+			temp.push_front(gae);
 		}
 
-		// Append the rtgs to the queue of the batch
+		// Append the GAEs to the queue of the batch
 		for (int i = 0; i < temp.size(); i++)
 		{
 			dest.push_back(temp[i]);
@@ -245,9 +248,10 @@ namespace BaseML::RL
 		std::deque<Matrix> observations;
 		std::deque<Matrix> actions;
 		std::deque<float> logProbabilities;
-		std::deque<float> rtgs; // Rewards-to-go
+		std::deque<float> advantages;
+		std::deque<float> stateValues;
 
-		// for monitoring reward
+		// For monitoring reward
 		float totalBatchReward = 0.0f; 
 		int numEpisodes = 0;
 
@@ -256,8 +260,10 @@ namespace BaseML::RL
 			environment->reset();
 
 			std::deque<float> episodeRewards;
+			std::deque<float> episodeValues;
 			numEpisodes++;
 
+			// Run an episode
 			for (tEpisode = 0; tEpisode < maxTimestepsPerEpisode && !environment->isFinished(); tEpisode++)
 			{
 				tBatch++;
@@ -268,12 +274,17 @@ namespace BaseML::RL
 				// Get action from actor network
 				auto [action, logProbability] = getAction(observation);
 
+				// Get value estimate from critic network
+				float valueEstimate = criticNetwork.forwardPropagate(observation)(0);
+				episodeValues.push_back(valueEstimate);
+
 				// Update environment
 				environment->setAction(playerId.c_str(), action);
 				environment->update();
 
 				// Get reward of action
 				float reward = environment->getReward(playerId.c_str());
+				episodeRewards.push_back(reward);
 
 				totalBatchReward += reward;
 
@@ -281,11 +292,11 @@ namespace BaseML::RL
 				observations.push_back(observation);
 				actions.push_back(action);
 				logProbabilities.push_back(logProbability);
-				episodeRewards.push_back(reward);
+				stateValues.push_back(valueEstimate);
 			}
 
-			// Compute rewards-to-go
-			calculateRewardsToGo(rtgs, episodeRewards);
+			// Compute GAE
+			computeGeneralizedAdvantageEstimates(advantages, episodeRewards, episodeValues);
 		}
 
 		std::cout << "Average episode reward: " << totalBatchReward / (float)numEpisodes << std::endl;
@@ -294,22 +305,10 @@ namespace BaseML::RL
 		data.observations = vectorDataToMatrix(observations);
 		data.actions = vectorDataToMatrix(actions);
 		data.logProbabilities = scalarDataToMatrix(logProbabilities);
-		data.rtgs = scalarDataToMatrix(rtgs);
+		data.advantages = scalarDataToMatrix(advantages);
+		data.stateValues = scalarDataToMatrix(stateValues);
 
 		return { data, tBatch };
-	}
-
-	Matrix PPO::computeAdvantageEstimates(const RLTrainingData& data)
-	{
-		Matrix criticStateValues = criticNetwork.forwardPropagate(data.observations);
-
-		// Calculate advantages
-		Matrix advantages = data.rtgs - criticStateValues;
-
-		// Normalize advanteges for numerical stability
-		advantages = Utils::zScoreNormalize(advantages);
-
-		return advantages;
 	}
 
 	std::pair<Matrix, Matrix> PPO::checkActorUnderCurrentPolicy(const Matrix& observations, const Matrix& actions)
@@ -319,7 +318,7 @@ namespace BaseML::RL
 		return { actionMeans, sampler.batchLogProbabilities(actionMeans, actions) };
 	}
 
-	void PPO::updatePolicy(const RLTrainingData& data, const Matrix& advantages, float currentLearningRate)
+	void PPO::updatePolicy(const RLTrainingData& data, float currentLearningRate)
 	{
 		auto [currentActionMeans, currentLogProbabilities] = checkActorUnderCurrentPolicy(data.observations, data.actions);
 
@@ -336,9 +335,9 @@ namespace BaseML::RL
 		{
 			// This 'if' statement calculates the gradients of the clip function and min function
 			if (
-				(advantages(i) > 0 && ratios(i) < 1 + clipThreshold) 
-				|| 
-				(advantages(i) < 0 && ratios(i) > 1 - clipThreshold)
+				(data.advantages(i) > 0 && ratios(i) < 1 + clipThreshold) 
+				||
+				(data.advantages(i) < 0 && ratios(i) > 1 - clipThreshold)
 				)
 			{
 				// Gradient of the advantage and probability ratio. The stddev is from the 
@@ -346,7 +345,7 @@ namespace BaseML::RL
 				// states we can divide by it here to save calculations. The minus (-) is 
 				// here because we need to flip the sign of the gradient since we later use 
 				// a gradient descent algorithm (instead of gradient ascent).
-				float actionGradient = -advantages(i) * ratios(i) / (sampler.getSigma() * sampler.getSigma());
+				float actionGradient = -data.advantages(i) * ratios(i) / (sampler.getSigma() * sampler.getSigma());
 
 				for (int j = 0; j < gradients.rowsCount(); j++)
 				{
@@ -369,7 +368,7 @@ namespace BaseML::RL
 
 	void PPO::fitValueFunction(const RLTrainingData& data, float currentLearningRate)
 	{
-		criticNetwork.learn(data.observations, data.rtgs, currentLearningRate);
+		criticNetwork.learn(data.observations, (data.advantages + data.stateValues), currentLearningRate);
 	}
 
 	void PPO::save()
@@ -386,17 +385,16 @@ namespace BaseML::RL
 		ofile.close();
 	}
 
-	std::pair<RLTrainingData, Matrix> PPO::generateMinibatch(const RLTrainingData& data, const Matrix& advantages, const std::vector<int>& sequence, int start)
+	RLTrainingData PPO::generateMinibatch(const RLTrainingData& data, const std::vector<int>& sequence, int start)
 	{
 		RLTrainingData minibatch;
 		int actualMinibatchSize = (minibatchSize < (sequence.size() - start)) ? minibatchSize : (sequence.size() - start);
 
-		Matrix minibatchAdvantages(1, actualMinibatchSize);
-
 		minibatch.observations = Matrix(environment->getObservationDimension(), actualMinibatchSize);
 		minibatch.actions = Matrix(environment->getActionDimension(), actualMinibatchSize);
 		minibatch.logProbabilities = Matrix(1, actualMinibatchSize);
-		minibatch.rtgs = Matrix(1, actualMinibatchSize);
+		minibatch.advantages = Matrix(1, actualMinibatchSize);
+		minibatch.stateValues = Matrix(1, actualMinibatchSize);
 
 		for (int step = 0; step < actualMinibatchSize; step++)
 		{
@@ -417,13 +415,13 @@ namespace BaseML::RL
 			// Copy log probabilities
 			minibatch.logProbabilities(step) = data.logProbabilities(shuffledTimestep);
 
-			// Copy rtgs
-			minibatch.rtgs(step) = data.rtgs(shuffledTimestep);
+			// Copy advantages
+			minibatch.advantages(step) = data.advantages(shuffledTimestep);
 
-			// Copy advantage
-			minibatchAdvantages(step) = advantages(shuffledTimestep);
+			// Copy state values
+			minibatch.stateValues(step) = data.stateValues(shuffledTimestep);
 		}
 
-		return { minibatch, minibatchAdvantages };
+		return minibatch;
 	}
 }
