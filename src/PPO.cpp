@@ -78,6 +78,8 @@ namespace BaseML::RL
 		if (!actorNetwork.loadFromFile(actorNetFile.c_str()))
 			return false;
 
+		actorNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
+
 		try {
 			std::ifstream ifile;
 
@@ -91,6 +93,8 @@ namespace BaseML::RL
 		catch (...) {
 			return false;
 		}
+
+		criticNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
 
 		std::cout << "Continuing from step: " << timestepsLearned << std::endl;
 
