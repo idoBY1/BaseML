@@ -8,11 +8,11 @@
 
 namespace BaseML::RL
 {
-	PPO::PPO(std::shared_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate, float discountFactor,
-		float clipThreshold, int timestepsPerBatch, int maxTimestepsPerEpisode, int minibatchSize, int updatesPerIteration, float actionSigma)
-		:RLAlgorithm(environment), criticNetFile(criticFileName), actorNetFile(actorFileName), learningRate(learningRate), rewardDiscountFactor(discountFactor),
-		clipThreshold(clipThreshold), timestepsPerBatch(timestepsPerBatch), maxTimestepsPerEpisode(maxTimestepsPerEpisode), minibatchSize(minibatchSize), 
-		updatesPerIter(updatesPerIteration), 
+	PPO::PPO(std::shared_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate, float discountFactor, float gaeLambda, 
+		int timestepsPerBatch, int maxTimestepsPerEpisode, int minibatchSize, int updatesPerIteration, float actionSigma, float clipThreshold)
+		:RLAlgorithm(environment), criticNetFile(criticFileName), actorNetFile(actorFileName), learningRate(learningRate), 
+		rewardDiscountFactor(discountFactor), gaeLambda(gaeLambda), timestepsPerBatch(timestepsPerBatch),
+		maxTimestepsPerEpisode(maxTimestepsPerEpisode), minibatchSize(minibatchSize), clipThreshold(clipThreshold), updatesPerIter(updatesPerIteration), 
 		criticNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, 1 }), 
 		actorNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, this->environment->getActionDimension() }),
 		sampler(actionSigma), timestepsLearned(0)
