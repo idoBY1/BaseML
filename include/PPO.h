@@ -28,8 +28,8 @@ namespace BaseML::RL
 
 	public:
 		PPO(std::shared_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate = 0.005f,
-			float discountFactor = 0.95f, float gaeLambda = 0.99f, int timestepsPerBatch = 4800, int maxTimestepsPerEpisode = 1600, 
-			int minibatchSize = 800, int updatesPerIteration = 5, float actionSigma = 0.5f, float clipThreshold = 0.2f);
+			float discountFactor = 0.95f, float gaeLambda = 0.98f, int timestepsPerBatch = 4800, int maxTimestepsPerEpisode = 1600, 
+			int minibatchSize = 400, int updatesPerIteration = 5, float actionSigma = 0.5f, float clipThreshold = 0.2f);
 
 		// Change the starting learning rate of the algorithm
 		void setLearningRate(float learningRate = 0.005f);
