@@ -129,6 +129,8 @@ namespace BaseML::RL
 
 			timestepsPassed += collectedTimesteps;
 			timestepsLearned += collectedTimesteps;
+
+			save();
 		}
 	}
 
@@ -363,23 +365,11 @@ namespace BaseML::RL
 
 		// Update actor network
 		actorNetwork.backPropagation(gradients, currentLearningRate);
-
-		actorNetwork.saveToFile(actorNetFile.c_str());
 	}
 
 	void PPO::fitValueFunction(const RLTrainingData& data, float currentLearningRate)
 	{
 		criticNetwork.learn(data.observations, data.rtgs, currentLearningRate);
-
-		// Save network
-		std::ofstream ofile;
-
-		ofile.open(criticNetFile.c_str(), std::ios::binary | std::ios::out);
-
-		ofile.write(reinterpret_cast<const char*>(&timestepsLearned), sizeof(timestepsLearned));
-		criticNetwork.save(ofile);
-
-		ofile.close();
 	}
 
 	void PPO::save()
