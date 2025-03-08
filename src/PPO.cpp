@@ -21,9 +21,30 @@ namespace BaseML::RL
 		actorNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
 	}
 
+	void PPO::setLearningRate(float learningRate)
+	{
+		this->learningRate = learningRate;
+	}
+
 	void PPO::setActionSigma(float actionSigma)
 	{
 		sampler = Utils::GaussianSampler(actionSigma);
+	}
+
+	void PPO::setEpisodeAndBatchSize(int timestepsPerBatch, int maxTimestepsPerEpisode)
+	{
+		this->timestepsPerBatch = timestepsPerBatch;
+		this->maxTimestepsPerEpisode = maxTimestepsPerEpisode;
+	}
+
+	void PPO::setMinibatchSize(int minibatchSize)
+	{
+		this->minibatchSize = minibatchSize;
+	}
+
+	void PPO::setUpdatesPerIter(int updatesPerIteration)
+	{
+		this->updatesPerIter = updatesPerIteration;
 	}
 
 	void PPO::setCriticNetworkLayers(std::vector<size_t> layerSizes)

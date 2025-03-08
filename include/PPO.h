@@ -31,8 +31,20 @@ namespace BaseML::RL
 			float discountFactor = 0.95f, float clipThreshold = 0.2f, int timestepsPerBatch = 4800, int maxTimestepsPerEpisode = 1600, 
 			int minibatchSize = 800, int updatesPerIteration = 5, float actionSigma = 0.5f);
 
+		// Change the starting learning rate of the algorithm
+		void setLearningRate(float learningRate = 0.005f);
+
 		// Set the standard deviation of the distribution from which the algorithm samples actions during training
 		void setActionSigma(float actionSigma);
+
+		// Set the size of the max episode length and the size of a single batch of data
+		void setEpisodeAndBatchSize(int timestepsPerBatch = 4800, int maxTimestepsPerEpisode = 1600);
+
+		// Set the size of each minibatch the algorithm trains on
+		void setMinibatchSize(int minibatchSize = 800);
+
+		// Set the number of times the algorithm should go over the same data
+		void setUpdatesPerIter(int updatesPerIteration = 5);
 
 		// Set the layer sizes of the critic network. 
 		// Warning! This function deletes the old network parameters and resets the network's settings.
