@@ -124,7 +124,9 @@ namespace BaseML::RL
 			if (saveThreshold < 0 || currEpisodeAvg > bestEpisodeAvg - saveThreshold)
 			{
 				save();
-				bestEpisodeAvg = currEpisodeAvg;
+
+				if (currEpisodeAvg > bestEpisodeAvg)
+					bestEpisodeAvg = currEpisodeAvg;
 			}
 
 			for (int i = 0; i < updatesPerIter; i++)
@@ -157,7 +159,9 @@ namespace BaseML::RL
 		if (saveThreshold < 0 || currEpisodeAvg > bestEpisodeAvg - saveThreshold)
 		{
 			save();
-			bestEpisodeAvg = currEpisodeAvg;
+
+			if (currEpisodeAvg > bestEpisodeAvg)
+				bestEpisodeAvg = currEpisodeAvg;
 		}
 	}
 
