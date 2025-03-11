@@ -59,6 +59,11 @@ namespace BaseML::RL
 		void setActorOutputActivationFunction(float (*activationFunction)(float),
 			float (*activationFunctionDerivative)(float));
 
+		// Set the save threshold for the networks (the amount of points to subtruct from the best score when 
+		// choosing if the networks should be saved). Choose a negative value to always save the most recent 
+		// networks.
+		void setSaveThreshold(float saveThreshold = -1.0f);
+
 		// Get a weak pointer to the environment of the algorithm
 		std::weak_ptr<Environment> getEnvironment();
 

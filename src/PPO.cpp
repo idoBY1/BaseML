@@ -69,6 +69,11 @@ namespace BaseML::RL
 		actorNetwork.setOutputActivationFunction(activationFunction, activationFunctionDerivative);
 	}
 
+	void PPO::setSaveThreshold(float saveThreshold)
+	{
+		this->saveThreshold = saveThreshold;
+	}
+
 	std::weak_ptr<Environment> PPO::getEnvironment()
 	{
 		return environment;
