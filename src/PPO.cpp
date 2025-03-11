@@ -1,6 +1,6 @@
 #include "PPO.h"
 
-#include <deque>
+#include <list>
 #include <cmath>
 
 #include "RLAlgorithm.h"
@@ -185,43 +185,45 @@ namespace BaseML::RL
 		return { action, logProbability };
 	}
 
-	void PPO::computeGeneralizedAdvantageEstimates(std::deque<float>& dest, const std::deque<float>& rewards, const std::deque<float>& values)
+	void PPO::computeGeneralizedAdvantageEstimates(std::list<float>& dest, const std::list<float>& rewards, const std::list<float>& values)
 	{
-		std::deque<float> temp;
+		std::list<float> temp;
 
 		float delta, gae;
 
-		gae = rewards[rewards.size() - 1] - values[values.size() - 1];
+		gae = rewards.back() - values.back();
 
 		temp.push_front(gae); // The last GAE doesn't have future values to account for
 
-		for (int i = rewards.size() - 2; i >= 0; i--)
+		// Calculate GAEs by going backwards on the rewards (advancing a reverse_iterator moves it backwards)
+		for (auto rew = std::next(rewards.rbegin()); rew != rewards.rend(); rew++)
 		{
-			delta = rewards[i] + rewardDiscountFactor * values[i + 1] - values[i];
+			delta = *rew + rewardDiscountFactor * *std::prev(rew) - *rew; // Because using reverse iterators, std::prev(rew) points to the reward of the NEXT state
 			gae = delta + rewardDiscountFactor * gaeLambda * gae;
 			temp.push_front(gae);
 		}
 
-		// Append the GAEs to the queue of the batch
-		for (int i = 0; i < temp.size(); i++)
+		// Append the GAEs to the list of the batch
+		for (auto adv = temp.begin(); adv != temp.end(); adv++)
 		{
-			dest.push_back(temp[i]);
+			dest.push_back(*adv);
 		}
 	}
 
-	Matrix PPO::scalarDataToMatrix(const std::deque<float>& data)
+	Matrix PPO::scalarDataToMatrix(const std::list<float>& data)
 	{
 		Matrix converted(1, data.size());
 
-		for (int i = 0; i < data.size(); i++)
+		int t = 0;
+		for (auto d = data.begin(); d != data.end(); d++)
 		{
-			converted(i) = data[i];
+			converted(t++) = *d;
 		}
 
 		return converted;
 	}
 
-	Matrix PPO::vectorDataToMatrix(const std::deque<Matrix>& data)
+	Matrix PPO::vectorDataToMatrix(const std::list<Matrix>& data)
 	{
 		if (data.size() == 0)
 		{
@@ -229,14 +231,17 @@ namespace BaseML::RL
 			throw std::runtime_error("Cannot convert an empty collection");
 		}
 
-		Matrix converted(data[0].size(), data.size());
+		Matrix converted(data.front().size(), data.size());
 
-		for (int i = 0; i < converted.columnsCount(); i++)
+		int t = 0;
+		for (auto act = data.begin(); act != data.end(); act++)
 		{
-			for (int j = 0; j < converted.rowsCount(); j++)
+			for (int d = 0; d < converted.rowsCount(); d++)
 			{
-				converted(j, i) = data[i](j);
+				converted(d, t) = (*act)(d);
 			}
+
+			t++;
 		}
 
 		return converted;
@@ -249,11 +254,11 @@ namespace BaseML::RL
 		int tBatch = 0, tEpisode;
 
 		// Deques for collecting data (will be converted to objects of type Matrix)
-		std::deque<Matrix> observations;
-		std::deque<Matrix> actions;
-		std::deque<float> logProbabilities;
-		std::deque<float> advantages;
-		std::deque<float> stateValues;
+		std::list<Matrix> observations;
+		std::list<Matrix> actions;
+		std::list<float> logProbabilities;
+		std::list<float> advantages;
+		std::list<float> stateValues;
 
 		// For monitoring reward
 		float totalBatchReward = 0.0f; 
@@ -263,8 +268,8 @@ namespace BaseML::RL
 		{
 			environment->reset();
 
-			std::deque<float> episodeRewards;
-			std::deque<float> episodeValues;
+			std::list<float> episodeRewards;
+			std::list<float> episodeValues;
 			numEpisodes++;
 
 			// Run an episode

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <utility>
+#include <list>
 
 #include "NeuralNetwork.h"
 #include "Environment.h"
@@ -77,13 +78,13 @@ namespace BaseML::RL
 
 		// Calculate Generalized Advantage Estimates for an episode based on the rewards and values of the episode. The calculated 
 		// advantages will be appended in the right order to 'dest'.
-		void computeGeneralizedAdvantageEstimates(std::deque<float>& dest, const std::deque<float>& rewards, const std::deque<float>& values);
+		void computeGeneralizedAdvantageEstimates(std::list<float>& dest, const std::list<float>& rewards, const std::list<float>& values);
 
-		// Convert a deque containing single value numbers to a row vector represented by a Matrix
-		Matrix scalarDataToMatrix(const std::deque<float>& data);
+		// Convert a list containing single value numbers to a row vector represented by a Matrix
+		Matrix scalarDataToMatrix(const std::list<float>& data);
 
-		// Convert a deque containing 1 dimensional vectors (represented as Matrix) to a 2 dimensional Matrix
-		Matrix vectorDataToMatrix(const std::deque<Matrix>& data);
+		// Convert a list containing 1 dimensional vectors (represented as Matrix) to a 2 dimensional Matrix
+		Matrix vectorDataToMatrix(const std::list<Matrix>& data);
 
 		// Run the actor in the environment and collect data. Returns a pair of the data collected and the 
 		// number of simulated timesteps.
