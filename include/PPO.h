@@ -22,7 +22,7 @@ namespace BaseML::RL
 
 		Utils::GaussianSampler sampler;
 
-		float learningRate, rewardDiscountFactor, gaeLambda, clipThreshold;
+		float learningRate, rewardDiscountFactor, gaeLambda, clipThreshold, currEpisodeAvg, bestEpisodeAvg;
 		int timestepsPerBatch, maxTimestepsPerEpisode, minibatchSize, updatesPerIter;
 
 		size_t timestepsLearned;

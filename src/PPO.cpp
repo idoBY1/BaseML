@@ -2,6 +2,7 @@
 
 #include <list>
 #include <cmath>
+#include <limits>
 
 #include "RLAlgorithm.h"
 #include "UtilsGeneral.h"
@@ -15,7 +16,7 @@ namespace BaseML::RL
 		maxTimestepsPerEpisode(maxTimestepsPerEpisode), minibatchSize(minibatchSize), clipThreshold(clipThreshold), updatesPerIter(updatesPerIteration), 
 		criticNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, 1 }), 
 		actorNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, this->environment->getActionDimension() }),
-		sampler(actionSigma), timestepsLearned(0)
+		sampler(actionSigma), timestepsLearned(0), currEpisodeAvg(0.0f), bestEpisodeAvg(-std::numeric_limits<float>::infinity())
 	{
 		criticNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
 		actorNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
@@ -85,7 +86,11 @@ namespace BaseML::RL
 
 			ifile.open(criticNetFile, std::ios::binary | std::ios::in);
 
+			// Read PPO info
+			ifile.read(reinterpret_cast<char*>(&bestEpisodeAvg), sizeof(bestEpisodeAvg));
 			ifile.read(reinterpret_cast<char*>(&timestepsLearned), sizeof(timestepsLearned));
+
+			// Read critic
 			criticNetwork.load(ifile);
 
 			ifile.close();
@@ -97,6 +102,7 @@ namespace BaseML::RL
 		criticNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
 
 		std::cout << "Continuing from step: " << timestepsLearned << std::endl;
+		std::cout << "Best episode-reward-average so far: " << bestEpisodeAvg << std::endl;
 
 		return true;
 	}
@@ -108,6 +114,10 @@ namespace BaseML::RL
 		while (timestepsPassed < maxTimesteps)
 		{
 			auto [data, collectedTimesteps] = collectTrajectories();
+
+			// If average episode reward has improved, save the current networks
+			if (currEpisodeAvg > bestEpisodeAvg)
+				save();
 
 			for (int i = 0; i < updatesPerIter; i++)
 			{
@@ -131,9 +141,13 @@ namespace BaseML::RL
 
 			timestepsPassed += collectedTimesteps;
 			timestepsLearned += collectedTimesteps;
-
-			save();
 		}
+
+		// Perform one last check of the policy, and save if it improved
+		collectTrajectories();
+
+		if (currEpisodeAvg > bestEpisodeAvg)
+			save();
 	}
 
 	void PPO::showRealTime()
@@ -312,6 +326,7 @@ namespace BaseML::RL
 		}
 
 		std::cout << "Average episode reward: " << totalBatchReward / (float)numEpisodes << std::endl;
+		currEpisodeAvg = totalBatchReward / (float)numEpisodes; // Save the average episode return for this batch
 
 		// Convert to matrices
 		data.observations = vectorDataToMatrix(observations);
@@ -391,7 +406,11 @@ namespace BaseML::RL
 
 		ofile.open(criticNetFile.c_str(), std::ios::binary | std::ios::out);
 
+		// Save PPO info
+		ofile.write(reinterpret_cast<const char*>(&bestEpisodeAvg), sizeof(bestEpisodeAvg));
 		ofile.write(reinterpret_cast<const char*>(&timestepsLearned), sizeof(timestepsLearned));
+
+		// Save critic
 		criticNetwork.save(ofile);
 
 		ofile.close();
