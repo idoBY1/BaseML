@@ -10,13 +10,13 @@
 namespace BaseML::RL
 {
 	PPO::PPO(std::shared_ptr<Environment> environment, const char* criticFileName, const char* actorFileName, float learningRate, float discountFactor, float gaeLambda, 
-		int timestepsPerBatch, int maxTimestepsPerEpisode, int minibatchSize, int updatesPerIteration, float actionSigma, float clipThreshold)
+		int timestepsPerBatch, int maxTimestepsPerEpisode, int minibatchSize, int updatesPerIteration, float actionSigma, float clipThreshold, float saveThreshold)
 		:RLAlgorithm(environment), criticNetFile(criticFileName), actorNetFile(actorFileName), learningRate(learningRate), 
 		rewardDiscountFactor(discountFactor), gaeLambda(gaeLambda), timestepsPerBatch(timestepsPerBatch),
 		maxTimestepsPerEpisode(maxTimestepsPerEpisode), minibatchSize(minibatchSize), clipThreshold(clipThreshold), updatesPerIter(updatesPerIteration), 
 		criticNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, 1 }), 
 		actorNetwork({ this->environment->getObservationDimension(), DEFAULT_HIDDEN_LAYER_SIZE, this->environment->getActionDimension() }),
-		sampler(actionSigma), timestepsLearned(0), currEpisodeAvg(0.0f), bestEpisodeAvg(-std::numeric_limits<float>::infinity())
+		sampler(actionSigma), timestepsLearned(0), currEpisodeAvg(0.0f), bestEpisodeAvg(-std::numeric_limits<float>::infinity()), saveThreshold(saveThreshold)
 	{
 		criticNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
 		actorNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
@@ -115,8 +115,8 @@ namespace BaseML::RL
 		{
 			auto [data, collectedTimesteps] = collectTrajectories();
 
-			// If average episode reward has improved, save the current networks
-			if (currEpisodeAvg > bestEpisodeAvg)
+			// If average episode reward has improved, save the current networks. If saveThreshold < 0, always save the networks.
+			if (saveThreshold < 0 || currEpisodeAvg > bestEpisodeAvg - saveThreshold)
 			{
 				save();
 				bestEpisodeAvg = currEpisodeAvg;
@@ -146,10 +146,10 @@ namespace BaseML::RL
 			timestepsLearned += collectedTimesteps;
 		}
 
-		// Perform one last check of the policy, and save if it improved
+		// Perform one last check of the policy, and save if it improved. If saveThreshold < 0, always save the networks.
 		collectTrajectories();
 
-		if (currEpisodeAvg > bestEpisodeAvg)
+		if (saveThreshold < 0 || currEpisodeAvg > bestEpisodeAvg - saveThreshold)
 		{
 			save();
 			bestEpisodeAvg = currEpisodeAvg;
