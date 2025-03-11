@@ -117,7 +117,10 @@ namespace BaseML::RL
 
 			// If average episode reward has improved, save the current networks
 			if (currEpisodeAvg > bestEpisodeAvg)
+			{
 				save();
+				bestEpisodeAvg = currEpisodeAvg;
+			}
 
 			for (int i = 0; i < updatesPerIter; i++)
 			{
@@ -147,7 +150,10 @@ namespace BaseML::RL
 		collectTrajectories();
 
 		if (currEpisodeAvg > bestEpisodeAvg)
+		{
 			save();
+			bestEpisodeAvg = currEpisodeAvg;
+		}
 	}
 
 	void PPO::showRealTime()
