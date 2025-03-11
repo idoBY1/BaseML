@@ -191,14 +191,17 @@ namespace BaseML::RL
 
 		float delta, gae;
 
-		gae = rewards.back() - values.back();
+		auto rew = rewards.rbegin();
+		auto val = values.rbegin();
+
+		gae = *(rew++) - *(val++);
 
 		temp.push_front(gae); // The last GAE doesn't have future values to account for
 
 		// Calculate GAEs by going backwards on the rewards (advancing a reverse_iterator moves it backwards)
-		for (auto rew = std::next(rewards.rbegin()); rew != rewards.rend(); rew++)
+		for (; rew != rewards.rend() && val != values.rend(); rew++, val++)
 		{
-			delta = *rew + rewardDiscountFactor * *std::prev(rew) - *rew; // Because using reverse iterators, std::prev(rew) points to the reward of the NEXT state
+			delta = *rew + rewardDiscountFactor * *std::prev(val) - *val; // Because using reverse iterators, std::prev(val) points to the value of the NEXT state
 			gae = delta + rewardDiscountFactor * gaeLambda * gae;
 			temp.push_front(gae);
 		}
