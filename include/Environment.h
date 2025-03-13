@@ -16,8 +16,8 @@ namespace BaseML::RL
 		float deltaTime; 
 
 	public:
-		Environment(size_t observationDim, size_t actionDim)
-			:obsDim(observationDim), actDim(actionDim)
+		Environment(size_t observationDim, size_t actionDim, float deltaTime = 1.0f / 60.0f)
+			:obsDim(observationDim), actDim(actionDim), deltaTime(deltaTime)
 		{
 		}
 
