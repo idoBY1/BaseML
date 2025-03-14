@@ -1,8 +1,8 @@
-#include "UtilsGeneral.h"
+#include "Utils/UtilsGeneral.h"
 
 #include <cmath>
 
-#include "Matrix.h"
+#include "Core/Matrix.h"
 
 namespace BaseML::Utils
 {

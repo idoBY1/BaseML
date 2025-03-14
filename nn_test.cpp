@@ -4,10 +4,9 @@
 #include <fstream>
 #include <chrono>
 
-#include "Matrix.h"
-#include "UtilsFunctions.h"
-#include "Layer.h"
-#include "NeuralNetwork.h"
+#include "BaseML.h"
+#include "BaseMLUtils.h"
+#include "BaseRL.h"
 
 void trainXOR()
 {

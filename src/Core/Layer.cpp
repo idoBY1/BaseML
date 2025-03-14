@@ -1,13 +1,12 @@
-#include "Layer.h"
-#include "Layer.h"
+#include "Core/Layer.h"
 
 #include <vector>
 #include <cstdlib>
 #include <cmath>
 #include <fstream>
 
-#include "UtilsFunctions.h"
-#include "UtilsRandom.h"
+#include "Utils/UtilsFunctions.h"
+#include "Utils/UtilsRandom.h"
 
 namespace BaseML
 {

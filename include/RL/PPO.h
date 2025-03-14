@@ -4,10 +4,10 @@
 #include <utility>
 #include <list>
 
-#include "NeuralNetwork.h"
+#include "Core/NeuralNetwork.h"
 #include "Environment.h"
 #include "RLAlgorithm.h"
-#include "UtilsRandom.h"
+#include "Utils/UtilsRandom.h"
 
 namespace BaseML::RL
 {

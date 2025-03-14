@@ -3,7 +3,7 @@
 #include <string>
 #include <deque>
 
-#include "Matrix.h"
+#include "Core/Matrix.h"
 #include "Environment.h"
 
 namespace BaseML::RL

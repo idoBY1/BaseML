@@ -3,7 +3,7 @@
 #include <random>
 #include <vector>
 
-#include "Matrix.h"
+#include "Core/Matrix.h"
 
 namespace BaseML::Utils
 {

@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "Matrix.h"
-#include "UtilsFunctions.h"
+#include "Utils/UtilsFunctions.h"
 
 namespace BaseML
 {

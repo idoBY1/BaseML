@@ -1,11 +1,11 @@
-#include "PPO.h"
+#include "RL/PPO.h"
 
 #include <list>
 #include <cmath>
 #include <limits>
 
-#include "RLAlgorithm.h"
-#include "UtilsGeneral.h"
+#include "RL/RLAlgorithm.h"
+#include "Utils/UtilsGeneral.h"
 
 namespace BaseML::RL
 {
