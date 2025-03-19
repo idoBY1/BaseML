@@ -6,7 +6,7 @@ namespace BaseML::RL
 {
 	class Player
 	{
-	private:
+	protected:
 		Matrix currentAction, currentObservation;
 		float currentReward;
 
