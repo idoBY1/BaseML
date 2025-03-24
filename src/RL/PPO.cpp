@@ -54,6 +54,7 @@ namespace BaseML::RL
 		layerSizes.push_back(1);
 
 		criticNetwork = NeuralNetwork(layerSizes);
+		criticNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
 	}
 
 	void PPO::setActorNetworkLayers(std::vector<size_t> layerSizes)
@@ -62,6 +63,7 @@ namespace BaseML::RL
 		layerSizes.push_back(this->environment->getActionDimension());
 
 		actorNetwork = NeuralNetwork(layerSizes);
+		actorNetwork.setOutputActivationFunction([](float x) { return x; }, [](float x) { return 1.0f; });
 	}
 
 	void PPO::setActorOutputActivationFunction(float(*activationFunction)(float), float(*activationFunctionDerivative)(float))
