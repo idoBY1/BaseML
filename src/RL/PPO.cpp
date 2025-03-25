@@ -141,7 +141,7 @@ namespace BaseML::RL
 					RLTrainingData minibatch = generateMinibatch(data, shuffledIndexes, timestepsUsedFromBatch);
 
 					// Calculate learning rate for current step
-					float currentLearningRate = learningRate * (1.0f - ((timestepsPassed + timestepsUsedFromBatch) / maxTimesteps));
+					float currentLearningRate = learningRate * (1.0f - (static_cast<float>(timestepsPassed + timestepsUsedFromBatch) / maxTimesteps));
 
 					// Update networks
 					updatePolicy(minibatch, currentLearningRate);
@@ -211,7 +211,7 @@ namespace BaseML::RL
 		Matrix actionMean = actorNetwork.forwardPropagate(observation);
 
 		Matrix action = sampler.sample(actionMean);
-		float logProbability = sampler.logProbabiltiy(actionMean, action);
+		float logProbability = sampler.logProbability(actionMean, action);
 
 		return { action, logProbability };
 	}

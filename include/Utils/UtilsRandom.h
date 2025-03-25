@@ -20,7 +20,7 @@ namespace BaseML::Utils
 		GaussianSampler(float stddev);
 
 		// Get the standard deviation of the sampler
-		float getSigma();
+		float getSigma() const;
 
 		// Sample a value randomly from the normal distribution
 		float sample(float mean);
@@ -29,10 +29,10 @@ namespace BaseML::Utils
 		Matrix sample(const Matrix& mean);
 
 		// Get the log probability density of a sample given the mean of the distibution
-		float logProbabiltiy(float mean, float sample);
+		float logProbability(float mean, float sample);
 
 		// Get the log probability density of a sample given the mean of the distibution
-		float logProbabiltiy(const Matrix& mean, const Matrix& sample);
+		float logProbability(const Matrix& mean, const Matrix& sample);
 
 		// Get the log probability density of samples given the means of the distibutions. This function 
 		// assumes that each mean and sample is a column in the matrices and that the standard deviation 

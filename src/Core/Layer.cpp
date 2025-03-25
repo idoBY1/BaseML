@@ -21,11 +21,10 @@ namespace BaseML
 		gradients(numOutputs, batchSize), activationFunc(&Utils::leakyReLU), activationFuncDerivative(&Utils::leakyReLUDerivative), inputRef(nullptr), 
 		mWeights(numOutputs, numInputs), mBiases(numOutputs, 1), vWeights(numOutputs, numInputs), vBiases(numOutputs, 1)
 	{
-		// Initialize the biases and weights with random values
+		// Initialize the weights with random values
 		for (int i = 0; i < numOutputs; i++)
 		{
-			// Generate a number between MIN_INIT_VAL and MAX_INIT_VAL (the number is a float)
-			biases(i) = Utils::initFromNumInputs(numInputs);
+			biases(i) = 0.0f;
 
 			for (int j = 0; j < numInputs; j++)
 			{
@@ -46,11 +45,10 @@ namespace BaseML
 		gradients(numOutputs, 1), activationFunc(activationFunction), activationFuncDerivative(activationFunctionDerivative), inputRef(nullptr), 
 		mWeights(numOutputs, numInputs), mBiases(numOutputs, 1), vWeights(numOutputs, numInputs), vBiases(numOutputs, 1)
 	{
-		// Initialize the biases and weights with random values
+		// Initialize the weights with random values
 		for (int i = 0; i < numOutputs; i++)
 		{
-			// Generate a number between MIN_INIT_VAL and MAX_INIT_VAL (the number is a float)
-			biases(i) = Utils::initFromNumInputs(numInputs);
+			biases(i) = 0.0f;
 
 			for (int j = 0; j < numInputs; j++)
 			{

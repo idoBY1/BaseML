@@ -13,7 +13,7 @@ namespace BaseML::Utils
     {
     }
 
-    float GaussianSampler::getSigma()
+    float GaussianSampler::getSigma() const
     {
         return distrib.stddev();
     }
@@ -27,7 +27,6 @@ namespace BaseML::Utils
     {
         Matrix sample(mean);
 
-        #pragma omp parallel for
         for (int i = 0; i < sample.size(); i++)
         {
             sample(i) += distrib(gen);
@@ -36,13 +35,13 @@ namespace BaseML::Utils
         return sample;
     }
 
-    float GaussianSampler::logProbabiltiy(float mean, float sample)
+    float GaussianSampler::logProbability(float mean, float sample)
     {
         float diff = sample - mean;
         return -std::log(distrib.stddev() * std::sqrt(2.0f * SAMPLER_PI)) - 0.5f * (diff * diff) / (distrib.stddev() * distrib.stddev());
     }
 
-    float GaussianSampler::logProbabiltiy(const Matrix& mean, const Matrix& sample)
+    float GaussianSampler::logProbability(const Matrix& mean, const Matrix& sample)
     {
 #ifdef DEBUG
         if (mean.size() != sample.size())
@@ -108,7 +107,8 @@ namespace BaseML::Utils
 
     float initFromNumInputs(int inputNum)
     {
-        float limit = std::sqrt(6.0f / inputNum);
+        float gain = std::sqrt(2.0f / (1.0f + 0.01f * 0.01f));
+        float limit = std::sqrt(6.0f / inputNum) * gain;
         return getRandomFloat(-limit, limit);
     }
 
