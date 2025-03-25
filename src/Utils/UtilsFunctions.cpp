@@ -32,6 +32,16 @@ namespace BaseML::Utils
             return 0.01f;
     }
 
+    float hyperbolicTangent(float input)
+    {
+        return (expf(input) - expf(-input)) / (expf(input) + expf(-input));
+    }
+
+    float hyperbolicTangentDerivative(float neuronOutput)
+    {
+        return 1.0f - neuronOutput * neuronOutput;
+    }
+
     float BaseML::Utils::squareError(float activation, float expected)
     {
         float error = activation - expected;

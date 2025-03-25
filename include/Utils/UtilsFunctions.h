@@ -8,6 +8,9 @@ namespace BaseML::Utils
 	float leakyReLU(float input);
 	float leakyReLUDerivative(float neuronOutput);
 
+	float hyperbolicTangent(float input);
+	float hyperbolicTangentDerivative(float neuronOutput);
+
 	float squareError(float activation, float expected);
 	float squareErrorDerivative(float activation, float expected);
 }
