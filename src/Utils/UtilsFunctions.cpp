@@ -34,7 +34,7 @@ namespace BaseML::Utils
 
     float hyperbolicTangent(float input)
     {
-        return (expf(input) - expf(-input)) / (expf(input) + expf(-input));
+        return tanhf(input);
     }
 
     float hyperbolicTangentDerivative(float neuronOutput)
