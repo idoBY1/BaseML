@@ -156,11 +156,13 @@ namespace BaseML
 		// Reset gradients and resize to fit the output
 		gradients = Matrix(outputCount, batchSize);
 
+		float gradScaleFactor = (1.0f / static_cast<float>(batchSize));
+
 		// The Last layer bases its gradients on the loss function directly
 		#pragma omp parallel for
 		for (int i = 0; i < gradients.size(); i++)
 		{
-			gradients(i) = (*lossFunctionDerivative)(outputs(i), expectedOutputs(i)) * (*activationFuncDerivative)(outputs(i));
+			gradients(i) = (*lossFunctionDerivative)(outputs(i), expectedOutputs(i)) * (*activationFuncDerivative)(outputs(i)) * gradScaleFactor;
 		}
 	}
 

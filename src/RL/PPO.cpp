@@ -406,6 +406,9 @@ namespace BaseML::RL
 			}
 		}
 
+		// Scale by batch size
+		gradients = gradients * (1.0f / static_cast<float>(gradients.columnsCount()));
+
 		// Update actor network
 		actorNetwork.backPropagation(gradients, currentLearningRate);
 	}
